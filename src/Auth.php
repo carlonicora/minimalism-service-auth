@@ -7,12 +7,14 @@ use CarloNicora\Minimalism\Core\Services\Interfaces\ServiceConfigurationsInterfa
 use CarloNicora\Minimalism\Services\Auth\Configurations\AuthConfigurations;
 use CarloNicora\Minimalism\Services\Auth\Data\Databases\OAuth\Tables\AppsTables;
 use CarloNicora\Minimalism\Services\Auth\Data\Databases\OAuth\Tables\AuthsTable;
+use CarloNicora\Minimalism\Services\Auth\Data\Databases\OAuth\Tables\TokensTable;
 use CarloNicora\Minimalism\Services\Auth\Interfaces\AuthenticationInterface;
 use CarloNicora\Minimalism\Services\MySQL\Exceptions\DbRecordNotFoundException;
 use CarloNicora\Minimalism\Services\MySQL\Exceptions\DbSqlException;
 use CarloNicora\Minimalism\Services\MySQL\Interfaces\TableInterface;
 use CarloNicora\Minimalism\Services\MySQL\MySQL;
 use Exception;
+use RuntimeException;
 
 class Auth  extends AbstractService {
     /** @var AuthConfigurations  */
@@ -159,5 +161,25 @@ class Auth  extends AbstractService {
         /** @var AppsTables $apps */
         $apps = $mysql->create(AppsTables::class);
         return $apps->getByClientId($this->clientId);
+    }
+
+    /**
+     * @param string $token
+     * @return int
+     * @throws Exception
+     */
+    public function validateToken(string $token): ?int
+    {
+        /** @var MySQL $mysql */
+        $mysql = $this->services->service(MySQL::class);
+        /** @var TokensTable $tokens */
+        $tokens = $mysql->create(TokensTable::class);
+
+        try {
+            $tokenArray = $tokens->loadByToken($token);
+            return $tokenArray['userId'];
+        } catch (DbRecordNotFoundException|DbSqlException $e) {
+            throw new RuntimeException('token not found');
+        }
     }
 }
