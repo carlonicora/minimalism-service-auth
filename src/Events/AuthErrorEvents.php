@@ -26,4 +26,13 @@ class AuthErrorEvents extends AbstractErrorEvent
             'The account (user id '  . $userId . ') has not been activated yet'
         );
     }
+
+    public static function AUTH_CODE_EXPIRED() : EventInterface
+    {
+        return new self(
+            3,
+            ResponseInterface::HTTP_STATUS_412,
+            'The authorization code is expired'
+        );
+    }
 }

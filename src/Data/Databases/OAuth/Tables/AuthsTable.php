@@ -2,6 +2,7 @@
 namespace CarloNicora\Minimalism\Services\Auth\Data\Databases\OAuth\Tables;
 
 use CarloNicora\Minimalism\Services\MySQL\Abstracts\AbstractTable;
+use CarloNicora\Minimalism\Services\MySQL\Exceptions\DbSqlException;
 use CarloNicora\Minimalism\Services\MySQL\Interfaces\TableInterface;
 
 class AuthsTable extends AbstractTable {
@@ -18,4 +19,18 @@ class AuthsTable extends AbstractTable {
         'expiration'    => TableInterface::STRING,
         'code'          => TableInterface::STRING
     ];
+
+    /**
+     * @param string $code
+     * @return array
+     * @throws DbSqlException
+     */
+    public function loadByCode(string $code): array
+    {
+        $this->sql = $this->query->SELECT()
+            . ' WHERE code=?;';
+        $this->parameters = ['s', $code];
+
+        return $this->functions->runRead();
+    }
 }
