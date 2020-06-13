@@ -1,1 +1,33 @@
-auth
+{% extends "base.twig" %}
+
+{% block content %}
+    <h3>Login</h3>
+    <form action="{{ links.doLogin }}" id="loginForm" class="loginForm">
+        <button>YES</button>
+    </form>
+{% endblock %}
+
+{% block footer %}
+    <script>
+        $(function () {
+            $("#loginForm").submit(function (e) {
+                e.preventDefault();
+
+                var postData = $(this).serializeArray();
+
+                $.ajax({
+                    url: $(this).attr('action'),
+                    type: 'POST',
+                    data: postData,
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    },
+                    success: function (result) {
+                        var response = JSON.parse(result);
+                        console.log(response);
+                        //window.location.replace(form.data('redirection'));
+                    }
+                });
+            });
+        });
+    </script>
+{% endblock %}
