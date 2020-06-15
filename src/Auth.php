@@ -4,6 +4,8 @@ namespace CarloNicora\Minimalism\Services\Auth;
 use CarloNicora\Minimalism\Core\Services\Abstracts\AbstractService;
 use CarloNicora\Minimalism\Core\Services\Factories\ServicesFactory;
 use CarloNicora\Minimalism\Core\Services\Interfaces\ServiceConfigurationsInterface;
+use CarloNicora\Minimalism\Core\Traits\HttpHeadersTrait;
+use CarloNicora\Minimalism\Interfaces\SecurityInterface;
 use CarloNicora\Minimalism\Services\Auth\Configurations\AuthConfigurations;
 use CarloNicora\Minimalism\Services\Auth\Data\Databases\OAuth\Tables\AppsTables;
 use CarloNicora\Minimalism\Services\Auth\Data\Databases\OAuth\Tables\AuthsTable;
@@ -16,7 +18,10 @@ use CarloNicora\Minimalism\Services\MySQL\MySQL;
 use Exception;
 use RuntimeException;
 
-class Auth  extends AbstractService {
+class Auth  extends AbstractService implements SecurityInterface
+{
+    use HttpHeadersTrait;
+
     /** @var AuthConfigurations  */
     private AuthConfigurations $configData;
 
@@ -181,5 +186,30 @@ class Auth  extends AbstractService {
         } catch (DbRecordNotFoundException|DbSqlException $e) {
             throw new RuntimeException('token not found');
         }
+    }
+
+    /**
+     * @param string $verb
+     * @param string $uri
+     * @param array|null $body
+     * @return bool
+     * @throws Exception
+     */
+    public function isSignatureValid(string $verb, string $uri, array $body = null): bool
+    {
+        $bearer = $this->getHeader('Authorization');
+        [,$token] = explode(' ', $bearer);
+
+        $this->userId = $this->validateToken($token);
+
+        return true;
+    }
+
+    /**
+     * @return SecurityInterface
+     */
+    public function getSecurityInterface(): SecurityInterface
+    {
+        return $this;
     }
 }
