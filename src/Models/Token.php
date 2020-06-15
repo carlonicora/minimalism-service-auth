@@ -7,6 +7,7 @@ use CarloNicora\Minimalism\Services\Auth\Data\Databases\OAuth\Tables\AuthsTable;
 use CarloNicora\Minimalism\Services\Auth\Data\Databases\OAuth\Tables\TokensTable;
 use CarloNicora\Minimalism\Services\Auth\Events\AuthErrorEvents;
 use CarloNicora\Minimalism\Services\ParameterValidator\ParameterValidator;
+use DateTime;
 use Exception;
 use JsonException;
 use RuntimeException;
@@ -48,7 +49,7 @@ class Token extends AbstractAuthWebModel
         $auths = $this->mysql->create(AuthsTable::class);
         $auth = $auths->loadByCode($this->code);
 
-        if ($auth['expiration'] < time()) {
+        if (new DateTime($auth['expiration']) < new DateTime()) {
             $this->services->logger()->error()->log(
                 AuthErrorEvents::AUTH_CODE_EXPIRED()
             )->throw();
