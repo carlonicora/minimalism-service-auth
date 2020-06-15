@@ -8,10 +8,10 @@ use CarloNicora\Minimalism\Services\Auth\Configurations\AuthConfigurations;
 use CarloNicora\Minimalism\Services\Auth\Data\Databases\OAuth\Tables\AppsTables;
 use CarloNicora\Minimalism\Services\Auth\Data\Databases\OAuth\Tables\AuthsTable;
 use CarloNicora\Minimalism\Services\Auth\Data\Databases\OAuth\Tables\TokensTable;
+use CarloNicora\Minimalism\Services\Auth\Events\AuthErrorEvents;
 use CarloNicora\Minimalism\Services\Auth\Interfaces\AuthenticationInterface;
 use CarloNicora\Minimalism\Services\MySQL\Exceptions\DbRecordNotFoundException;
 use CarloNicora\Minimalism\Services\MySQL\Exceptions\DbSqlException;
-use CarloNicora\Minimalism\Services\MySQL\Interfaces\TableInterface;
 use CarloNicora\Minimalism\Services\MySQL\MySQL;
 use Exception;
 use RuntimeException;
@@ -19,9 +19,6 @@ use RuntimeException;
 class Auth  extends AbstractService {
     /** @var AuthConfigurations  */
     private AuthConfigurations $configData;
-
-    /** @var AuthenticationInterface|null  */
-    private ?AuthenticationInterface $authenticationTable=null;
 
     /** @var string|null  */
     private ?string $clientId=null;
@@ -50,15 +47,18 @@ class Auth  extends AbstractService {
      */
     public function getAuthenticationTable(): AuthenticationInterface
     {
-        if ($this->authenticationTable === null) {
-            /** @var MySQL $mysql */
-            $mysql = $this->services->service(MySQL::class);
-            /** @var AuthenticationInterface|TableInterface authenticationTable */
-            /** @noinspection PhpFieldAssignmentTypeMismatchInspection */
-            $this->authenticationTable = $mysql->create($this->configData->getAuthInterfaceClass());
+        $authClass = $this->configData->getAuthInterfaceClass();
+
+        if ($authClass === null){
+            $this->services->logger()->error()->log(
+                AuthErrorEvents::AUTH_INTERFACE_NOT_CONFIGURED()
+            )->throw();
         }
 
-        return $this->authenticationTable;
+        /** @var AuthenticationInterface $response */
+        $response = new $authClass($this->services);
+
+        return $response;
     }
 
     /**
@@ -142,7 +142,7 @@ class Auth  extends AbstractService {
         $response = $app['url'];
 
         $join = (strpos($response, '?') !== false) ? '&' : '?';
-        $response = $join
+        $response .= $join
             . 'code=' . $auth['code']
             . '&state=' . $this->state;
 

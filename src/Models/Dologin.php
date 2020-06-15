@@ -1,5 +1,5 @@
 <?php
-namespace CarloNicora\Minimalism\Services\Auth\Models\Login;
+namespace CarloNicora\Minimalism\Services\Auth\Models;
 
 use CarloNicora\Minimalism\Core\Modules\Interfaces\ResponseInterface;
 use CarloNicora\Minimalism\Services\Auth\Abstracts\AbstractAuthWebModel;
@@ -7,7 +7,7 @@ use CarloNicora\Minimalism\Services\Auth\Events\AuthErrorEvents;
 use CarloNicora\Minimalism\Services\ParameterValidator\ParameterValidator;
 use Exception;
 
-class Login extends AbstractAuthWebModel
+class Dologin extends AbstractAuthWebModel
 {
     /** @var string|null  */
     protected ?string $email;
@@ -38,18 +38,12 @@ class Login extends AbstractAuthWebModel
                 AuthErrorEvents::INVALID_EMAIL_OR_PASSWORD()
             )->throw();
         }
-
-        if (array_key_exists('activationDate', $user) && empty($user['activationDate'])) {
-            $this->services->logger()->error()->log(
-                AuthErrorEvents::ACCOUNT_NOT_ACTIVE($user['userId'])
-            )->throw(Exception::class, 'The account has not been activated yet');
-        }
-
+        
         $this->auth->setUserId($user['userId']);
 
         $this->document->meta->add(
             'redirection',
-            $this->services->paths()->getUrl() . '/auth'
+            $this->services->paths()->getUrl() . 'auth'
         );
 
         return $this->generateResponse($this->document, ResponseInterface::HTTP_STATUS_200);

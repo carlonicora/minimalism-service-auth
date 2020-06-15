@@ -1,6 +1,7 @@
 <?php
 namespace CarloNicora\Minimalism\Services\Auth\Models;
 
+use CarloNicora\JsonApi\Objects\Link;
 use CarloNicora\Minimalism\Core\Modules\Interfaces\ResponseInterface;
 use CarloNicora\Minimalism\Services\Auth\Abstracts\AbstractAuthWebModel;
 use CarloNicora\Minimalism\Services\Auth\Data\Builders\App;
@@ -34,17 +35,6 @@ class Auth extends AbstractAuthWebModel
     {
         parent::initialise($passedParameters, $file);
 
-        if ($this->auth->getUserId() === null){
-            $this->redirectPage = 'login';
-        }
-    }
-
-    /**
-     * @return ResponseInterface
-     * @throws Exception
-     */
-    public function generateData(): ResponseInterface
-    {
         if ($this->clientId !== null) {
             $this->auth->setClientId($this->clientId);
         }
@@ -57,6 +47,17 @@ class Auth extends AbstractAuthWebModel
             throw new RuntimeException('client_id missing', 412);
         }
 
+        if ($this->auth->getUserId() === null){
+            $this->redirectPage = 'Login';
+        }
+    }
+
+    /**
+     * @return ResponseInterface
+     * @throws Exception
+     */
+    public function generateData(): ResponseInterface
+    {
         $app = $this->auth->getAppByClientId();
 
         if (!$app['isActive']) {
@@ -67,17 +68,22 @@ class Auth extends AbstractAuthWebModel
             $auth = $this->auth->generateAuth($app['appId']);
             $redirection = $this->auth->generateRedirection($app, $auth);
 
-            $this->document->meta->add('redirection', $redirection);
-        } else {
-            $this->document->addResourceList(
-                $this->mapper->generateResourceObjectByFieldValue(
-                    App::class,
-                    App::attributeId(),
-                    $app['appId'],
-                    true
-                )
-            );
+            header('Location: ' . $redirection);
+            exit;
         }
+
+        $this->document->links->add(
+            new Link('authorise', $this->services->paths()->getUrl() . 'authorise')
+        );
+
+        $this->document->addResourceList(
+            $this->mapper->generateResourceObjectByFieldValue(
+                App::class,
+                App::attributeId(),
+                $app['appId'],
+                true
+            )
+        );
 
         return $this->generateResponse($this->document, ResponseInterface::HTTP_STATUS_200);
     }

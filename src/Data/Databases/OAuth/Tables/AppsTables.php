@@ -8,7 +8,7 @@ use CarloNicora\Minimalism\Services\MySQL\Interfaces\TableInterface;
 
 class AppsTables extends AbstractTable {
     /** @var string */
-    protected string $tableName = 'aps';
+    protected string $tableName = 'apps';
 
     /** @var array  */
     protected array $fields = [

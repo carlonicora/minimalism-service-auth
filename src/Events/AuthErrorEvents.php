@@ -35,4 +35,13 @@ class AuthErrorEvents extends AbstractErrorEvent
             'The authorization code is expired'
         );
     }
+
+    public static function AUTH_INTERFACE_NOT_CONFIGURED() : EventInterface
+    {
+        return new self(
+            4,
+            ResponseInterface::HTTP_STATUS_500,
+            'The authorization interface is not configured'
+        );
+    }
 }

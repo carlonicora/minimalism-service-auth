@@ -27,8 +27,7 @@
                 },
                 success: function (result) {
                     var response = JSON.parse(result);
-                    console.log(response);
-                    //window.location.replace(form.data('redirection'));
+                    window.location.replace(response.meta.redirection);
                 }
             });
         });

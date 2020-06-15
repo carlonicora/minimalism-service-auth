@@ -1,5 +1,5 @@
 <?php
-namespace CarloNicora\Minimalism\Services\Auth\Models\Auth;
+namespace CarloNicora\Minimalism\Services\Auth\Models;
 
 use CarloNicora\Minimalism\Core\Modules\Interfaces\ResponseInterface;
 use CarloNicora\Minimalism\Services\Auth\Abstracts\AbstractAuthWebModel;
