@@ -40,6 +40,8 @@ class Token extends AbstractAuthWebModel
             throw new RuntimeException('grant_type not supported', 500);
         }
 
+        header("Access-Control-Allow-Origin: *");
+
         $response = [
             'access_token' => '',
             'token_type' => 'bearer'
@@ -64,6 +66,8 @@ class Token extends AbstractAuthWebModel
         $this->mysql->create(TokensTable::class)->update($token);
 
         $response['access_token'] = $token['token'];
+
+        header("Access-Control-Allow-Origin: *");
 
         echo json_encode($response, JSON_THROW_ON_ERROR);
         exit;
