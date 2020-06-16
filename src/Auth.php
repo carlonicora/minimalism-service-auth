@@ -198,6 +198,11 @@ class Auth  extends AbstractService implements SecurityInterface
     public function isSignatureValid(string $verb, string $uri, array $body = null): bool
     {
         $bearer = $this->getHeader('Authorization');
+
+        if ($bearer === null){
+            return false;
+        }
+
         [,$token] = explode(' ', $bearer);
 
         $this->userId = $this->validateToken($token);
