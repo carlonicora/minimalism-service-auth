@@ -184,7 +184,7 @@ class Auth  extends AbstractService implements SecurityInterface
             $tokenArray = $tokens->loadByToken($token);
             return $tokenArray['userId'];
         } catch (DbRecordNotFoundException|DbSqlException $e) {
-            throw new RuntimeException('token not found');
+            throw new RuntimeException('token not found', 401);
         }
     }
 
