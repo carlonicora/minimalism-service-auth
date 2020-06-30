@@ -7,7 +7,7 @@ use CarloNicora\Minimalism\Services\Auth\Abstracts\AbstractAuthWebModel;
 use CarloNicora\Minimalism\Services\ParameterValidator\ParameterValidator;
 use Exception;
 
-class Login extends AbstractAuthWebModel
+class Change extends AbstractAuthWebModel
 {
     /** @var string  */
     protected string $viewName = 'login';
@@ -28,28 +28,6 @@ class Login extends AbstractAuthWebModel
             'validator' => ParameterValidator::PARAMETER_TYPE_STRING
         ]
     ];
-
-    /**
-     * @param array $passedParameters
-     * @param array|null $file
-     * @throws Exception
-     */
-    public function initialise(array $passedParameters, array $file = null): void
-    {
-        parent::initialise($passedParameters, $file);
-
-        if ($this->clientId !== null) {
-            $this->auth->setClientId($this->clientId);
-        }
-
-        if ($this->state !== null) {
-            $this->auth->setState($this->state);
-        }
-
-        if ($this->auth->getUserId() !== null){
-            $this->redirectPage = 'auth';
-        }
-    }
 
     /**
      * @return ResponseInterface

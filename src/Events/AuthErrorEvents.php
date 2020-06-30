@@ -44,4 +44,13 @@ class AuthErrorEvents extends AbstractErrorEvent
             'The authorization interface is not configured'
         );
     }
+
+    public static function INVALID_ACCOUNT() : EventInterface
+    {
+        return new self(
+            5,
+            ResponseInterface::HTTP_STATUS_401,
+            'Could not find your account'
+        );
+    }
 }

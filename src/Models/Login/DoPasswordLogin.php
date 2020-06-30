@@ -1,13 +1,14 @@
 <?php
-namespace CarloNicora\Minimalism\Services\Auth\Models;
+namespace CarloNicora\Minimalism\Services\Auth\Models\Login;
 
 use CarloNicora\Minimalism\Core\Modules\Interfaces\ResponseInterface;
 use CarloNicora\Minimalism\Services\Auth\Abstracts\AbstractAuthWebModel;
 use CarloNicora\Minimalism\Services\Auth\Events\AuthErrorEvents;
+use CarloNicora\Minimalism\Services\ParameterValidator\Interfaces\ParameterInterface;
 use CarloNicora\Minimalism\Services\ParameterValidator\ParameterValidator;
 use Exception;
 
-class Dologin extends AbstractAuthWebModel
+class DoPasswordLogin extends AbstractAuthWebModel
 {
     /** @var string|null  */
     protected ?string $email;
@@ -17,8 +18,15 @@ class Dologin extends AbstractAuthWebModel
 
     /** @var array  */
     protected array $parameters = [
-        'email' => ['required' => true, 'validator' => ParameterValidator::PARAMETER_TYPE_STRING],
-        'password' => ['required' => true, 'validator' => ParameterValidator::PARAMETER_TYPE_STRING]
+        'userId' => [
+            ParameterInterface::NAME => 'userId',
+            ParameterInterface::IS_REQUIRED => true,
+            ParameterInterface::IS_ENCRYPTED => true
+        ],
+        'password' => [
+            ParameterInterface::IS_REQUIRED => true,
+            ParameterInterface::VALIDATOR => ParameterValidator::PARAMETER_TYPE_STRING
+        ]
     ];
 
     /**
@@ -27,7 +35,7 @@ class Dologin extends AbstractAuthWebModel
      */
     public function generateData(): ResponseInterface
     {
-        if (($user = $this->auth->getAuthenticationTable()->authenticateByEmail($this->email)) === null){
+        if (($user = $this->auth->getAuthenticationTable()->authenticateById($this->email)) === null){
             $this->services->logger()->error()->log(
                 AuthErrorEvents::INVALID_EMAIL_OR_PASSWORD()
             )->throw();
@@ -38,7 +46,7 @@ class Dologin extends AbstractAuthWebModel
                 AuthErrorEvents::INVALID_EMAIL_OR_PASSWORD()
             )->throw();
         }
-        
+
         $this->auth->setUserId($user['userId']);
 
         $this->document->meta->add(

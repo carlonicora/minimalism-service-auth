@@ -22,8 +22,13 @@ class Auth extends AbstractAuthWebModel
 
     /** @var array|array[]  */
     protected array $parameters = [
-        'client_id' => ['name' => 'clientId', 'validator' => ParameterValidator::PARAMETER_TYPE_STRING],
-        'state' => ['validator' => ParameterValidator::PARAMETER_TYPE_STRING]
+        'client_id' => [
+            'name' => 'clientId',
+            'validator' => ParameterValidator::PARAMETER_TYPE_STRING
+        ],
+        'state' => [
+            'validator' => ParameterValidator::PARAMETER_TYPE_STRING
+        ]
     ];
 
     /**
@@ -73,12 +78,13 @@ class Auth extends AbstractAuthWebModel
         }
 
         $this->document->links->add(
-            new Link('authorise', $this->services->paths()->getUrl() . 'authorise')
+            new Link('authorise', $this->services->paths()->getUrl() . 'Authorisation/DoAuthorise')
         );
 
         $this->document->addResourceList(
             $this->mapper->generateResourceObjectByFieldValue(
                 App::class,
+                null,
                 App::attributeId(),
                 $app['appId'],
                 true

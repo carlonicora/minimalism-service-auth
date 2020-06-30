@@ -1,5 +1,5 @@
 <?php
-namespace CarloNicora\Minimalism\Services\Auth\Models;
+namespace CarloNicora\Minimalism\Services\Auth\Models\Authorisation;
 
 use CarloNicora\Minimalism\Core\Modules\Interfaces\ResponseInterface;
 use CarloNicora\Minimalism\Services\Auth\Abstracts\AbstractAuthWebModel;
@@ -8,7 +8,7 @@ use CarloNicora\Minimalism\Services\MySQL\Exceptions\DbSqlException;
 use Exception;
 use RuntimeException;
 
-class Authorise extends AbstractAuthWebModel
+class DoAuthorise extends AbstractAuthWebModel
 {
     /**
      * @return ResponseInterface

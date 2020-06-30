@@ -7,10 +7,10 @@ use CarloNicora\Minimalism\Services\Auth\Abstracts\AbstractAuthWebModel;
 use CarloNicora\Minimalism\Services\ParameterValidator\ParameterValidator;
 use Exception;
 
-class Login extends AbstractAuthWebModel
+class Register extends AbstractAuthWebModel
 {
     /** @var string  */
-    protected string $viewName = 'login';
+    protected string $viewName = 'register';
 
     /** @var string|null  */
     protected ?string $clientId=null;
@@ -58,7 +58,7 @@ class Login extends AbstractAuthWebModel
     public function generateData(): ResponseInterface
     {
         $this->document->links->add(
-            new Link('doLogin', $this->services->paths()->getUrl() . 'Accounts/DoAccountLookup')
+            new Link('doRegister', $this->services->paths()->getUrl() . 'Accounts/DoAccountLookup')
         );
 
         return $this->generateResponse($this->document, ResponseInterface::HTTP_STATUS_200);

@@ -16,4 +16,21 @@ interface AuthenticationInterface
      * @return array
      */
     public function authenticateByEmail(string $email): array;
+
+    /**
+     * @param int $userId
+     * @return array
+     */
+    public function authenticateById(int $userId): array;
+
+    /**
+     * @param string $email
+     * @return array
+     */
+    public function generateNewUser(string $email): array;
+
+    /**
+     * @param array $user
+     */
+    public function activateUser(array $user): void;
 }
