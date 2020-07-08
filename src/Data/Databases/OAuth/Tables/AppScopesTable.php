@@ -4,7 +4,8 @@ namespace CarloNicora\Minimalism\Services\Auth\Data\Databases\OAuth\Tables;
 use CarloNicora\Minimalism\Services\MySQL\Abstracts\AbstractTable;
 use CarloNicora\Minimalism\Services\MySQL\Interfaces\TableInterface;
 
-class AppScopesTable extends AbstractTable {
+class AppScopesTable extends AbstractTable
+{
     /** @var string */
     protected string $tableName = 'appScopes';
 

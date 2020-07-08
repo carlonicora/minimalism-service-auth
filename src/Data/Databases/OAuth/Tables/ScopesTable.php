@@ -5,7 +5,8 @@ use CarloNicora\Minimalism\Services\MySQL\Abstracts\AbstractTable;
 use CarloNicora\Minimalism\Services\MySQL\Exceptions\DbSqlException;
 use CarloNicora\Minimalism\Services\MySQL\Interfaces\TableInterface;
 
-class ScopesTable extends AbstractTable {
+class ScopesTable extends AbstractTable
+{
     /** @var string */
     protected string $tableName = 'scopes';
 

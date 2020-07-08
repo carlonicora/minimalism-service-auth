@@ -32,7 +32,7 @@ class AuthErrorEvents extends AbstractErrorEvent
         return new self(
             3,
             ResponseInterface::HTTP_STATUS_412,
-            'The authorization code is expired'
+            'The authorization code is incorrect or expired'
         );
     }
 

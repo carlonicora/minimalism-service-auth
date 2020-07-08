@@ -217,4 +217,28 @@ class Auth  extends AbstractService implements SecurityInterface
     {
         return $this;
     }
+
+    /**
+     * @return string
+     */
+    public function getSenderName(): string
+    {
+        return $this->configData->getSenderName();
+    }
+
+    /**
+     * @return string
+     */
+    public function getSenderEmail(): string
+    {
+        return $this->configData->getSenderEmail();
+    }
+
+    /**
+     * @return string
+     */
+    public function getCodeEmailTitle(): string
+    {
+        return $this->configData->getCodeEmailTitle();
+    }
 }

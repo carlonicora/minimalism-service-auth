@@ -6,7 +6,8 @@ use CarloNicora\Minimalism\Services\MySQL\Exceptions\DbRecordNotFoundException;
 use CarloNicora\Minimalism\Services\MySQL\Exceptions\DbSqlException;
 use CarloNicora\Minimalism\Services\MySQL\Interfaces\TableInterface;
 
-class AuthsTable extends AbstractTable {
+class AuthsTable extends AbstractTable
+{
     /** @var string */
     protected string $tableName = 'auths';
 
