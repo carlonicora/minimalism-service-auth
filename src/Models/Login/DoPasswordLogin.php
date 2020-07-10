@@ -11,7 +11,7 @@ use Exception;
 class DoPasswordLogin extends AbstractAuthWebModel
 {
     /** @var string|null  */
-    protected ?string $email;
+    protected ?string $userId;
 
     /** @var string|null  */
     protected ?string $password;
@@ -35,7 +35,7 @@ class DoPasswordLogin extends AbstractAuthWebModel
      */
     public function generateData(): ResponseInterface
     {
-        if (($user = $this->auth->getAuthenticationTable()->authenticateById($this->email)) === null){
+        if (($user = $this->auth->getAuthenticationTable()->authenticateById($this->userId)) === null){
             $this->services->logger()->error()->log(
                 AuthErrorEvents::INVALID_EMAIL_OR_PASSWORD()
             )->throw();
@@ -47,7 +47,7 @@ class DoPasswordLogin extends AbstractAuthWebModel
             )->throw();
         }
 
-        $this->auth->setUserId($user['userId']);
+        $this->auth->setUserId($this->userId);
 
         $this->document->meta->add(
             'redirection',

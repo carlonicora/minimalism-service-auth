@@ -58,7 +58,7 @@ class EmailFactory
             $title,
             $paths
         );
-        $email->addRecipient($$recipientEmail, $recipientName);
+        $email->addRecipient($recipientEmail, $recipientName);
 
         $email->addTemplateFile($template);
         $email->addParameters($data);

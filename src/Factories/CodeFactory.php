@@ -62,7 +62,7 @@ class CodeFactory
         ];
         $this->codes->update($code);
 
-        $this->sendAccessCode($user, (string)$code);
+        $this->sendAccessCode($user, (string)$actualCode);
     }
 
     /**
@@ -73,6 +73,7 @@ class CodeFactory
     public function validateCode(array $user, int $code): void
     {
         $this->codes->purgeExpired();
+        $this->codes->purgeUserId($user['userId']);
 
         try {
             $codeRecord = $this->codes->userIdCode($user['userId'], $code);

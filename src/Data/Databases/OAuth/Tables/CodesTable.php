@@ -38,6 +38,19 @@ class CodesTable extends AbstractTable
 
     /**
      * @param int $userId
+     * @throws DbSqlException
+     */
+    public function purgeUserId(int $userId) : void
+    {
+        $this->sql = $this->query->DELETE()
+            . ' WHERE userId=?;';
+        $this->parameters = ['i', $userId];
+
+        $this->functions->runSql();
+    }
+
+    /**
+     * @param int $userId
      * @param int $code
      * @return array
      * @throws DbSqlException

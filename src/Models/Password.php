@@ -4,12 +4,25 @@ namespace CarloNicora\Minimalism\Services\Auth\Models;
 use CarloNicora\JsonApi\Objects\Link;
 use CarloNicora\Minimalism\Core\Modules\Interfaces\ResponseInterface;
 use CarloNicora\Minimalism\Services\Auth\Abstracts\AbstractAuthWebModel;
+use CarloNicora\Minimalism\Services\ParameterValidator\Interfaces\ParameterInterface;
 use Exception;
 
 class Password extends AbstractAuthWebModel
 {
     /** @var string  */
-    protected string $viewName = 'login';
+    protected string $viewName = 'password';
+
+    /** @var int|null  */
+    protected ?int $userId=null;
+
+    /** @var array|array[]  */
+    protected array $parameters = [
+        'id' => [
+            ParameterInterface::NAME => 'userId',
+            ParameterInterface::IS_ENCRYPTED => true,
+            ParameterInterface::IS_REQUIRED => true
+        ]
+    ];
 
     /**
      * @return ResponseInterface
@@ -17,6 +30,8 @@ class Password extends AbstractAuthWebModel
      */
     public function generateData(): ResponseInterface
     {
+        $this->document->meta->add('userId', $this->encrypter->encryptId($this->userId));
+
         $this->document->links->add(
             new Link('doLogin', $this->services->paths()->getUrl() . 'Login/DoPasswordLogin')
         );

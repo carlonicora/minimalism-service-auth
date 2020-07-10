@@ -15,13 +15,13 @@ interface AuthenticationInterface
      * @param string $email
      * @return array
      */
-    public function authenticateByEmail(string $email): array;
+    public function authenticateByEmail(string $email): ?array;
 
     /**
      * @param int $userId
-     * @return array
+     * @return array|null
      */
-    public function authenticateById(int $userId): array;
+    public function authenticateById(int $userId): ?array;
 
     /**
      * @param string $email
