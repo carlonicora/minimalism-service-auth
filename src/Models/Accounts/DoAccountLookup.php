@@ -12,6 +12,9 @@ use Exception;
 
 class DoAccountLookup extends AbstractAuthWebModel
 {
+    /** @var int|null  */
+    protected ?int $userId=null;
+
     /** @var string|null  */
     protected ?string $email=null;
 
@@ -20,13 +23,17 @@ class DoAccountLookup extends AbstractAuthWebModel
 
     /** @var bool|null  */
     protected ?bool $recoverPassword=false;
+
     /** @var bool|null  */
     protected ?bool $create=false;
 
     /** @var array  */
     protected array $parameters = [
+        0 => [
+            ParameterInterface::NAME => 'userId',
+            ParameterInterface::IS_ENCRYPTED => true
+        ],
         'email' => [
-            ParameterInterface::IS_REQUIRED => true,
             ParameterInterface::VALIDATOR => ParameterValidator::PARAMETER_TYPE_STRING
         ],
         'create' => [
@@ -46,9 +53,15 @@ class DoAccountLookup extends AbstractAuthWebModel
      */
     public function generateData(): ResponseInterface
     {
+        $user = [];
+
         if ($this->auth->getUserId() !== null) {
             $user = $this->auth->getAuthenticationTable()->authenticateById($this->auth->getUserId());
-        } elseif (($user = $this->auth->getAuthenticationTable()->authenticateByEmail($this->email)) === null) {
+        } elseif ($this->email !== null &&  ($user = $this->auth->getAuthenticationTable()->authenticateByEmail($this->email)) === null) {
+            $this->services->logger()->error()->log(
+                AuthErrorEvents::INVALID_ACCOUNT()
+            )->throw();
+        } elseif ($this->userId !== null &&  ($user = $this->auth->getAuthenticationTable()->authenticateById($this->userId)) === null) {
             $this->services->logger()->error()->log(
                 AuthErrorEvents::INVALID_ACCOUNT()
             )->throw();
@@ -67,20 +80,32 @@ class DoAccountLookup extends AbstractAuthWebModel
                 true
             );
         } else {
+            $redirection = null;
+
             if ($this->overridePassword || empty($user['password'])) {
                 $codeFactory = new CodeFactory($this->services);
 
                 $codeFactory->generateAndSendCode($user);
 
-                $redirection = 'code/' . $encrypter->encryptId($user['userId']);
+                if ($this->overridePassword){
+                    header(
+                        'location:'
+                        . $this->services->paths()->getUrl()
+                        . 'code/' . $encrypter->encryptId($user['userId'])
+                    );
+                } else {
+                    $redirection = 'code/' . $encrypter->encryptId($user['userId']);
+                }
             } else {
                 $redirection = 'password/' . $encrypter->encryptId($user['userId']);
             }
 
-            $this->document->meta->add(
-                'redirection',
-                $this->services->paths()->getUrl() . $redirection
-            );
+            if ($redirection !== null) {
+                $this->document->meta->add(
+                    'redirection',
+                    $this->services->paths()->getUrl() . $redirection
+                );
+            }
         }
 
         return $this->generateResponse($this->document, ResponseInterface::HTTP_STATUS_200);
