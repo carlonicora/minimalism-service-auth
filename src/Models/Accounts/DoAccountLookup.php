@@ -67,14 +67,14 @@ class DoAccountLookup extends AbstractAuthWebModel
                 true
             );
         } else {
-            if ($this->overridePassword || empty($user['password'])) {
+            if ($this->overridePassword || !empty($user['password'])) {
                 $codeFactory = new CodeFactory($this->services);
 
                 $codeFactory->generateAndSendCode($user);
 
-                $redirection = 'code?id=' . $encrypter->encryptId($user['userId']);
+                $redirection = 'code/' . $encrypter->encryptId($user['userId']);
             } else {
-                $redirection = 'password?id=' . $encrypter->encryptId($user['userId']);
+                $redirection = 'password/' . $encrypter->encryptId($user['userId']);
             }
 
             $this->document->meta->add(

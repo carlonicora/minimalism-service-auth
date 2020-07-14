@@ -15,7 +15,7 @@ class Code extends AbstractAuthWebModel
 
     /** @var array  */
     protected array $parameters = [
-        'id' => [
+        0 => [
             ParameterInterface::NAME => 'userId',
             ParameterInterface::IS_REQUIRED => true,
             ParameterInterface::IS_ENCRYPTED => true
@@ -31,7 +31,13 @@ class Code extends AbstractAuthWebModel
      */
     public function generateData(): ResponseInterface
     {
-        $this->document->addResource(new ResourceObject('user', $this->userId));
+        $user = $this->auth->getAuthenticationTable()->authenticateById($this->userId);
+
+        $userResource = new ResourceObject('user', $this->encrypter->encryptId($this->userId));
+        $userResource->attributes->add('email', $user['email']);
+
+        $this->document->addResource($userResource);
+
 
         $this->document->links->add(
             new Link('doLogin', $this->services->paths()->getUrl() . 'Login/DoCodeLogin')

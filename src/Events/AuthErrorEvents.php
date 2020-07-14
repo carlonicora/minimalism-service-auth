@@ -53,4 +53,13 @@ class AuthErrorEvents extends AbstractErrorEvent
             'Could not find your account'
         );
     }
+
+    public static function INVALID_PASSWORD() : EventInterface
+    {
+        return new self(
+            6,
+            ResponseInterface::HTTP_STATUS_401,
+            'Invalid password. Try again or click Forgot Password to reset it.'
+        );
+    }
 }

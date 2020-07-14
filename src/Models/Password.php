@@ -17,7 +17,7 @@ class Password extends AbstractAuthWebModel
 
     /** @var array|array[]  */
     protected array $parameters = [
-        'id' => [
+        0 => [
             ParameterInterface::NAME => 'userId',
             ParameterInterface::IS_ENCRYPTED => true,
             ParameterInterface::IS_REQUIRED => true

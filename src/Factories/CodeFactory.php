@@ -5,6 +5,7 @@ use CarloNicora\Minimalism\Core\Services\Factories\ServicesFactory;
 use CarloNicora\Minimalism\Services\Auth\Auth;
 use CarloNicora\Minimalism\Services\Auth\Data\Databases\OAuth\Tables\CodesTable;
 use CarloNicora\Minimalism\Services\Auth\Events\AuthErrorEvents;
+use CarloNicora\Minimalism\Services\Encrypter\Encrypter;
 use CarloNicora\Minimalism\Services\MySQL\Exceptions\DbRecordNotFoundException;
 use CarloNicora\Minimalism\Services\MySQL\Exceptions\DbSqlException;
 use CarloNicora\Minimalism\Services\MySQL\MySQL;
@@ -47,6 +48,7 @@ class CodeFactory
     public function generateAndSendCode(array $user): void
     {
         $this->codes->purgeExpired();
+        $this->codes->purgeUserId($user['userId']);
 
         try {
             $actualCode = random_int(100000, 999999);
@@ -73,7 +75,6 @@ class CodeFactory
     public function validateCode(array $user, int $code): void
     {
         $this->codes->purgeExpired();
-        $this->codes->purgeUserId($user['userId']);
 
         try {
             $codeRecord = $this->codes->userIdCode($user['userId'], $code);
@@ -93,12 +94,21 @@ class CodeFactory
      */
     private function sendAccessCode(array $user, string $code): void
     {
+        /** @var Encrypter $encrypter */
+        $encrypter = $this->services->service(Encrypter::class);
+
         $data = [];
         $data['title'] = $this->auth->getCodeEmailTitle();
         $data['previewText'] = $this->auth->getCodeEmailTitle();
         $data['username'] = $user['username'];
         $data['code'] = $code;
-        $data['loginUrl'] = $this->services->paths()->getUrl() . 'code/' . $user['userId'] . '/' . $code;
+        $data['loginUrl'] = $this->services->paths()->getUrl()
+            . 'login/'
+            . 'docodelogin/'
+            . $encrypter->encryptId($user['userId']) . '/'
+            . $code . '/'
+            . $this->auth->getClientId() . '/'
+            . $this->auth->getState();
 
         $emailFactory = new EmailFactory($this->services);
         $emailFactory->sendEmail(
