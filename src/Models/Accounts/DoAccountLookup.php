@@ -67,7 +67,7 @@ class DoAccountLookup extends AbstractAuthWebModel
                 true
             );
         } else {
-            if ($this->overridePassword || !empty($user['password'])) {
+            if ($this->overridePassword || empty($user['password'])) {
                 $codeFactory = new CodeFactory($this->services);
 
                 $codeFactory->generateAndSendCode($user);
