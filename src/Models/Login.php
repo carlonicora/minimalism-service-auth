@@ -61,6 +61,10 @@ class Login extends AbstractAuthWebModel
             new Link('doLogin', $this->services->paths()->getUrl() . 'Accounts/DoAccountLookup')
         );
 
+        $this->document->links->add(
+            new Link('registration', $this->services->paths()->getUrl() . 'register')
+        );
+
         return $this->generateResponse($this->document, ResponseInterface::HTTP_STATUS_200);
     }
 }
