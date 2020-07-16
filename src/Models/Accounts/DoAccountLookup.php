@@ -93,6 +93,8 @@ class DoAccountLookup extends AbstractAuthWebModel
                         . $this->services->paths()->getUrl()
                         . 'code/' . $encrypter->encryptId($user['userId'])
                     );
+                } elseif ($this->create){
+                    $redirection = 'code/' . $encrypter->encryptId($user['userId']) . '/1';
                 } else {
                     $redirection = 'code/' . $encrypter->encryptId($user['userId']);
                 }
