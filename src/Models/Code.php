@@ -26,7 +26,6 @@ class Code extends AbstractAuthWebModel
         ],
         1 => [
             ParameterInterface::NAME => 'create',
-            ParameterInterface::IS_REQUIRED => true,
             ParameterInterface::VALIDATOR => ParameterValidator::PARAMETER_TYPE_BOOL
         ]
     ];
