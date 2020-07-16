@@ -3,6 +3,7 @@ namespace CarloNicora\Minimalism\Services\Auth\Models;
 
 use CarloNicora\Minimalism\Core\Modules\Interfaces\ResponseInterface;
 use CarloNicora\Minimalism\Services\Auth\Abstracts\AbstractAuthWebModel;
+use CarloNicora\Minimalism\Services\Auth\Data\Databases\OAuth\Tables\AppsTables;
 use CarloNicora\Minimalism\Services\Auth\Data\Databases\OAuth\Tables\AuthsTable;
 use CarloNicora\Minimalism\Services\Auth\Data\Databases\OAuth\Tables\TokensTable;
 use CarloNicora\Minimalism\Services\Auth\Events\AuthErrorEvents;
@@ -36,7 +37,12 @@ class Token extends AbstractAuthWebModel
      */
     public function generateData(): ResponseInterface
     {
-        if (strtolower($this->grantType) !== 'authorization_code') {
+        /** @noinspection NotOptimalIfConditionsInspection */
+        if (!(
+            strtolower($this->grantType) === 'authorization_code'
+            ||
+            strtolower($this->grantType) === 'client_credentials')
+        ){
             throw new RuntimeException('grant_type not supported', 500);
         }
 
@@ -47,21 +53,36 @@ class Token extends AbstractAuthWebModel
             'token_type' => 'bearer'
         ];
 
-        /** @var AuthsTable $auths */
-        $auths = $this->mysql->create(AuthsTable::class);
-        $auth = $auths->loadByCode($this->code);
+        if (strtolower($this->grantType) !== 'authorization_code') {
+            /** @var AuthsTable $auths */
+            $auths = $this->mysql->create(AuthsTable::class);
+            $auth = $auths->loadByCode($this->code);
 
-        if (new DateTime($auth['expiration']) < new DateTime()) {
-            $this->services->logger()->error()->log(
-                AuthErrorEvents::AUTH_CODE_EXPIRED()
-            )->throw();
+            if (new DateTime($auth['expiration']) < new DateTime()) {
+                $this->services->logger()->error()->log(
+                    AuthErrorEvents::AUTH_CODE_EXPIRED()
+                )->throw();
+            }
+
+            $token = [
+                'appId' => $auth['appId'],
+                'userId' => $auth['userId'],
+                'isUser' => true,
+                'token' => bin2hex(random_bytes(32))
+            ];
+        } else {
+            /** @var AppsTables $apps */
+            $apps = $this->mysql->create(AppsTables::class);
+
+            $app = $apps->getByClientId($this->clientId);
+
+            $token = [
+                'appId' => $app['appId'],
+                'userId' => (int)(microtime(true)*1000),
+                'isUser' => false,
+                'token' => bin2hex(random_bytes(32))
+            ];
         }
-
-        $token = [
-            'appId' => $auth['appId'],
-            'userId' => $auth['userId'],
-            'token' => bin2hex(random_bytes(32))
-        ];
 
         $this->mysql->create(TokensTable::class)->update($token);
 

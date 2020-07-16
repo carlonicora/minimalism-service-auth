@@ -51,6 +51,10 @@ class Code extends AbstractAuthWebModel
             new Link('doLogin', $this->services->paths()->getUrl() . 'Login/DoCodeLogin')
         );
 
+        $this->document->links->add(
+            new Link('doCodeLogin', $this->services->paths()->getUrl() . 'Accounts/DoAccountLookup/' . $this->encrypter->encryptId($this->userId) . '?overridePassword=true')
+        );
+
         return $this->generateResponse($this->document, ResponseInterface::HTTP_STATUS_200);
     }
 }

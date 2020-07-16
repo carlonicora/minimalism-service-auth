@@ -18,6 +18,7 @@ class TokensTable extends AbstractTable
                     +  TableInterface::AUTO_INCREMENT,
         'appId'     => TableInterface::INTEGER,
         'userId'    => TableInterface::INTEGER,
+        'isUser'    => TableInterface::INTEGER,
         'token'     => TableInterface::STRING
     ];
 
