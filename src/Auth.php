@@ -34,6 +34,9 @@ class Auth  extends AbstractService implements SecurityInterface
     /** @var int|null */
     private ?int $userId=null;
 
+    /** @var bool  */
+    private bool $isUser=false;
+
     /**
      * abstractApiCaller constructor.
      * @param ServiceConfigurationsInterface $configData
@@ -170,10 +173,11 @@ class Auth  extends AbstractService implements SecurityInterface
 
     /**
      * @param string $token
+     * @param bool $isUser
      * @return int
      * @throws Exception
      */
-    public function validateToken(string $token): ?int
+    public function validateToken(string $token, bool &$isUser): ?int
     {
         /** @var MySQL $mysql */
         $mysql = $this->services->service(MySQL::class);
@@ -182,6 +186,7 @@ class Auth  extends AbstractService implements SecurityInterface
 
         try {
             $tokenArray = $tokens->loadByToken($token);
+            $isUser = $tokenArray['isUser'];
             return $tokenArray['userId'];
         } catch (DbRecordNotFoundException|DbSqlException $e) {
             throw new RuntimeException('token not found', 401);
@@ -205,7 +210,7 @@ class Auth  extends AbstractService implements SecurityInterface
 
         [,$token] = explode(' ', $bearer);
 
-        $this->userId = $this->validateToken($token);
+        $this->userId = $this->validateToken($token, $this->isUser);
 
         return true;
     }
@@ -240,5 +245,13 @@ class Auth  extends AbstractService implements SecurityInterface
     public function getCodeEmailTitle(): string
     {
         return $this->configData->getCodeEmailTitle();
+    }
+
+    /**
+     * @return bool
+     */
+    public function isUser(): bool
+    {
+        return $this->isUser;
     }
 }
