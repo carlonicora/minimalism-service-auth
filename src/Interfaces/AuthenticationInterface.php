@@ -24,6 +24,12 @@ interface AuthenticationInterface
     public function authenticateById(int $userId): ?array;
 
     /**
+     * @param int $userId
+     * @param string $password
+     */
+    public function updatePassword(int $userId, string $password): void;
+
+    /**
      * @param string $email
      * @return array
      */

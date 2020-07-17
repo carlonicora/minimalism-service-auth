@@ -53,6 +53,8 @@ class DoAccountLookup extends AbstractAuthWebModel
      */
     public function generateData(): ResponseInterface
     {
+        $codeFactory = new CodeFactory($this->services);
+
         $user = [];
 
         if ($this->auth->getUserId() !== null) {
@@ -73,18 +75,16 @@ class DoAccountLookup extends AbstractAuthWebModel
         $encrypter = $this->services->service(Encrypter::class);
 
         if ($this->recoverPassword){
-            //TODO intialise password recovery
+            $codeFactory->generateAndSendResetCode($user);
 
             $this->document->meta->add(
-                'recovery',
-                true
+                'message',
+                'If your email is in our database, we have sent you a message to reset your password'
             );
         } else {
             $redirection = null;
 
             if ($this->overridePassword || empty($user['password'])) {
-                $codeFactory = new CodeFactory($this->services);
-
                 $codeFactory->generateAndSendCode($user);
 
                 if ($this->overridePassword){

@@ -19,6 +19,9 @@ class AuthConfigurations  extends AbstractServiceConfigurations
     /** @var string  */
     private string $codeEmailTitle;
 
+    /** @var string  */
+    private string $forgotEmailTitle;
+
     /**
      * AuthConfigurations constructor.
      * @throws Exception
@@ -35,9 +38,9 @@ class AuthConfigurations  extends AbstractServiceConfigurations
             throw new ConfigurationException('MINIMALISM_SERVICE_AUTH_SENDER_EMAIL is a required configuration');
         }
 
-        if (!($this->codeEmailTitle = getenv('MINIMALISM_SERVICE_AUTH_CODE_EMAIL_TITLE'))){
-            throw new ConfigurationException('MINIMALISM_SERVICE_AUTH_CODE_EMAIL_TITLE is a required configuration');
-        }
+        $this->codeEmailTitle = getenv('MINIMALISM_SERVICE_AUTH_CODE_EMAIL_TITLE') ?? 'Account access';
+
+        $this->forgotEmailTitle = getenv('MINIMALISM_SERVICE_AUTH_FORGOT_EMAIL_TITLE') ?? 'Password reset link';
     }
 
     /**
@@ -70,5 +73,13 @@ class AuthConfigurations  extends AbstractServiceConfigurations
     public function getCodeEmailTitle(): string
     {
         return $this->codeEmailTitle;
+    }
+
+    /**
+     * @return string
+     */
+    public function getForgotEmailTitle(): string
+    {
+        return $this->forgotEmailTitle;
     }
 }

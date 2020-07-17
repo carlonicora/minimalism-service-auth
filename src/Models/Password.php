@@ -40,6 +40,10 @@ class Password extends AbstractAuthWebModel
             new Link('doCodeLogin', $this->services->paths()->getUrl() . 'Accounts/DoAccountLookup/' . $this->encrypter->encryptId($this->userId) . '?overridePassword=true')
         );
 
+        $this->document->links->add(
+            new Link('forgot', $this->services->paths()->getUrl() . 'forgot')
+        );
+
         return $this->generateResponse($this->document, ResponseInterface::HTTP_STATUS_200);
     }
 }

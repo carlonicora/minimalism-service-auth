@@ -248,6 +248,14 @@ class Auth  extends AbstractService implements SecurityInterface
     }
 
     /**
+     * @return string
+     */
+    public function getForgotEmailTitle(): string
+    {
+        return $this->configData->getForgotEmailTitle();
+    }
+
+    /**
      * @return bool
      */
     public function isUser(): bool
