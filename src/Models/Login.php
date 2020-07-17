@@ -85,7 +85,7 @@ class Login extends AbstractAuthWebModel
         try {
             if ($this->auth->getGoogleIdentityFile() !== null) {
                 $client = new Google_Client();
-                $client->setAuthConfig($this->auth->getGoogleIdentityFile());
+                $client->setAuthConfig($this->services->paths()->getRoot() . DIRECTORY_SEPARATOR . $this->auth->getGoogleIdentityFile());
                 $client->setRedirectUri($this->services->paths()->getUrl() . 'google');
                 $client->addScope('email');
                 $client->addScope('profile');

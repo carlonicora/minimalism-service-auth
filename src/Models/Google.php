@@ -27,13 +27,25 @@ class Google extends AbstractAuthWebModel
     public function generateData(): ResponseInterface
     {
         $client = new Google_Client();
-        $client->setAuthConfig($this->auth->getGoogleIdentityFile());
+        $client->setAuthConfig($this->services->paths()->getRoot() . DIRECTORY_SEPARATOR . $this->auth->getGoogleIdentityFile());
         $client->setRedirectUri($this->services->paths()->getUrl() . 'google');
         $client->addScope('email');
         $client->addScope('profile');
 
-        $token = $client->fetchAccessTokenWithAuthCode($this->googleCode);
+        $client->fetchAccessTokenWithAuthCode($this->googleCode);
         $token_data = $client->verifyIdToken();
+
+        if (($user = $this->auth->getAuthenticationTable()->authenticateByEmail($token_data['email'])) === null) {
+            $user = $this->auth->getAuthenticationTable()->generateNewUser($token_data['email'], $token_data['name']);
+            $this->auth->getAuthenticationTable()->activateUser($user);
+        }
+
+        $this->auth->setUserId($user['userId']);
+
+        header(
+            'location: '
+            . $this->services->paths()->getUrl()
+            . 'auth?client_id=' . $this->auth->getClientId() . '&state=' . $this->auth->getState());
 
         return $this->generateResponse($this->document, ResponseInterface::HTTP_STATUS_200);
     }
