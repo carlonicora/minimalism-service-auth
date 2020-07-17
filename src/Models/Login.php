@@ -7,6 +7,7 @@ use CarloNicora\Minimalism\Services\Auth\Abstracts\AbstractAuthWebModel;
 use CarloNicora\Minimalism\Services\ParameterValidator\ParameterValidator;
 use Exception;
 use Facebook\Facebook;
+use Google_Client;
 
 class Login extends AbstractAuthWebModel
 {
@@ -81,11 +82,10 @@ class Login extends AbstractAuthWebModel
      */
     private function addGoogleLogin(): void
     {
-        /*
         try {
-            if ($this->auth->getGoogleConfig() !== null) {
+            if ($this->auth->getGoogleIdentityFile() !== null) {
                 $client = new Google_Client();
-                $client->setAuthConfig($this->auth->getGoogleConfig());
+                $client->setAuthConfig($this->auth->getGoogleIdentityFile());
                 $client->setRedirectUri($this->services->paths()->getUrl() . 'google');
                 $client->addScope('email');
                 $client->addScope('profile');
@@ -97,7 +97,6 @@ class Login extends AbstractAuthWebModel
             }
         } catch (Exception $e){
         }
-        */
     }
 
     /**
