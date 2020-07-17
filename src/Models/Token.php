@@ -53,7 +53,7 @@ class Token extends AbstractAuthWebModel
             'token_type' => 'bearer'
         ];
 
-        if (strtolower($this->grantType) !== 'authorization_code') {
+        if (strtolower($this->grantType) === 'authorization_code') {
             /** @var AuthsTable $auths */
             $auths = $this->mysql->create(AuthsTable::class);
             $auth = $auths->loadByCode($this->code);
