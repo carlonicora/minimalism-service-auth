@@ -262,4 +262,20 @@ class Auth  extends AbstractService implements SecurityInterface
     {
         return $this->isUser;
     }
+
+    /**
+     * @return string|null
+     */
+    public function getFacebookId(): ?string
+    {
+        return $this->configData->getFacebookId();
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getFacebookSecret(): ?string
+    {
+        return $this->configData->getFacebookSecret();
+    }
 }

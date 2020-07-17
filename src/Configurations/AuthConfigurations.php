@@ -22,6 +22,12 @@ class AuthConfigurations  extends AbstractServiceConfigurations
     /** @var string  */
     private string $forgotEmailTitle;
 
+    /** @var string|null  */
+    private ?string $facebookId=null;
+
+    /** @var string|null  */
+    private ?string $facebookSecret=null;
+
     /**
      * AuthConfigurations constructor.
      * @throws Exception
@@ -41,6 +47,9 @@ class AuthConfigurations  extends AbstractServiceConfigurations
         $this->codeEmailTitle = getenv('MINIMALISM_SERVICE_AUTH_CODE_EMAIL_TITLE') ?? 'Account access';
 
         $this->forgotEmailTitle = getenv('MINIMALISM_SERVICE_AUTH_FORGOT_EMAIL_TITLE') ?? 'Password reset link';
+
+        $this->facebookId = getenv('MINIMALISM_SERVICE_AUTH_FACEBOOK_ID');
+        $this->facebookSecret = getenv('MINIMALISM_SERVICE_AUTH_FACEBOOK_SECRET');
     }
 
     /**
@@ -81,5 +90,21 @@ class AuthConfigurations  extends AbstractServiceConfigurations
     public function getForgotEmailTitle(): string
     {
         return $this->forgotEmailTitle;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getFacebookId(): ?string
+    {
+        return $this->facebookId;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getFacebookSecret(): ?string
+    {
+        return $this->facebookSecret;
     }
 }

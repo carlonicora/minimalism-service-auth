@@ -6,6 +6,7 @@ use CarloNicora\Minimalism\Core\Modules\Interfaces\ResponseInterface;
 use CarloNicora\Minimalism\Services\Auth\Abstracts\AbstractAuthWebModel;
 use CarloNicora\Minimalism\Services\ParameterValidator\ParameterValidator;
 use Exception;
+use Facebook\Facebook;
 
 class Login extends AbstractAuthWebModel
 {
@@ -75,41 +76,51 @@ class Login extends AbstractAuthWebModel
         return $this->generateResponse($this->document, ResponseInterface::HTTP_STATUS_200);
     }
 
+    /**
+     *
+     */
     private function addGoogleLogin(): void
     {
         /*
         try {
-            $client = new Google_Client();
-            $client->setAuthConfig($this->configurations->googleFile);
-            $client->setRedirectUri($this->configurations->getBaseUrl() . '/google');
-            $client->addScope('email');
-            $client->addScope('profile');
-            $authUrl = $client->createAuthUrl();
+            if ($this->auth->getGoogleConfig() !== null) {
+                $client = new Google_Client();
+                $client->setAuthConfig($this->auth->getGoogleConfig());
+                $client->setRedirectUri($this->services->paths()->getUrl() . 'google');
+                $client->addScope('email');
+                $client->addScope('profile');
+                $authUrl = $client->createAuthUrl();
 
-            $this->response->addLink('google', $authUrl);
-        } catch (Exception $error ){
-            errorReporter::report($this->configurations, '', 'Google splash failed to be initialised. Aborting Google Login: ' . $error->getMessage());
+                $this->document->links->add(
+                    new Link('google', $authUrl)
+                );
+            }
+        } catch (Exception $e){
         }
         */
     }
 
+    /**
+     *
+     */
     private function addFacebookLogin(): void
     {
-        /*
         try {
-            $fb = new Facebook([
-                'app_id' => $this->configurations->facebookId,
-                'app_secret' => $this->configurations->facebookSecret,
-                'default_graph_version' => 'v5.0',
-            ]);
-            $helper = $fb->getRedirectLoginHelper();
-            $permissions = ['email'];
-            $loginUrl = $helper->getLoginUrl($this->configurations->getBaseUrl() . 'facebook', $permissions);
+            if ($this->auth->getFacebookId() !== null) {
+                $fb = new Facebook([
+                    'app_id' => $this->auth->getFacebookId(),
+                    'app_secret' => $this->auth->getFacebookSecret(),
+                    'default_graph_version' => 'v5.0',
+                ]);
+                $helper = $fb->getRedirectLoginHelper();
+                $permissions = ['email'];
+                $loginUrl = $helper->getLoginUrl($this->services->paths()->getUrl() . 'facebook', $permissions);
 
-            $this->response->addLink('facebook', $loginUrl);
-        } catch (Exception $error){
-            errorReporter::report($this->configurations, '', 'Facebook splash failed to be initialised. Aborting Facebook Login: ' . $error->getMessage());
+                $this->document->links->add(
+                    new Link('facebook', $loginUrl)
+                );
+            }
+        } catch (Exception $e){
         }
-        */
     }
 }
