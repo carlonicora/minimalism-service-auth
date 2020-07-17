@@ -156,7 +156,7 @@ class CodeFactory
         $data['previewText'] = $this->auth->getForgotEmailTitle();
         $data['username'] = $user['username'];
         $data['code'] = $code;
-        $data['loginUrl'] = $this->services->paths()->getUrl()
+        $data['resetUrl'] = $this->services->paths()->getUrl()
             . 'change/'
             . $encrypter->encryptId($user['userId']) . '/'
             . $code . '/'
