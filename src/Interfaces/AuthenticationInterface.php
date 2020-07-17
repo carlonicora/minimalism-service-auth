@@ -31,9 +31,10 @@ interface AuthenticationInterface
 
     /**
      * @param string $email
+     * @param string|null $name
      * @return array
      */
-    public function generateNewUser(string $email): array;
+    public function generateNewUser(string $email, string $name=null): array;
 
     /**
      * @param array $user
