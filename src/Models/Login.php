@@ -69,6 +69,47 @@ class Login extends AbstractAuthWebModel
             new Link('forgot', $this->services->paths()->getUrl() . 'forgot')
         );
 
+        $this->addFacebookLogin();
+        $this->addGoogleLogin();
+
         return $this->generateResponse($this->document, ResponseInterface::HTTP_STATUS_200);
+    }
+
+    private function addGoogleLogin(): void
+    {
+        /*
+        try {
+            $client = new Google_Client();
+            $client->setAuthConfig($this->configurations->googleFile);
+            $client->setRedirectUri($this->configurations->getBaseUrl() . '/google');
+            $client->addScope('email');
+            $client->addScope('profile');
+            $authUrl = $client->createAuthUrl();
+
+            $this->response->addLink('google', $authUrl);
+        } catch (Exception $error ){
+            errorReporter::report($this->configurations, '', 'Google splash failed to be initialised. Aborting Google Login: ' . $error->getMessage());
+        }
+        */
+    }
+
+    private function addFacebookLogin(): void
+    {
+        /*
+        try {
+            $fb = new Facebook([
+                'app_id' => $this->configurations->facebookId,
+                'app_secret' => $this->configurations->facebookSecret,
+                'default_graph_version' => 'v5.0',
+            ]);
+            $helper = $fb->getRedirectLoginHelper();
+            $permissions = ['email'];
+            $loginUrl = $helper->getLoginUrl($this->configurations->getBaseUrl() . 'facebook', $permissions);
+
+            $this->response->addLink('facebook', $loginUrl);
+        } catch (Exception $error){
+            errorReporter::report($this->configurations, '', 'Facebook splash failed to be initialised. Aborting Facebook Login: ' . $error->getMessage());
+        }
+        */
     }
 }

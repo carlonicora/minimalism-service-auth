@@ -1,7 +1,7 @@
 {
   "name": "carlonicora/minimalism-service-auth",
   "description": "Authentication and Authorisation service for minimalism",
-  "version": "0.3.0-beta14",
+  "version": "0.3.0-beta15",
   "homepage": "https://carlonicora.com",
   "time": "2020-06-13",
   "license": "MIT",
@@ -33,7 +33,9 @@
     "carlonicora/minimalism-service-mysql": "~2.0",
     "carlonicora/minimalism-service-encrypter": "~2.0",
     "carlonicora/minimalism-service-json-data-mapper": "~1.0",
-    "carlonicora/minimalism-service-mailer": "~2.0"
+    "carlonicora/minimalism-service-mailer": "~2.0",
+    "facebook/graph-sdk":"*",
+    "google/apiclient":"*"
   },
   "require-dev": {
     "roave/security-advisories": "dev-master",
