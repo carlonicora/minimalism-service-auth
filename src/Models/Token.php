@@ -27,7 +27,7 @@ class Token extends AbstractAuthWebModel
     /** @var array  */
     protected array $parameters = [
         'grant_type' => ['name' => 'grantType', 'required' => true, 'validator' => ParameterValidator::PARAMETER_TYPE_STRING],
-        'code' => ['required' => true, 'validator' => ParameterValidator::PARAMETER_TYPE_STRING],
+        'code' => ['required' => false, 'validator' => ParameterValidator::PARAMETER_TYPE_STRING],
         'client_id' => ['name' => 'clientId', 'required' => true, 'validator' => ParameterValidator::PARAMETER_TYPE_STRING]
     ];
 
