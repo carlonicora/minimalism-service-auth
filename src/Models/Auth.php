@@ -73,6 +73,8 @@ class Auth extends AbstractAuthWebModel
             $auth = $this->auth->generateAuth($app['appId']);
             $redirection = $this->auth->generateRedirection($app, $auth);
 
+            $this->auth->cleanData();
+
             header('Location: ' . $redirection);
             exit;
         }

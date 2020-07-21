@@ -70,6 +70,17 @@ class Auth  extends AbstractService implements SecurityInterface
     }
 
     /**
+     *
+     */
+    public function cleanData(): void 
+    {
+        $this->clientId = null;
+        $this->state = null;
+        $this->userId = null;
+        $this->isUser = false;
+    }
+
+    /**
      * @return string|null
      */
     public function getClientId(): ?string

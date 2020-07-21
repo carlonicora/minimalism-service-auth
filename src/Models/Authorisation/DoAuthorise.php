@@ -31,6 +31,8 @@ class DoAuthorise extends AbstractAuthWebModel
 
         $this->document->meta->add('redirection', $redirection);
 
+        $this->auth->cleanData();
+
         return $this->generateResponse($this->document, ResponseInterface::HTTP_STATUS_200);
     }
 }
