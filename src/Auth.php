@@ -221,6 +221,10 @@ class Auth  extends AbstractService implements SecurityInterface
 
         [,$token] = explode(' ', $bearer);
 
+        if (empty($token)) {
+            return false;
+        }
+
         $this->userId = $this->validateToken($token, $this->isUser);
 
         return true;
