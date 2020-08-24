@@ -65,9 +65,9 @@ class DoAccountLookup extends AbstractAuthWebModel
             )->throw();
         } elseif ($this->userId !== null &&  ($user = $this->auth->getAuthenticationTable()->authenticateById($this->userId)) === null) {
             $this->services->logger()->error()->log(
-                AuthErrorEvents::INVALID_ACCOUNT()
+                autherrorevents::invalid_account()
             )->throw();
-        } elseif ($this->create === true) {
+        } elseif ($this->create === true && ($user = $this->auth->getAuthenticationTable()->authenticateByEmail($this->email)) === null) {
             $user = $this->auth->getAuthenticationTable()->generateNewUser($this->email);
         }
 
