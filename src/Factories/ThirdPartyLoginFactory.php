@@ -73,13 +73,13 @@ class ThirdPartyLoginFactory
                 $_SESSION['state'] = bin2hex(random_bytes(5));
 
                 $authUrl = 'https://appleid.apple.com/auth/authorize' . '?' . http_build_query([
-                    'response_type' => 'code',
-                    'response_mode' => 'form_post',
-                    'client_id' => $this->auth->getAppleClientId(),
-                    'redirect_uri' => $this->services->paths()->getUrl() . 'apple',
-                    'state' => $_SESSION['state'],
-                    'scope' => 'name email',
-                ]);
+                        'response_type' => 'code',
+                        'response_mode' => 'form_post',
+                        'client_id' => $this->auth->getAppleClientId(),
+                        'redirect_uri' => $this->services->paths()->getUrl() . 'apple',
+                        'state' => $_SESSION['state'],
+                        'scope' => 'name email',
+                    ]);
 
                 $document->links->add(
                     new Link('apple', $authUrl)

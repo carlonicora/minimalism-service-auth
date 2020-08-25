@@ -65,6 +65,8 @@ class Facebook extends AbstractAuthWebModel
         if (($user = $this->auth->getAuthenticationTable()->authenticateByEmail($fbu['email'])) === null) {
             $user = $this->auth->getAuthenticationTable()->generateNewUser($fbu['email'], $fbu['name'], 'facebook');
             $this->auth->getAuthenticationTable()->activateUser($user);
+        } elseif ($user['isActive'] === false){
+            $this->auth->getAuthenticationTable()->activateUser($user);
         }
 
         $this->auth->setUserId($user['userId']);

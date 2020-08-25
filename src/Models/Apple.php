@@ -6,6 +6,7 @@ use CarloNicora\Minimalism\Services\Auth\Abstracts\AbstractAuthWebModel;
 use CarloNicora\Minimalism\Services\ParameterValidator\Interfaces\ParameterInterface;
 use CarloNicora\Minimalism\Services\ParameterValidator\ParameterValidator;
 use Exception;
+use RuntimeException;
 
 class Apple extends AbstractAuthWebModel
 {
@@ -50,7 +51,7 @@ class Apple extends AbstractAuthWebModel
                 'https://appleid.apple.com/auth/token',
                 [
                     'grant_type' => 'authorization_code',
-                    'code' => $_POST['code'],
+                    'code' => $this->code,
                     'redirect_uri' => $this->services->paths()->getUrl() . 'apple',
                     'client_id' => $this->auth->getAppleClientId(),
                     'client_secret' => $this->auth->getAppleClientSecret(),
@@ -58,27 +59,16 @@ class Apple extends AbstractAuthWebModel
             );
 
             if (!isset($response['access_token'])) {
-                echo '<p>Error getting an access token:</p>';
-                echo '<pre>';
-                print_r($response);
-                echo '</pre>';
-                echo '<p><a href="/">Start Over</a></p>';
-                die();
+                throw new RuntimeException('error');
             }
 
-            echo '<h3>Access Token Response</h3>';
-            echo '<pre>';
-            print_r($response);
-            echo '</pre>';
             $claims = explode('.', $response['id_token'])[1];
             $claims = json_decode(base64_decode($claims), true, 512, JSON_THROW_ON_ERROR);
-            echo '<h3>Parsed ID Token</h3>';
-            echo '<pre>';
-            print_r($claims);
-            echo '</pre>';
 
-            if (($user = $this->auth->getAuthenticationTable()->authenticateByEmail($response['email'])) === null) {
-                $user = $this->auth->getAuthenticationTable()->generateNewUser($response['email'], $response['name'], 'apple');
+            if (($user = $this->auth->getAuthenticationTable()->authenticateByEmail($claims['email'])) === null) {
+                $user = $this->auth->getAuthenticationTable()->generateNewUser($claims['email'], $claims['name'], 'apple');
+                $this->auth->getAuthenticationTable()->activateUser($user);
+            } elseif ($user['isActive'] === false){
                 $this->auth->getAuthenticationTable()->activateUser($user);
             }
 
@@ -112,6 +102,7 @@ class Apple extends AbstractAuthWebModel
 
         curl_setopt($ch, CURLOPT_HTTPHEADER, [
             'Accept: application/json',
+            'Content-Type: application/x-www-form-urlencoded',
             'User-Agent: curl',
         ]);
 

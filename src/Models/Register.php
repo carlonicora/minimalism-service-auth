@@ -50,11 +50,6 @@ class Register extends AbstractAuthWebModel
         if ($this->auth->getUserId() !== null){
             $this->redirectPage = 'auth';
         }
-
-        $thirdPartyLogins = new ThirdPartyLoginFactory($this->services);
-        $thirdPartyLogins->Facebook($this->document);
-        $thirdPartyLogins->Google($this->document);
-        $thirdPartyLogins->Apple($this->document);
     }
 
     /**
@@ -66,6 +61,11 @@ class Register extends AbstractAuthWebModel
         $this->document->links->add(
             new Link('doRegister', $this->services->paths()->getUrl() . 'Accounts/DoAccountLookup')
         );
+
+        $thirdPartyLogins = new ThirdPartyLoginFactory($this->services);
+        $thirdPartyLogins->Facebook($this->document);
+        $thirdPartyLogins->Google($this->document);
+        $thirdPartyLogins->Apple($this->document);
 
         return $this->generateResponse($this->document, ResponseInterface::HTTP_STATUS_200);
     }
