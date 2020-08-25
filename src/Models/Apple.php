@@ -65,8 +65,12 @@ class Apple extends AbstractAuthWebModel
             $claims = explode('.', $response['id_token'])[1];
             $claims = json_decode(base64_decode($claims), true, 512, JSON_THROW_ON_ERROR);
 
+            if (!array_key_exists('email', $claims)) {
+                throw new RuntimeException('no email');
+            }
+
             if (($user = $this->auth->getAuthenticationTable()->authenticateByEmail($claims['email'])) === null) {
-                $user = $this->auth->getAuthenticationTable()->generateNewUser($claims['email'], $claims['name'], 'apple');
+                $user = $this->auth->getAuthenticationTable()->generateNewUser($claims['email'], ($claims['name'] ?? null), 'apple');
                 $this->auth->getAuthenticationTable()->activateUser($user);
             } elseif ($user['isActive'] === false){
                 $this->auth->getAuthenticationTable()->activateUser($user);
