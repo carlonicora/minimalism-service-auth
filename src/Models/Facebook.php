@@ -61,7 +61,7 @@ class Facebook extends AbstractAuthWebModel
             header(
                 'location: '
                 . $this->services->paths()->getUrl()
-                . 'auth?client_id=' . $this->auth->getClientId()
+                . 'register?client_id=' . $this->auth->getClientId()
                 . '&state=' . $this->auth->getState()
                 . '&errorMessage=The social account does not have a valid email address'
             );

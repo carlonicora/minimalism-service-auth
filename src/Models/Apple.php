@@ -3,10 +3,11 @@ namespace CarloNicora\Minimalism\Services\Auth\Models;
 
 use CarloNicora\Minimalism\Core\Modules\Interfaces\ResponseInterface;
 use CarloNicora\Minimalism\Services\Auth\Abstracts\AbstractAuthWebModel;
+use CarloNicora\Minimalism\Services\Auth\Data\Databases\OAuth\Tables\AppleIdsTable;
+use CarloNicora\Minimalism\Services\MySQL\Exceptions\DbRecordNotFoundException;
 use CarloNicora\Minimalism\Services\ParameterValidator\Interfaces\ParameterInterface;
 use CarloNicora\Minimalism\Services\ParameterValidator\ParameterValidator;
 use Exception;
-use RuntimeException;
 
 class Apple extends AbstractAuthWebModel
 {
@@ -46,6 +47,9 @@ class Apple extends AbstractAuthWebModel
      */
     public function generateData(): ResponseInterface
     {
+        /** @var AppleIdsTable $appleIdsTable */
+        $appleIdsTable = $this->mysql->create(AppleIdsTable::class);
+
         try {
             $response = $this->httpCall(
                 'https://appleid.apple.com/auth/token',
@@ -59,26 +63,48 @@ class Apple extends AbstractAuthWebModel
             );
 
             if (!isset($response['access_token'])) {
-                throw new RuntimeException('error');
+                header(
+                    'location: '
+                    . $this->services->paths()->getUrl()
+                    . 'register?client_id=' . $this->auth->getClientId()
+                    . '&state=' . $this->auth->getState()
+                    . '&errorMessage=There has been an issue receiving the information from Apple'
+                );
+                exit;
             }
 
             $claims = explode('.', $response['id_token'])[1];
             $claims = json_decode(base64_decode($claims), true, 512, JSON_THROW_ON_ERROR);
 
             if (!array_key_exists('email', $claims)) {
-                header(
-                    'location: '
-                    . $this->services->paths()->getUrl()
-                    . 'auth?client_id=' . $this->auth->getClientId()
-                    . '&state=' . $this->auth->getState()
-                    . '&errorMessage=The social account does not have a valid email address'
-                );
-                exit;
-            }
+                $appleId = $claims['sub'];
 
-            if (($user = $this->auth->getAuthenticationTable()->authenticateByEmail($claims['email'])) === null) {
+                try {
+                    $appleId = $appleIdsTable->loadByAppleId($appleId);
+
+                    $user = $this->auth->getAuthenticationTable()->authenticateById($appleId['userId']);
+                    if ($user['isActive'] === false){
+                        $this->auth->getAuthenticationTable()->activateUser($user);
+                    }
+                } catch (DbRecordNotFoundException $e) {
+                    header(
+                        'location: '
+                        . $this->services->paths()->getUrl()
+                        . 'register?client_id=' . $this->auth->getClientId()
+                        . '&state=' . $this->auth->getState()
+                        . '&errorMessage=There has been an issue receiving the information from Apple'
+                    );
+                    exit;
+                }
+            } elseif (($user = $this->auth->getAuthenticationTable()->authenticateByEmail($claims['email'])) === null) {
                 $user = $this->auth->getAuthenticationTable()->generateNewUser($claims['email'], ($claims['name'] ?? null), 'apple');
                 $this->auth->getAuthenticationTable()->activateUser($user);
+
+                $appleId = [
+                    'appleId' => $claims['sub'],
+                    'userId' => $user['userid']
+                ];
+                $appleIdsTable->update($appleId);
             } elseif ($user['isActive'] === false){
                 $this->auth->getAuthenticationTable()->activateUser($user);
             }
