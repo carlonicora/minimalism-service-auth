@@ -77,12 +77,10 @@ class Apple extends AbstractAuthWebModel
             $claims = json_decode(base64_decode($claims), true, 512, JSON_THROW_ON_ERROR);
 
             if (!array_key_exists('email', $claims)) {
-                $appleId = $claims['sub'];
-
                 try {
-                    $appleId = $appleIdsTable->loadByAppleId($appleId);
+                    $appleIdRecord = $appleIdsTable->loadByAppleId($claims['sub']);
 
-                    $user = $this->auth->getAuthenticationTable()->authenticateById($appleId['userId']);
+                    $user = $this->auth->getAuthenticationTable()->authenticateById($appleIdRecord['userId']);
                     if ($user['isActive'] === false){
                         $this->auth->getAuthenticationTable()->activateUser($user);
                     }
@@ -96,17 +94,24 @@ class Apple extends AbstractAuthWebModel
                     );
                     exit;
                 }
-            } elseif (($user = $this->auth->getAuthenticationTable()->authenticateByEmail($claims['email'])) === null) {
-                $user = $this->auth->getAuthenticationTable()->generateNewUser($claims['email'], ($claims['name'] ?? null), 'apple');
-                $this->auth->getAuthenticationTable()->activateUser($user);
+            } else {
+                if (($user = $this->auth->getAuthenticationTable()->authenticateByEmail($claims['email'])) === null) {
+                    $user = $this->auth->getAuthenticationTable()->generateNewUser($claims['email'], ($claims['name'] ?? null), 'apple');
+                }
 
-                $appleId = [
-                    'appleId' => $claims['sub'],
-                    'userId' => $user['userid']
-                ];
-                $appleIdsTable->update($appleId);
-            } elseif ($user['isActive'] === false){
-                $this->auth->getAuthenticationTable()->activateUser($user);
+                if ($user['isActive'] === false) {
+                    $this->auth->getAuthenticationTable()->activateUser($user);
+                }
+
+                try {
+                    $appleIdsTable->loadByAppleId($claims['sub']);
+                } catch (DbRecordNotFoundException $e) {
+                    $appleIdRecord = [
+                        'appleId' => $claims['sub'],
+                        'userId' => $user['userId']
+                    ];
+                    $appleIdsTable->update($appleIdRecord);
+                }
             }
 
             $this->auth->setUserId($user['userId']);

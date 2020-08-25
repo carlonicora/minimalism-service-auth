@@ -13,7 +13,7 @@ class AppleIdsTable extends AbstractTable
 
     /** @var array  */
     protected array $fields = [
-        'appleId'   => TableInterface::INTEGER
+        'appleId'   => TableInterface::STRING
                     +  TableInterface::PRIMARY_KEY,
         'userId'    => TableInterface::INTEGER
     ];
