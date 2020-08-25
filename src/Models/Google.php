@@ -35,6 +35,17 @@ class Google extends AbstractAuthWebModel
         $client->fetchAccessTokenWithAuthCode($this->googleCode);
         $token_data = $client->verifyIdToken();
 
+        if (!array_key_exists('email', $token_data)){
+            header(
+                'location: '
+                . $this->services->paths()->getUrl()
+                . 'auth?client_id=' . $this->auth->getClientId()
+                . '&state=' . $this->auth->getState()
+                . '&errorMessage=The social account does not have a valid email address'
+            );
+            exit;
+        }
+
         if (($user = $this->auth->getAuthenticationTable()->authenticateByEmail($token_data['email'])) === null) {
             $user = $this->auth->getAuthenticationTable()->generateNewUser($token_data['email'], $token_data['name'], 'google');
             $this->auth->getAuthenticationTable()->activateUser($user);

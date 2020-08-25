@@ -19,6 +19,9 @@ class Register extends AbstractAuthWebModel
     /** @var string|null  */
     protected ?string $state=null;
 
+    /** @var string|null  */
+    protected ?string $errorMessage=null;
+
     /** @var array|array[]  */
     protected array $parameters = [
         'client_id' => [
@@ -27,6 +30,9 @@ class Register extends AbstractAuthWebModel
         ],
         'state' => [
             'validator' => ParameterValidator::PARAMETER_TYPE_STRING
+        ],
+        'errorMessage' => [
+            'name' => 'errorMessage'
         ]
     ];
 
@@ -61,6 +67,12 @@ class Register extends AbstractAuthWebModel
         $this->document->links->add(
             new Link('doRegister', $this->services->paths()->getUrl() . 'Accounts/DoAccountLookup')
         );
+
+        if ($this->errorMessage !== null){
+            $this->document->meta->add(
+                'errorMessage', $this->errorMessage
+            );
+        }
 
         $thirdPartyLogins = new ThirdPartyLoginFactory($this->services);
         $thirdPartyLogins->Facebook($this->document);

@@ -10,7 +10,6 @@ use Facebook\Authentication\OAuth2Client;
 use Facebook\FacebookApp;
 use Facebook\FacebookClient;
 use Facebook\Helpers\FacebookRedirectLoginHelper;
-use RuntimeException;
 
 class Facebook extends AbstractAuthWebModel
 {
@@ -59,7 +58,14 @@ class Facebook extends AbstractAuthWebModel
         $fbu = $facebookUser->getDecodedBody();
 
         if (!array_key_exists('email', $fbu) || empty($fbu['email'])){
-            throw new RuntimeException('no email');
+            header(
+                'location: '
+                . $this->services->paths()->getUrl()
+                . 'auth?client_id=' . $this->auth->getClientId()
+                . '&state=' . $this->auth->getState()
+                . '&errorMessage=The social account does not have a valid email address'
+            );
+            exit;
         }
 
         if (($user = $this->auth->getAuthenticationTable()->authenticateByEmail($fbu['email'])) === null) {

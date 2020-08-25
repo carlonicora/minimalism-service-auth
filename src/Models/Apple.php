@@ -66,7 +66,14 @@ class Apple extends AbstractAuthWebModel
             $claims = json_decode(base64_decode($claims), true, 512, JSON_THROW_ON_ERROR);
 
             if (!array_key_exists('email', $claims)) {
-                throw new RuntimeException('no email');
+                header(
+                    'location: '
+                    . $this->services->paths()->getUrl()
+                    . 'auth?client_id=' . $this->auth->getClientId()
+                    . '&state=' . $this->auth->getState()
+                    . '&errorMessage=The social account does not have a valid email address'
+                );
+                exit;
             }
 
             if (($user = $this->auth->getAuthenticationTable()->authenticateByEmail($claims['email'])) === null) {
