@@ -31,6 +31,12 @@ class AuthConfigurations  extends AbstractServiceConfigurations
     /** @var string|null  */
     private ?string $googleIdentityFile=null;
 
+    /** @var string|null  */
+    private ?string $appleClientId=null;
+
+    /** @var string|null  */
+    private ?string $appleClientSecret=null;
+
     /**
      * AuthConfigurations constructor.
      * @throws Exception
@@ -54,6 +60,8 @@ class AuthConfigurations  extends AbstractServiceConfigurations
         $this->facebookId = getenv('MINIMALISM_SERVICE_AUTH_FACEBOOK_ID');
         $this->facebookSecret = getenv('MINIMALISM_SERVICE_AUTH_FACEBOOK_SECRET');
         $this->googleIdentityFile = getenv('MINIMALISM_SERVICE_AUTH_GOOGLE_IDENTITY_FILE');
+        $this->appleClientId = getenv('MINIMALISM_SERVICE_AUTH_APPLE_CLIENT_ID');
+        $this->appleClientSecret = getenv('MINIMALISM_SERVICE_AUTH_APPLE_CLIENT_SECRET');
     }
 
     /**
@@ -118,5 +126,21 @@ class AuthConfigurations  extends AbstractServiceConfigurations
     public function getGoogleIdentityFile(): ?string
     {
         return $this->googleIdentityFile;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getAppleClientId(): ?string
+    {
+        return $this->appleClientId;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getAppleClientSecret(): ?string
+    {
+        return $this->appleClientSecret;
     }
 }

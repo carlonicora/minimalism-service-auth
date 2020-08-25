@@ -301,4 +301,20 @@ class Auth  extends AbstractService implements SecurityInterface
     {
         return $this->configData->getGoogleIdentityFile();
     }
+
+    /**
+     * @return string|null
+     */
+    public function getAppleClientId(): ?string
+    {
+        return $this->configData->getAppleClientId();
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getAppleClientSecret(): ?string
+    {
+        return $this->configData->getAppleClientSecret();
+    }
 }

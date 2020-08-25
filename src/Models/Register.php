@@ -4,6 +4,7 @@ namespace CarloNicora\Minimalism\Services\Auth\Models;
 use CarloNicora\JsonApi\Objects\Link;
 use CarloNicora\Minimalism\Core\Modules\Interfaces\ResponseInterface;
 use CarloNicora\Minimalism\Services\Auth\Abstracts\AbstractAuthWebModel;
+use CarloNicora\Minimalism\Services\Auth\Factories\ThirdPartyLoginFactory;
 use CarloNicora\Minimalism\Services\ParameterValidator\ParameterValidator;
 use Exception;
 
@@ -49,6 +50,11 @@ class Register extends AbstractAuthWebModel
         if ($this->auth->getUserId() !== null){
             $this->redirectPage = 'auth';
         }
+
+        $thirdPartyLogins = new ThirdPartyLoginFactory($this->services);
+        $thirdPartyLogins->Facebook($this->document);
+        $thirdPartyLogins->Google($this->document);
+        $thirdPartyLogins->Apple($this->document);
     }
 
     /**

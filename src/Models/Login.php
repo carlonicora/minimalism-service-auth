@@ -4,10 +4,9 @@ namespace CarloNicora\Minimalism\Services\Auth\Models;
 use CarloNicora\JsonApi\Objects\Link;
 use CarloNicora\Minimalism\Core\Modules\Interfaces\ResponseInterface;
 use CarloNicora\Minimalism\Services\Auth\Abstracts\AbstractAuthWebModel;
+use CarloNicora\Minimalism\Services\Auth\Factories\ThirdPartyLoginFactory;
 use CarloNicora\Minimalism\Services\ParameterValidator\ParameterValidator;
 use Exception;
-use Facebook\Facebook;
-use Google_Client;
 
 class Login extends AbstractAuthWebModel
 {
@@ -71,55 +70,11 @@ class Login extends AbstractAuthWebModel
             new Link('forgot', $this->services->paths()->getUrl() . 'forgot')
         );
 
-        $this->addFacebookLogin();
-        $this->addGoogleLogin();
+        $thirdPartyLogins = new ThirdPartyLoginFactory($this->services);
+        $thirdPartyLogins->Facebook($this->document);
+        $thirdPartyLogins->Google($this->document);
+        $thirdPartyLogins->Apple($this->document);
 
         return $this->generateResponse($this->document, ResponseInterface::HTTP_STATUS_200);
-    }
-
-    /**
-     *
-     */
-    private function addGoogleLogin(): void
-    {
-        try {
-            if ($this->auth->getGoogleIdentityFile() !== null) {
-                $client = new Google_Client();
-                $client->setAuthConfig($this->services->paths()->getRoot() . DIRECTORY_SEPARATOR . $this->auth->getGoogleIdentityFile());
-                $client->setRedirectUri($this->services->paths()->getUrl() . 'google');
-                $client->addScope('email');
-                $client->addScope('profile');
-                $authUrl = $client->createAuthUrl();
-
-                $this->document->links->add(
-                    new Link('google', $authUrl)
-                );
-            }
-        } catch (Exception $e){
-        }
-    }
-
-    /**
-     *
-     */
-    private function addFacebookLogin(): void
-    {
-        try {
-            if ($this->auth->getFacebookId() !== null) {
-                $fb = new Facebook([
-                    'app_id' => $this->auth->getFacebookId(),
-                    'app_secret' => $this->auth->getFacebookSecret(),
-                    'default_graph_version' => 'v5.0',
-                ]);
-                $helper = $fb->getRedirectLoginHelper();
-                $permissions = ['email'];
-                $loginUrl = $helper->getLoginUrl($this->services->paths()->getUrl() . 'facebook', $permissions);
-
-                $this->document->links->add(
-                    new Link('facebook', $loginUrl)
-                );
-            }
-        } catch (Exception $e){
-        }
     }
 }
