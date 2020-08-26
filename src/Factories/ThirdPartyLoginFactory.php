@@ -78,7 +78,7 @@ class ThirdPartyLoginFactory
                         'client_id' => $this->auth->getAppleClientId(),
                         'redirect_uri' => $this->services->paths()->getUrl() . 'apple',
                         'state' => $_SESSION['state'],
-                        'scope' => 'name email',
+                        'scope' => 'email',
                     ]);
 
                 $document->links->add(
