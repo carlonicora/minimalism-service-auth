@@ -81,6 +81,18 @@ class Apple extends AbstractAuthWebModel
                     $appleIdRecord = $appleIdsTable->loadByAppleId($claims['sub']);
 
                     $user = $this->auth->getAuthenticationTable()->authenticateById($appleIdRecord['userId']);
+
+                    if ($user === null) {
+                        header(
+                            'location: '
+                            . $this->services->paths()->getUrl()
+                            . 'register?client_id=' . $this->auth->getClientId()
+                            . '&state=' . $this->auth->getState()
+                            . '&errorMessage=There has been an issue finding a user linked to your Apple account'
+                        );
+                        exit;
+                    }
+
                     if ($user['isActive'] === false){
                         $this->auth->getAuthenticationTable()->activateUser($user);
                     }
@@ -90,7 +102,7 @@ class Apple extends AbstractAuthWebModel
                         . $this->services->paths()->getUrl()
                         . 'register?client_id=' . $this->auth->getClientId()
                         . '&state=' . $this->auth->getState()
-                        . '&errorMessage=There has been an issue receiving the information from Apple'
+                        . '&errorMessage=There has been an issue finding a user connected to your Apple account'
                     );
                     exit;
                 }
@@ -99,18 +111,20 @@ class Apple extends AbstractAuthWebModel
                     $user = $this->auth->getAuthenticationTable()->generateNewUser($claims['email'], ($claims['name'] ?? null), 'apple');
                 }
 
-                if ($user['isActive'] === false) {
-                    $this->auth->getAuthenticationTable()->activateUser($user);
-                }
+                if (!empty($user)){
+                    if (!array_key_exists('isActive', $user) || $user['isActive'] === false) {
+                        $this->auth->getAuthenticationTable()->activateUser($user);
+                    }
 
-                try {
-                    $appleIdsTable->loadByAppleId($claims['sub']);
-                } catch (DbRecordNotFoundException $e) {
-                    $appleIdRecord = [
-                        'appleId' => $claims['sub'],
-                        'userId' => $user['userId']
-                    ];
-                    $appleIdsTable->update($appleIdRecord);
+                    try {
+                        $appleIdsTable->loadByAppleId($claims['sub']);
+                    } catch (DbRecordNotFoundException $e) {
+                        $appleIdRecord = [
+                            'appleId' => $claims['sub'],
+                            'userId' => $user['userId']
+                        ];
+                        $appleIdsTable->update($appleIdRecord);
+                    }
                 }
             }
 
