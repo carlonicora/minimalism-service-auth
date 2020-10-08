@@ -48,11 +48,11 @@ class Code extends AbstractAuthWebModel
         $this->document->addResource($userResource);
 
         $this->document->links->add(
-            new Link('doLogin', $this->services->paths()->getUrl() . 'Login/DoCodeLogin')
+            new Link('doLogin', $this->services->paths()->getUrl() . 'Login/Docodelogin')
         );
 
         $this->document->links->add(
-            new Link('doCodeLogin', $this->services->paths()->getUrl() . 'Accounts/DoAccountLookup/' . $this->encrypter->encryptId($this->userId) . '?overridePassword=true')
+            new Link('doCodeLogin', $this->services->paths()->getUrl() . 'Accounts/Doaccountlookup/' . $this->encrypter->encryptId($this->userId) . '?overridePassword=true')
         );
 
         return $this->generateResponse($this->document, ResponseInterface::HTTP_STATUS_200);

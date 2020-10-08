@@ -33,11 +33,11 @@ class Password extends AbstractAuthWebModel
         $this->document->meta->add('userId', $this->encrypter->encryptId($this->userId));
 
         $this->document->links->add(
-            new Link('doLogin', $this->services->paths()->getUrl() . 'Login/DoPasswordLogin')
+            new Link('doLogin', $this->services->paths()->getUrl() . 'Login/Dopasswordlogin')
         );
 
         $this->document->links->add(
-            new Link('doCodeLogin', $this->services->paths()->getUrl() . 'Accounts/DoAccountLookup/' . $this->encrypter->encryptId($this->userId) . '?overridePassword=true')
+            new Link('doCodeLogin', $this->services->paths()->getUrl() . 'Accounts/Doaccountlookup/' . $this->encrypter->encryptId($this->userId) . '?overridePassword=true')
         );
 
         $this->document->links->add(

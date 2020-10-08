@@ -18,7 +18,7 @@ class Forgot extends AbstractAuthWebModel
     public function generateData(): ResponseInterface
     {
         $this->document->links->add(
-            new Link('doResend', $this->services->paths()->getUrl() . 'Accounts/DoAccountLookup')
+            new Link('doResend', $this->services->paths()->getUrl() . 'Accounts/Doaccountlookup')
         );
 
         return $this->generateResponse($this->document, ResponseInterface::HTTP_STATUS_200);

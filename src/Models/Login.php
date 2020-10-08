@@ -59,7 +59,7 @@ class Login extends AbstractAuthWebModel
     public function generateData(): ResponseInterface
     {
         $this->document->links->add(
-            new Link('doLogin', $this->services->paths()->getUrl() . 'Accounts/DoAccountLookup')
+            new Link('doLogin', $this->services->paths()->getUrl() . 'Accounts/Doaccountlookup')
         );
 
         $this->document->links->add(

@@ -80,7 +80,7 @@ class Auth extends AbstractAuthWebModel
         }
 
         $this->document->links->add(
-            new Link('authorise', $this->services->paths()->getUrl() . 'Authorisation/DoAuthorise')
+            new Link('authorise', $this->services->paths()->getUrl() . 'Authorisation/Doauthorise')
         );
 
         $this->document->addResourceList(

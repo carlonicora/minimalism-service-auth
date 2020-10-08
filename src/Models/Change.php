@@ -51,7 +51,7 @@ class Change extends AbstractAuthWebModel
         $this->document->addResource(new ResourceObject('user', $this->encrypter->encryptId($this->userId)));
 
         $this->document->links->add(
-            new Link('doReset', $this->services->paths()->getUrl() . 'Reset/DoPasswordReset')
+            new Link('doReset', $this->services->paths()->getUrl() . 'Reset/Dopasswordreset')
         );
 
         return $this->generateResponse($this->document, ResponseInterface::HTTP_STATUS_200);

@@ -65,7 +65,7 @@ class Register extends AbstractAuthWebModel
     public function generateData(): ResponseInterface
     {
         $this->document->links->add(
-            new Link('doRegister', $this->services->paths()->getUrl() . 'Accounts/DoAccountLookup')
+            new Link('doRegister', $this->services->paths()->getUrl() . 'Accounts/Doaccountlookup')
         );
 
         if ($this->errorMessage !== null){
