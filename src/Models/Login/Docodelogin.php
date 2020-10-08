@@ -9,7 +9,7 @@ use CarloNicora\Minimalism\Services\ParameterValidator\Interfaces\ParameterInter
 use CarloNicora\Minimalism\Services\ParameterValidator\ParameterValidator;
 use Exception;
 
-class DoCodeLogin extends AbstractAuthWebModel
+class Docodelogin extends AbstractAuthWebModel
 {
     /** @var int|null  */
     protected ?int $userIdForm=null;

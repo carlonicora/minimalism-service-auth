@@ -8,7 +8,7 @@ use CarloNicora\Minimalism\Services\MySQL\Exceptions\DbSqlException;
 use Exception;
 use RuntimeException;
 
-class DoAuthorise extends AbstractAuthWebModel
+class Doauthorise extends AbstractAuthWebModel
 {
     /**
      * @return ResponseInterface

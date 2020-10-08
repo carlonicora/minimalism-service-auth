@@ -10,7 +10,7 @@ use CarloNicora\Minimalism\Services\ParameterValidator\Interfaces\ParameterInter
 use CarloNicora\Minimalism\Services\ParameterValidator\ParameterValidator;
 use Exception;
 
-class DoAccountLookup extends AbstractAuthWebModel
+class Doaccountlookup extends AbstractAuthWebModel
 {
     /** @var int|null  */
     protected ?int $userId=null;
