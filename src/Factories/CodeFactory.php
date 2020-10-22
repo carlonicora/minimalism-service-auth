@@ -166,7 +166,7 @@ class CodeFactory
         $emailFactory = new EmailFactory($this->services);
         $emailFactory->sendEmail(
             'Emails/Forgot.twig',
-            $this->auth->getCodeEmailTitle(),
+            $this->auth->getForgotEmailTitle(),
             $user['email'],
             $user['username'],
             $this->auth->getSenderEmail(),
