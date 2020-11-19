@@ -68,6 +68,14 @@ class Register extends AbstractAuthWebModel
             new Link('doRegister', $this->services->paths()->getUrl() . 'Accounts/Doaccountlookup')
         );
 
+        try {
+            $app = $this->auth->getAppByClientId();
+            $this->document->links->add(
+                new Link('doCancel', $app['url'])
+            );
+        } catch (Exception $e) {
+        }
+
         if ($this->errorMessage !== null){
             $this->document->meta->add(
                 'errorMessage', $this->errorMessage

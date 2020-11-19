@@ -54,6 +54,14 @@ class Change extends AbstractAuthWebModel
             new Link('doReset', $this->services->paths()->getUrl() . 'Reset/Dopasswordreset')
         );
 
+        try {
+            $app = $this->auth->getAppByClientId();
+            $this->document->links->add(
+                new Link('doCancel', $app['url'])
+            );
+        } catch (Exception $e) {
+        }
+
         return $this->generateResponse($this->document, ResponseInterface::HTTP_STATUS_200);
     }
 }
