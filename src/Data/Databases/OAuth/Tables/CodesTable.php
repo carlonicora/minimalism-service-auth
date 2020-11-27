@@ -4,7 +4,7 @@ namespace CarloNicora\Minimalism\Services\Auth\Data\Databases\OAuth\Tables;
 use CarloNicora\Minimalism\Services\MySQL\Abstracts\AbstractTable;
 use CarloNicora\Minimalism\Services\MySQL\Exceptions\DbRecordNotFoundException;
 use CarloNicora\Minimalism\Services\MySQL\Exceptions\DbSqlException;
-use CarloNicora\Minimalism\Services\MySQL\Interfaces\TableInterface;
+use CarloNicora\Minimalism\Services\MySQL\Interfaces\FieldInterface;
 
 class CodesTable extends AbstractTable
 {
@@ -13,15 +13,15 @@ class CodesTable extends AbstractTable
 
     /** @var array  */
     protected array $fields = [
-        'codeId'        => TableInterface::INTEGER
-                        +  TableInterface::PRIMARY_KEY
-                        +  TableInterface::AUTO_INCREMENT,
-        'userId'        => TableInterface::INTEGER,
-        'code'          => TableInterface::INTEGER,
-        'type'          => TableInterface::STRING,
-        'creationTime'  => TableInterface::STRING
-                        +  TableInterface::TIME_CREATE,
-        'expirationTime'=> TableInterface::STRING
+        'codeId'        => FieldInterface::INTEGER
+                        +  FieldInterface::PRIMARY_KEY
+                        +  FieldInterface::AUTO_INCREMENT,
+        'userId'        => FieldInterface::INTEGER,
+        'code'          => FieldInterface::INTEGER,
+        'type'          => FieldInterface::STRING,
+        'creationTime'  => FieldInterface::STRING
+                        +  FieldInterface::TIME_CREATE,
+        'expirationTime'=> FieldInterface::STRING
     ];
 
     /**

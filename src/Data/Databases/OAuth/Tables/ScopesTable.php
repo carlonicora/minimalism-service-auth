@@ -3,7 +3,7 @@ namespace CarloNicora\Minimalism\Services\Auth\Data\Databases\OAuth\Tables;
 
 use CarloNicora\Minimalism\Services\MySQL\Abstracts\AbstractTable;
 use CarloNicora\Minimalism\Services\MySQL\Exceptions\DbSqlException;
-use CarloNicora\Minimalism\Services\MySQL\Interfaces\TableInterface;
+use CarloNicora\Minimalism\Services\MySQL\Interfaces\FieldInterface;
 
 class ScopesTable extends AbstractTable
 {
@@ -12,10 +12,10 @@ class ScopesTable extends AbstractTable
 
     /** @var array  */
     protected array $fields = [
-        'scopeId'   => TableInterface::INTEGER
-                    +  TableInterface::PRIMARY_KEY
-                    +  TableInterface::AUTO_INCREMENT,
-        'name'      => TableInterface::STRING
+        'scopeId'   => FieldInterface::INTEGER
+                    +  FieldInterface::PRIMARY_KEY
+                    +  FieldInterface::AUTO_INCREMENT,
+        'name'      => FieldInterface::STRING
     ];
 
     /**

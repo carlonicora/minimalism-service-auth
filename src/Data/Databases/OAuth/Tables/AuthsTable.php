@@ -4,7 +4,7 @@ namespace CarloNicora\Minimalism\Services\Auth\Data\Databases\OAuth\Tables;
 use CarloNicora\Minimalism\Services\MySQL\Abstracts\AbstractTable;
 use CarloNicora\Minimalism\Services\MySQL\Exceptions\DbRecordNotFoundException;
 use CarloNicora\Minimalism\Services\MySQL\Exceptions\DbSqlException;
-use CarloNicora\Minimalism\Services\MySQL\Interfaces\TableInterface;
+use CarloNicora\Minimalism\Services\MySQL\Interfaces\FieldInterface;
 
 class AuthsTable extends AbstractTable
 {
@@ -13,13 +13,13 @@ class AuthsTable extends AbstractTable
 
     /** @var array  */
     protected array $fields = [
-        'authId'        => TableInterface::INTEGER
-                        +  TableInterface::PRIMARY_KEY
-                        +  TableInterface::AUTO_INCREMENT,
-        'appId'         => TableInterface::INTEGER,
-        'userId'        => TableInterface::INTEGER,
-        'expiration'    => TableInterface::STRING,
-        'code'          => TableInterface::STRING
+        'authId'        => FieldInterface::INTEGER
+                        +  FieldInterface::PRIMARY_KEY
+                        +  FieldInterface::AUTO_INCREMENT,
+        'appId'         => FieldInterface::INTEGER,
+        'userId'        => FieldInterface::INTEGER,
+        'expiration'    => FieldInterface::STRING,
+        'code'          => FieldInterface::STRING
     ];
 
     /**
