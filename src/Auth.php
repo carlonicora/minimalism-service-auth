@@ -37,6 +37,9 @@ class Auth  extends AbstractService implements SecurityInterface
     /** @var bool  */
     private bool $isUser=false;
 
+    /** @var AuthenticationInterface|null  */
+    private ?AuthenticationInterface $authInterfaceClass=null;
+
     /**
      * abstractApiCaller constructor.
      * @param ServiceConfigurationsInterface $configData
@@ -50,23 +53,26 @@ class Auth  extends AbstractService implements SecurityInterface
     }
 
     /**
+     * @param AuthenticationInterface|null $authInterfaceClass
+     */
+    public function setAuthInterfaceClass(?AuthenticationInterface $authInterfaceClass): void
+    {
+        $this->authInterfaceClass = $authInterfaceClass;
+    }
+
+    /**
      * @return AuthenticationInterface
      * @throws Exception
      */
     public function getAuthenticationTable(): AuthenticationInterface
     {
-        $authClass = $this->configData->getAuthInterfaceClass();
-
-        if ($authClass === null){
+        if ($this->authInterfaceClass === null){
             $this->services->logger()->error()->log(
                 AuthErrorEvents::AUTH_INTERFACE_NOT_CONFIGURED()
             )->throw();
         }
 
-        /** @var AuthenticationInterface $response */
-        $response = new $authClass($this->services);
-
-        return $response;
+        return $this->authInterfaceClass;
     }
 
     /**

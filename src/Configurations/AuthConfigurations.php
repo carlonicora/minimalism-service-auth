@@ -7,9 +7,6 @@ use Exception;
 
 class AuthConfigurations  extends AbstractServiceConfigurations
 {
-    /** @var string|null  */
-    private ?string $authInterfaceClass;
-
     /** @var string  */
     private string $senderName;
 
@@ -43,8 +40,6 @@ class AuthConfigurations  extends AbstractServiceConfigurations
      */
     public function __construct()
     {
-        $this->authInterfaceClass = getenv('MINIMALISM_SERVICE_AUTH_AUTH_INTERFACE_CLASS');
-
         if (!($this->senderName = getenv('MINIMALISM_SERVICE_AUTH_SENDER_NAME'))){
             throw new ConfigurationException('MINIMALISM_SERVICE_AUTH_SENDER_NAME is a required configuration');
         }
@@ -62,14 +57,6 @@ class AuthConfigurations  extends AbstractServiceConfigurations
         $this->googleIdentityFile = getenv('MINIMALISM_SERVICE_AUTH_GOOGLE_IDENTITY_FILE');
         $this->appleClientId = getenv('MINIMALISM_SERVICE_AUTH_APPLE_CLIENT_ID');
         $this->appleClientSecret = getenv('MINIMALISM_SERVICE_AUTH_APPLE_CLIENT_SECRET');
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getAuthInterfaceClass(): ?string
-    {
-        return $this->authInterfaceClass;
     }
 
     /**
