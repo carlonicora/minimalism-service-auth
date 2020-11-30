@@ -1,7 +1,6 @@
 <?php
 namespace CarloNicora\Minimalism\Services\Auth\Models;
 
-use CarloNicora\JsonApi\Document;
 use CarloNicora\JsonApi\Objects\Link;
 use CarloNicora\Minimalism\Core\Modules\Interfaces\ResponseInterface;
 use CarloNicora\Minimalism\Services\Auth\Abstracts\AbstractAuthWebModel;
@@ -22,9 +21,6 @@ class Auth extends AbstractAuthWebModel
     /** @var string|null  */
     protected ?string $state=null;
 
-    /** @var Document|null  */
-    protected ?Document $additionalInformation=null;
-
     /** @var array|array[]  */
     protected array $parameters = [
         'client_id' => [
@@ -33,10 +29,6 @@ class Auth extends AbstractAuthWebModel
         ],
         'state' => [
             ParameterInterface::VALIDATOR => ParameterValidator::PARAMETER_TYPE_STRING
-        ],
-        'additionalInformation' => [
-            ParameterInterface::NAME => 'additionalInformation',
-            ParameterInterface::VALIDATOR => ParameterValidator::PARAMETER_TYPE_JSONAPI
         ]
     ];
 
