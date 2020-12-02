@@ -43,13 +43,17 @@ class App extends AbstractResourceBuilder
      */
     protected function setRelationships(): void
     {
-        $this->generateRelationship(
-            'scopes',
-            RelationshipTypeInterface::RELATIONSHIP_MANY_TO_MANY,
-            Scope::attributeId(),
-            'appId',
-            AppScopesTable::class,
-            'scopeId'
+        $this->addRelationship(
+            $this->relationshipBuilderInterfaceFactory->create(
+                RelationshipTypeInterface::MANY_TO_MANY,
+                'scopes'
+            )->withBuilder(
+                Scope::attributeId(),
+                'appId'
+            )->throughManyToManyTable(
+                AppScopesTable::class,
+                'scopeId'
+            )
         );
     }
 }
