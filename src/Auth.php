@@ -189,7 +189,7 @@ class Auth  extends AbstractService implements SecurityInterface
         $response .= $join
             . 'code=' . $auth['code']
             . '&state=' . $this->state
-            . '&newRegistration' . $this->isNewRegistration;
+            . '&newRegistration=' . $this->isNewRegistration;
 
         return $response;
     }
