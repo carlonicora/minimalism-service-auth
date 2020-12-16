@@ -37,6 +37,12 @@ class Auth  extends AbstractService implements SecurityInterface
     /** @var bool  */
     private bool $isUser=false;
 
+    /** @var bool  */
+    private bool $isNewRegistration=false;
+
+    /** @var AuthenticationInterface|null  */
+    private ?AuthenticationInterface $authInterfaceClass=null;
+
     /**
      * abstractApiCaller constructor.
      * @param ServiceConfigurationsInterface $configData
@@ -50,23 +56,26 @@ class Auth  extends AbstractService implements SecurityInterface
     }
 
     /**
+     * @param AuthenticationInterface|null $authInterfaceClass
+     */
+    public function setAuthInterfaceClass(?AuthenticationInterface $authInterfaceClass): void
+    {
+        $this->authInterfaceClass = $authInterfaceClass;
+    }
+
+    /**
      * @return AuthenticationInterface
      * @throws Exception
      */
     public function getAuthenticationTable(): AuthenticationInterface
     {
-        $authClass = $this->configData->getAuthInterfaceClass();
-
-        if ($authClass === null){
+        if ($this->authInterfaceClass === null){
             $this->services->logger()->error()->log(
                 AuthErrorEvents::AUTH_INTERFACE_NOT_CONFIGURED()
             )->throw();
         }
 
-        /** @var AuthenticationInterface $response */
-        $response = new $authClass($this->services);
-
-        return $response;
+        return $this->authInterfaceClass;
     }
 
     /**
@@ -129,6 +138,22 @@ class Auth  extends AbstractService implements SecurityInterface
     }
 
     /**
+     *
+     */
+    public function setIsNewRegistration(): void
+    {
+        $this->isNewRegistration = true;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isNewRegistration(): bool
+    {
+        return $this->isNewRegistration;
+    }
+
+    /**
      * @param int $appId
      * @return array
      * @throws DbSqlException|Exception
@@ -163,7 +188,8 @@ class Auth  extends AbstractService implements SecurityInterface
         $join = (strpos($response, '?') !== false) ? '&' : '?';
         $response .= $join
             . 'code=' . $auth['code']
-            . '&state=' . $this->state;
+            . '&state=' . $this->state
+            . '&newRegistration=' . $this->isNewRegistration;
 
         return $response;
     }

@@ -69,6 +69,7 @@ class Doaccountlookup extends AbstractAuthWebModel
             )->throw();
         } elseif ($this->create === true && ($user = $this->auth->getAuthenticationTable()->authenticateByEmail($this->email)) === null) {
             $user = $this->auth->getAuthenticationTable()->generateNewUser($this->email);
+            $this->auth->setIsNewRegistration();
         }
 
         /** @var Encrypter $encrypter */

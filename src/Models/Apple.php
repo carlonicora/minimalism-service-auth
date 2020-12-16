@@ -109,6 +109,7 @@ class Apple extends AbstractAuthWebModel
             } else {
                 if (($user = $this->auth->getAuthenticationTable()->authenticateByEmail($claims['email'])) === null) {
                     $user = $this->auth->getAuthenticationTable()->generateNewUser($claims['email'], ($claims['name'] ?? null), 'apple');
+                    $this->auth->setIsNewRegistration();
                 }
 
                 if (!empty($user)){

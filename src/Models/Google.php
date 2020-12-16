@@ -48,6 +48,7 @@ class Google extends AbstractAuthWebModel
 
         if (($user = $this->auth->getAuthenticationTable()->authenticateByEmail($token_data['email'])) === null) {
             $user = $this->auth->getAuthenticationTable()->generateNewUser($token_data['email'], $token_data['name'], 'google');
+            $this->auth->setIsNewRegistration();
             $this->auth->getAuthenticationTable()->activateUser($user);
         } elseif ($user['isActive'] === false){
             $this->auth->getAuthenticationTable()->activateUser($user);
