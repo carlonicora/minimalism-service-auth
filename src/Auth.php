@@ -37,6 +37,9 @@ class Auth  extends AbstractService implements SecurityInterface
     /** @var bool  */
     private bool $isUser=false;
 
+    /** @var bool  */
+    private bool $isNewRegistration=false;
+
     /** @var AuthenticationInterface|null  */
     private ?AuthenticationInterface $authInterfaceClass=null;
 
@@ -135,6 +138,22 @@ class Auth  extends AbstractService implements SecurityInterface
     }
 
     /**
+     *
+     */
+    public function setIsNewRegistration(): void
+    {
+        $this->isNewRegistration = true;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isNewRegistration(): bool
+    {
+        return $this->isNewRegistration;
+    }
+
+    /**
      * @param int $appId
      * @return array
      * @throws DbSqlException|Exception
@@ -169,7 +188,8 @@ class Auth  extends AbstractService implements SecurityInterface
         $join = (strpos($response, '?') !== false) ? '&' : '?';
         $response .= $join
             . 'code=' . $auth['code']
-            . '&state=' . $this->state;
+            . '&state=' . $this->state
+            . '&newRegistration' . $this->isNewRegistration;
 
         return $response;
     }
