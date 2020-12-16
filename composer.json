@@ -1,12 +1,12 @@
 {
   "name": "carlonicora/minimalism-service-auth",
   "description": "Authentication and Authorisation service for minimalism",
-  "version": "1.0.0-beta5",
+  "version": "1.0.0",
   "homepage": "https://carlonicora.com",
   "time": "2020-06-13",
   "license": "MIT",
   "type": "library",
-  "minimum-stability": "beta",
+  "minimum-stability": "stable",
   "authors": [
     {
       "name": "Carlo Nicora",
