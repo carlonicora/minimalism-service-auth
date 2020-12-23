@@ -57,6 +57,7 @@ class Doaccountlookup extends AbstractAuthWebModel
 
         $user = [];
 
+        $isNewUserGenerated = false;
         if ($this->auth->getUserId() !== null) {
             $user = $this->auth->getAuthenticationTable()->authenticateById($this->auth->getUserId());
         } elseif ($this->create === false && $this->email !== null &&  ($user = $this->auth->getAuthenticationTable()->authenticateByEmail($this->email)) === null) {
@@ -68,6 +69,7 @@ class Doaccountlookup extends AbstractAuthWebModel
                 autherrorevents::invalid_account()
             )->throw();
         } elseif ($this->create === true && ($user = $this->auth->getAuthenticationTable()->authenticateByEmail($this->email)) === null) {
+            $isNewUserGenerated = true;
             $user = $this->auth->getAuthenticationTable()->generateNewUser($this->email);
             $this->auth->setIsNewRegistration();
         }
@@ -94,7 +96,7 @@ class Doaccountlookup extends AbstractAuthWebModel
                         . $this->services->paths()->getUrl()
                         . 'code/' . $encrypter->encryptId($user['userId'])
                     );
-                } elseif ($this->create){
+                } elseif ($this->create && $isNewUserGenerated){
                     $redirection = 'code/' . $encrypter->encryptId($user['userId']) . '/1';
                 } else {
                     $redirection = 'code/' . $encrypter->encryptId($user['userId']);
