@@ -2,79 +2,65 @@
 namespace CarloNicora\Minimalism\Services\Auth\Models;
 
 use CarloNicora\JsonApi\Objects\Link;
-use CarloNicora\Minimalism\Core\Modules\Interfaces\ResponseInterface;
 use CarloNicora\Minimalism\Services\Auth\Abstracts\AbstractAuthWebModel;
 use CarloNicora\Minimalism\Services\Auth\Factories\ThirdPartyLoginFactory;
-use CarloNicora\Minimalism\Services\ParameterValidator\ParameterValidator;
+use CarloNicora\Minimalism\Services\Path;
 use Exception;
 
 class Login extends AbstractAuthWebModel
 {
-    /** @var string  */
-    protected string $viewName = 'login';
-
     /** @var string|null  */
-    protected ?string $clientId=null;
-
-    /** @var string|null  */
-    protected ?string $state=null;
-
-    /** @var array|array[]  */
-    protected array $parameters = [
-        'client_id' => [
-            'name' => 'clientId',
-            'validator' => ParameterValidator::PARAMETER_TYPE_STRING
-        ],
-        'state' => [
-            'validator' => ParameterValidator::PARAMETER_TYPE_STRING
-        ]
-    ];
+    protected ?string $view = 'login';
 
     /**
-     * @param array $passedParameters
-     * @param array|null $file
+     * @param \CarloNicora\Minimalism\Services\Auth\Auth $auth
+     * @param Path $path
+     * @param string|null $clientId
+     * @param string|null $state
+     * @return int
      * @throws Exception
      */
-    public function initialise(array $passedParameters, array $file = null): void
+    public function get(
+        \CarloNicora\Minimalism\Services\Auth\Auth $auth,
+        Path $path,
+        ?string $clientId,
+        ?string $state,
+    ): int
     {
-        parent::initialise($passedParameters, $file);
-
-        if ($this->clientId !== null) {
-            $this->auth->setClientId($this->clientId);
+        if ($clientId !== null) {
+            $auth->setClientId($clientId);
         }
 
-        if ($this->state !== null) {
-            $this->auth->setState($this->state);
+        if ($state !== null) {
+            $auth->setState($state);
         }
 
-        if ($this->auth->getUserId() !== null){
-            $this->redirectPage = 'auth';
+        if ($auth->getUserId() !== null){
+            $this->redirection = Auth::class;
+            $this->redirectionParameters = [];
+            return 302;
         }
-    }
 
-    /**
-     * @return ResponseInterface
-     * @throws Exception
-     */
-    public function generateData(): ResponseInterface
-    {
         $this->document->links->add(
-            new Link('doLogin', $this->services->paths()->getUrl() . 'Accounts/Doaccountlookup')
+            new Link('doLogin', $path->getUrl() . 'Accounts/Doaccountlookup')
         );
 
         $this->document->links->add(
-            new Link('registration', $this->services->paths()->getUrl() . 'register')
+            new Link('registration', $path->getUrl() . 'register')
         );
 
         $this->document->links->add(
-            new Link('forgot', $this->services->paths()->getUrl() . 'forgot')
+            new Link('forgot', $path->getUrl() . 'forgot')
         );
 
-        $thirdPartyLogins = new ThirdPartyLoginFactory($this->services);
+        $thirdPartyLogins = new ThirdPartyLoginFactory(
+            auth: $auth,
+            path: $path,
+        );
         $thirdPartyLogins->Facebook($this->document);
         $thirdPartyLogins->Google($this->document);
         $thirdPartyLogins->Apple($this->document);
 
-        return $this->generateResponse($this->document, ResponseInterface::HTTP_STATUS_200);
+        return 200;
     }
 }

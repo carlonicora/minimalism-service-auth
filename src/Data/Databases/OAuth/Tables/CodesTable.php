@@ -1,12 +1,12 @@
 <?php
 namespace CarloNicora\Minimalism\Services\Auth\Data\Databases\OAuth\Tables;
 
-use CarloNicora\Minimalism\Services\MySQL\Abstracts\AbstractTable;
+use CarloNicora\Minimalism\Services\MySQL\Abstracts\AbstractMySqlTable;
 use CarloNicora\Minimalism\Services\MySQL\Exceptions\DbRecordNotFoundException;
-use CarloNicora\Minimalism\Services\MySQL\Exceptions\DbSqlException;
 use CarloNicora\Minimalism\Services\MySQL\Interfaces\FieldInterface;
+use Exception;
 
-class CodesTable extends AbstractTable
+class CodesTable extends AbstractMySqlTable
 {
     /** @var string */
     protected string $tableName = 'codes';
@@ -25,7 +25,7 @@ class CodesTable extends AbstractTable
     ];
 
     /**
-     * @throws DbSqlException
+     * @throws Exception
      */
     public function purgeExpired() : void
     {
@@ -38,7 +38,7 @@ class CodesTable extends AbstractTable
 
     /**
      * @param int $userId
-     * @throws DbSqlException
+     * @throws Exception
      */
     public function purgeUserId(int $userId) : void
     {
@@ -53,7 +53,7 @@ class CodesTable extends AbstractTable
      * @param int $userId
      * @param int $code
      * @return array
-     * @throws DbSqlException
+     * @throws Exception
      * @throws DbRecordNotFoundException
      */
     public function userIdCode(int $userId, int $code): array

@@ -1,81 +1,68 @@
 <?php
 namespace CarloNicora\Minimalism\Services\Auth\Models\Accounts;
 
-use CarloNicora\Minimalism\Core\Modules\Interfaces\ResponseInterface;
+use CarloNicora\Minimalism\Interfaces\EncrypterInterface;
+use CarloNicora\Minimalism\Parameters\PositionedEncryptedParameter;
 use CarloNicora\Minimalism\Services\Auth\Abstracts\AbstractAuthWebModel;
-use CarloNicora\Minimalism\Services\Auth\Events\AuthErrorEvents;
+use CarloNicora\Minimalism\Services\Auth\Auth;
 use CarloNicora\Minimalism\Services\Auth\Factories\CodeFactory;
-use CarloNicora\Minimalism\Services\Encrypter\Encrypter;
-use CarloNicora\Minimalism\Services\ParameterValidator\Interfaces\ParameterInterface;
-use CarloNicora\Minimalism\Services\ParameterValidator\ParameterValidator;
+use CarloNicora\Minimalism\Services\Mailer\Mailer;
+use CarloNicora\Minimalism\Services\MySQL\MySQL;
+use CarloNicora\Minimalism\Services\Path;
 use Exception;
+use RuntimeException;
 
 class Doaccountlookup extends AbstractAuthWebModel
 {
-    /** @var int|null  */
-    protected ?int $userId=null;
-
-    /** @var string|null  */
-    protected ?string $email=null;
-
-    /** @var bool|null  */
-    protected ?bool $overridePassword=false;
-
-    /** @var bool|null  */
-    protected ?bool $recoverPassword=false;
-
-    /** @var bool|null  */
-    protected ?bool $create=false;
-
-    /** @var array  */
-    protected array $parameters = [
-        0 => [
-            ParameterInterface::NAME => 'userId',
-            ParameterInterface::IS_ENCRYPTED => true
-        ],
-        'email' => [
-            ParameterInterface::VALIDATOR => ParameterValidator::PARAMETER_TYPE_STRING
-        ],
-        'create' => [
-            ParameterInterface::VALIDATOR => ParameterValidator::PARAMETER_TYPE_BOOL
-        ],
-        'overridePassword' => [
-            ParameterInterface::VALIDATOR => ParameterValidator::PARAMETER_TYPE_BOOL
-        ],
-        'recoverPassword' => [
-            ParameterInterface::VALIDATOR => ParameterValidator::PARAMETER_TYPE_BOOL
-        ],
-    ];
-
     /**
-     * @return ResponseInterface
+     * @param Auth $auth
+     * @param MySQL $mysql
+     * @param EncrypterInterface $encrypter
+     * @param Path $path
+     * @param Mailer $mailer
+     * @param PositionedEncryptedParameter $userId
+     * @param string|null $email
+     * @param bool|null $create
+     * @param bool|null $overridePassword
+     * @param bool|null $recoverPassword
+     * @return int
      * @throws Exception
      */
-    public function generateData(): ResponseInterface
+    public function get(
+        Auth $auth,
+        MySQL $mysql,
+        EncrypterInterface $encrypter,
+        Path $path,
+        Mailer $mailer,
+        PositionedEncryptedParameter $userId,
+        ?string $email,
+        ?bool $create,
+        ?bool $overridePassword,
+        ?bool $recoverPassword,
+    ): int
     {
-        $codeFactory = new CodeFactory($this->services);
+        $codeFactory = new CodeFactory(
+            auth: $auth,
+            mysql: $mysql,
+            encrypter: $encrypter,
+            path: $path,
+            mailer: $mailer,
+        );
 
         $user = [];
 
-        if ($this->auth->getUserId() !== null) {
-            $user = $this->auth->getAuthenticationTable()->authenticateById($this->auth->getUserId());
-        } elseif ($this->create === false && $this->email !== null &&  ($user = $this->auth->getAuthenticationTable()->authenticateByEmail($this->email)) === null) {
-            $this->services->logger()->error()->log(
-                AuthErrorEvents::INVALID_ACCOUNT()
-            )->throw();
-        } elseif ($this->userId !== null &&  ($user = $this->auth->getAuthenticationTable()->authenticateById($this->userId)) === null) {
-            $this->services->logger()->error()->log(
-                autherrorevents::invalid_account()
-            )->throw();
-        } elseif ($this->create === true && ($user = $this->auth->getAuthenticationTable()->authenticateByEmail($this->email)) === null) {
-            $user = $this->auth->getAuthenticationTable()->generateNewUser($this->email);
-            $this->auth->setIsNewRegistration();
+        if ($auth->getUserId() !== null) {
+            $user = $auth->getAuthenticationTable()->authenticateById($auth->getUserId());
+        } elseif ($create === false && $email !== null &&  ($user = $auth->getAuthenticationTable()->authenticateByEmail($email)) === null) {
+            throw new RuntimeException('Could not find your account', 401);
+        } elseif ($userId !== null &&  ($user = $auth->getAuthenticationTable()->authenticateById($userId->getValue())) === null) {
+            throw new RuntimeException('Could not find your account', 401);
+        } elseif ($create === true && ($user = $auth->getAuthenticationTable()->authenticateByEmail($email)) === null) {
+            $user = $auth->getAuthenticationTable()->generateNewUser($email);
+            $auth->setIsNewRegistration();
         }
 
-        /** @var Encrypter $encrypter */
-        $encrypter = $this->services->service(Encrypter::class);
-
-        if ($this->recoverPassword){
+        if ($recoverPassword){
             $codeFactory->generateAndSendResetCode($user);
 
             $this->document->meta->add(
@@ -85,16 +72,16 @@ class Doaccountlookup extends AbstractAuthWebModel
         } else {
             $redirection = null;
 
-            if ($this->overridePassword || empty($user['password'])) {
+            if ($overridePassword || empty($user['password'])) {
                 $codeFactory->generateAndSendCode($user);
 
-                if ($this->overridePassword){
+                if ($overridePassword){
                     header(
                         'location:'
-                        . $this->services->paths()->getUrl()
+                        . $path->getUrl()
                         . 'code/' . $encrypter->encryptId($user['userId'])
                     );
-                } elseif ($this->create){
+                } elseif ($create){
                     $redirection = 'code/' . $encrypter->encryptId($user['userId']) . '/1';
                 } else {
                     $redirection = 'code/' . $encrypter->encryptId($user['userId']);
@@ -106,11 +93,11 @@ class Doaccountlookup extends AbstractAuthWebModel
             if ($redirection !== null) {
                 $this->document->meta->add(
                     'redirection',
-                    $this->services->paths()->getUrl() . $redirection
+                    $path->getUrl() . $redirection
                 );
             }
         }
 
-        return $this->generateResponse($this->document, ResponseInterface::HTTP_STATUS_200);
+        return 200;
     }
 }

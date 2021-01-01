@@ -1,12 +1,12 @@
 <?php
 namespace CarloNicora\Minimalism\Services\Auth\Data\Databases\OAuth\Tables;
 
-use CarloNicora\Minimalism\Services\MySQL\Abstracts\AbstractTable;
+use CarloNicora\Minimalism\Services\MySQL\Abstracts\AbstractMySqlTable;
 use CarloNicora\Minimalism\Services\MySQL\Exceptions\DbRecordNotFoundException;
-use CarloNicora\Minimalism\Services\MySQL\Exceptions\DbSqlException;
 use CarloNicora\Minimalism\Services\MySQL\Interfaces\FieldInterface;
+use Exception;
 
-class TokensTable extends AbstractTable
+class TokensTable extends AbstractMySqlTable
 {
     /** @var string */
     protected string $tableName = 'tokens';
@@ -25,7 +25,7 @@ class TokensTable extends AbstractTable
     /**
      * @param string $token
      * @return array
-     * @throws DbSqlException|DbRecordNotFoundException
+     * @throws Exception|DbRecordNotFoundException
      */
     public function loadByToken(string $token): array
     {

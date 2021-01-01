@@ -3,58 +3,52 @@ namespace CarloNicora\Minimalism\Services\Auth\Models;
 
 use CarloNicora\JsonApi\Objects\Link;
 use CarloNicora\JsonApi\Objects\ResourceObject;
-use CarloNicora\Minimalism\Core\Modules\Interfaces\ResponseInterface;
+use CarloNicora\Minimalism\Parameters\PositionedEncryptedParameter;
+use CarloNicora\Minimalism\Parameters\PositionedParameter;
 use CarloNicora\Minimalism\Services\Auth\Abstracts\AbstractAuthWebModel;
-use CarloNicora\Minimalism\Services\ParameterValidator\Interfaces\ParameterInterface;
-use CarloNicora\Minimalism\Services\ParameterValidator\ParameterValidator;
+use CarloNicora\Minimalism\Services\Path;
 use Exception;
 
 class Code extends AbstractAuthWebModel
 {
-    /** @var int|null  */
-    protected ?int $userId;
-
-    /** @var bool  */
-    protected bool $create=false;
-
-    /** @var array  */
-    protected array $parameters = [
-        0 => [
-            ParameterInterface::NAME => 'userId',
-            ParameterInterface::IS_REQUIRED => true,
-            ParameterInterface::IS_ENCRYPTED => true
-        ],
-        1 => [
-            ParameterInterface::NAME => 'create',
-            ParameterInterface::VALIDATOR => ParameterValidator::PARAMETER_TYPE_BOOL
-        ]
-    ];
-
-    /** @var string  */
-    protected string $viewName = 'code';
+    /** @var string|null  */
+    protected ?string $view = 'code';
 
     /**
-     * @return ResponseInterface
+     * @param \CarloNicora\Minimalism\Services\Auth\Auth $auth
+     * @param Path $path
+     * @param PositionedEncryptedParameter $userId
+     * @param PositionedParameter|null $create
+     * @return int
      * @throws Exception
      */
-    public function generateData(): ResponseInterface
+    public function get(
+        \CarloNicora\Minimalism\Services\Auth\Auth $auth,
+        Path $path,
+        PositionedEncryptedParameter $userId,
+        ?PositionedParameter $create,
+    ): int
     {
-        $user = $this->auth->getAuthenticationTable()->authenticateById($this->userId);
+        $user = $auth->getAuthenticationTable()->authenticateById($userId->getValue());
 
-        $userResource = new ResourceObject('user', $this->encrypter->encryptId($this->userId));
+        $userResource = new ResourceObject('user', $userId->getEncryptedValue());
         $userResource->attributes->add('email', $user['email']);
-        $userResource->attributes->add('new', $this->create);
+        $userResource->attributes->add('new', ($create ? (bool)$create->getValue() : false));
 
         $this->document->addResource($userResource);
 
         $this->document->links->add(
-            new Link('doLogin', $this->services->paths()->getUrl() . 'Login/Docodelogin')
+            new Link('doLogin', $path->getUrl() . 'Login/Docodelogin')
         );
 
         $this->document->links->add(
-            new Link('doCodeLogin', $this->services->paths()->getUrl() . 'Accounts/Doaccountlookup/' . $this->encrypter->encryptId($this->userId) . '?overridePassword=true')
+            new Link('doCodeLogin',
+                $path->getUrl()
+                . 'Accounts/Doaccountlookup/'
+                . $userId->getEncryptedValue()
+                . '?overridePassword=true')
         );
 
-        return $this->generateResponse($this->document, ResponseInterface::HTTP_STATUS_200);
+        return 200;
     }
 }

@@ -1,99 +1,90 @@
 <?php
 namespace CarloNicora\Minimalism\Services\Auth\Models\Login;
 
-use CarloNicora\Minimalism\Core\Modules\Interfaces\ResponseInterface;
+use CarloNicora\Minimalism\Interfaces\EncrypterInterface;
+use CarloNicora\Minimalism\Parameters\EncryptedParameter;
+use CarloNicora\Minimalism\Parameters\PositionedEncryptedParameter;
+use CarloNicora\Minimalism\Parameters\PositionedParameter;
 use CarloNicora\Minimalism\Services\Auth\Abstracts\AbstractAuthWebModel;
-use CarloNicora\Minimalism\Services\Auth\Events\AuthErrorEvents;
+use CarloNicora\Minimalism\Services\Auth\Auth;
 use CarloNicora\Minimalism\Services\Auth\Factories\CodeFactory;
-use CarloNicora\Minimalism\Services\ParameterValidator\Interfaces\ParameterInterface;
-use CarloNicora\Minimalism\Services\ParameterValidator\ParameterValidator;
+use CarloNicora\Minimalism\Services\Mailer\Mailer;
+use CarloNicora\Minimalism\Services\MySQL\MySQL;
+use CarloNicora\Minimalism\Services\Path;
 use Exception;
+use RuntimeException;
 
 class Docodelogin extends AbstractAuthWebModel
 {
-    /** @var int|null  */
-    protected ?int $userIdForm=null;
-
-    /** @var int|null */
-    protected ?int $codeForm=null;
-
-    /** @var int|null  */
-    protected ?int $userIdLink=null;
-
-    /** @var int|null */
-    protected ?int $codeLink=null;
-
-    /** @var string|null  */
-    protected ?string $clientId=null;
-
-    /** @var string|null */
-    protected ?string $state=null;
-
-    /** @var array  */
-    protected array $parameters = [
-        0 => [
-            ParameterInterface::NAME => 'userIdLink',
-            ParameterInterface::IS_ENCRYPTED => true
-        ],
-        1 => [
-            ParameterInterface::NAME => 'codeLink',
-            ParameterInterface::VALIDATOR => ParameterValidator::PARAMETER_TYPE_INT
-        ],
-        2 => [
-            ParameterInterface::NAME => 'clientId',
-            ParameterInterface::VALIDATOR => ParameterValidator::PARAMETER_TYPE_STRING
-        ],
-        3 => [
-            ParameterInterface::NAME => 'state',
-            ParameterInterface::VALIDATOR => ParameterValidator::PARAMETER_TYPE_STRING
-        ],
-        'userId' => [
-            ParameterInterface::NAME => 'userIdForm',
-            ParameterInterface::IS_ENCRYPTED => true
-        ],
-        'code' => [
-            ParameterInterface::NAME => 'codeForm',
-            ParameterInterface::VALIDATOR => ParameterValidator::PARAMETER_TYPE_INT
-        ]
-    ];
 
     /**
-     * @return ResponseInterface
+     * @param Auth $auth
+     * @param MySQL $mysql
+     * @param EncrypterInterface $encrypter
+     * @param Path $path
+     * @param Mailer $mailer
+     * @param PositionedEncryptedParameter|null $userIdLink
+     * @param PositionedParameter|null $codeLink
+     * @param PositionedParameter|null $clientId
+     * @param PositionedParameter|null $state
+     * @param EncryptedParameter|null $userIdForm
+     * @param int|null $codeForm
+     * @return int
      * @throws Exception
      */
-    public function generateData(): ResponseInterface
+    public function get(
+        Auth $auth,
+        MySQL $mysql,
+        EncrypterInterface $encrypter,
+        Path $path,
+        Mailer $mailer,
+        ?PositionedEncryptedParameter $userIdLink,
+        ?PositionedParameter $codeLink,
+        ?PositionedParameter $clientId,
+        ?PositionedParameter $state,
+        ?EncryptedParameter $userIdForm,
+        ?int $codeForm,
+    ): int
     {
-        $code = $this->codeForm ?? $this->codeLink;
-        $userId = $this->userIdForm ?? $this->userIdLink;
-
-        if (($user = $this->auth->getAuthenticationTable()->authenticateById($userId)) === null){
-            $this->services->logger()->error()->log(
-                AuthErrorEvents::INVALID_ACCOUNT()
-            )->throw();
+        $code = $codeForm ?? $codeLink ? $codeLink->getValue() : null;
+        if ($userIdForm !== null) {
+            $userId = $userIdForm->getValue();
+        } else {
+            $userId = $userIdLink ? $userIdLink->getValue() : null;
         }
 
-        $codeFactory = new CodeFactory($this->services);
+        if (($user = $auth->getAuthenticationTable()->authenticateById($userId)) === null){
+            throw new RuntimeException('Could not find your account', 401);
+        }
+
+        $codeFactory = new CodeFactory(
+            auth: $auth,
+            mysql: $mysql,
+            encrypter: $encrypter,
+            path: $path,
+            mailer: $mailer,
+        );
 
         $codeFactory->validateCode($user, $code);
 
         if (!$user['isActive']) {
-            $this->auth->getAuthenticationTable()->activateUser($user);
+            $auth->getAuthenticationTable()->activateUser($user);
         }
 
-        $this->auth->setUserId($user['userId']);
+        $auth->setUserId($user['userId']);
 
-        if ($this->userIdForm !== null) {
+        if ($userIdForm !== null) {
             $this->document->meta->add(
                 'redirection',
-                $this->services->paths()->getUrl() . 'auth'
+                $path->getUrl() . 'auth'
             );
         } else {
             header(
                 'location: '
-                . $this->services->paths()->getUrl()
-                . 'auth?client_id=' . $this->clientId . '&state=' . $this->state);
+                . $path->getUrl()
+                . 'auth?client_id=' . ($clientId ? $clientId->getValue() : '') . '&state=' . ($state ? $state->getValue() : ''));
         }
 
-        return $this->generateResponse($this->document, ResponseInterface::HTTP_STATUS_200);
+        return 200;
     }
 }

@@ -1,55 +1,43 @@
 <?php
 namespace CarloNicora\Minimalism\Services\Auth\Models\Reset;
 
-use CarloNicora\Minimalism\Core\Modules\Interfaces\ResponseInterface;
+use CarloNicora\Minimalism\Parameters\EncryptedParameter;
 use CarloNicora\Minimalism\Services\Auth\Abstracts\AbstractAuthWebModel;
-use CarloNicora\Minimalism\Services\Auth\Events\AuthErrorEvents;
-use CarloNicora\Minimalism\Services\ParameterValidator\Interfaces\ParameterInterface;
-use CarloNicora\Minimalism\Services\ParameterValidator\ParameterValidator;
+use CarloNicora\Minimalism\Services\Auth\Auth;
+use CarloNicora\Minimalism\Services\Path;
 use Exception;
+use RuntimeException;
 
 class Dopasswordreset extends AbstractAuthWebModel
 {
-    /** @var string|null  */
-    protected ?string $userId;
-
-    /** @var string|null  */
-    protected ?string $password;
-
-    /** @var array  */
-    protected array $parameters = [
-        'userId' => [
-            ParameterInterface::NAME => 'userId',
-            ParameterInterface::IS_REQUIRED => true,
-            ParameterInterface::IS_ENCRYPTED => true
-        ],
-        'password' => [
-            ParameterInterface::IS_REQUIRED => true,
-            ParameterInterface::VALIDATOR => ParameterValidator::PARAMETER_TYPE_STRING
-        ]
-    ];
-
     /**
-     * @return ResponseInterface
+     * @param Auth $auth
+     * @param Path $path
+     * @param EncryptedParameter $userId
+     * @param string $password
+     * @return int
      * @throws Exception
      */
-    public function generateData(): ResponseInterface
+    public function get(
+        Auth $auth,
+        Path $path,
+        EncryptedParameter $userId,
+        string $password,
+    ): int
     {
-        if ($this->auth->getAuthenticationTable()->authenticateById($this->userId) === null) {
-            $this->services->logger()->error()->log(
-                AuthErrorEvents::INVALID_EMAIL_OR_PASSWORD()
-            )->throw();
+        if ($auth->getAuthenticationTable()->authenticateById($userId->getValue()) === null) {
+            throw new RuntimeException('Invalid email or password', 401);
         }
 
-        $this->auth->getAuthenticationTable()->updatePassword($this->userId, $this->password);
+        $auth->getAuthenticationTable()->updatePassword($userId->getValue(), $password);
 
-        $this->auth->setUserId($this->userId);
+        $auth->setUserId($userId->getValue());
 
         $this->document->meta->add(
             'redirection',
-            $this->services->paths()->getUrl() . 'auth'
+            $path->getUrl() . 'auth'
         );
 
-        return $this->generateResponse($this->document, ResponseInterface::HTTP_STATUS_200);
+        return 200;
     }
 }

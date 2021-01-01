@@ -1,42 +1,41 @@
 <?php
 namespace CarloNicora\Minimalism\Services\Auth\Factories;
 
-use CarloNicora\Minimalism\Core\Services\Factories\ServicesFactory;
+use CarloNicora\Minimalism\Interfaces\EncrypterInterface;
 use CarloNicora\Minimalism\Services\Auth\Auth;
 use CarloNicora\Minimalism\Services\Auth\Data\Databases\OAuth\Tables\CodesTable;
-use CarloNicora\Minimalism\Services\Auth\Events\AuthErrorEvents;
-use CarloNicora\Minimalism\Services\Encrypter\Encrypter;
+use CarloNicora\Minimalism\Services\Mailer\Mailer;
 use CarloNicora\Minimalism\Services\MySQL\Exceptions\DbRecordNotFoundException;
 use CarloNicora\Minimalism\Services\MySQL\MySQL;
+use CarloNicora\Minimalism\Services\Path;
 use Exception;
+use JetBrains\PhpStorm\ArrayShape;
+use RuntimeException;
 
 class CodeFactory
 {
-    /** @var ServicesFactory  */
-    private ServicesFactory $services;
-
-    /** @var Auth  */
-    private Auth $auth;
-
     /** @var CodesTable  */
     private CodesTable $codes;
 
     /**
      * CodeFactory constructor.
-     * @param ServicesFactory $services
+     * @param Auth $auth
+     * @param MySQL $mysql
+     * @param EncrypterInterface $encrypter
+     * @param Path $path
+     * @param Mailer $mailer
      * @throws Exception
      */
-    public function __construct(ServicesFactory $services)
+    public function __construct(
+        private Auth $auth,
+        private MySQL $mysql,
+        private EncrypterInterface $encrypter,
+        private Path $path,
+        private Mailer $mailer,
+    )
     {
-        $this->services = $services;
-
-        $this->auth = $services->service(Auth::class);
-
-        /** @var MySQL $mysql */
-        $mysql = $this->services->service(MySQL::class);
-
         /** @noinspection PhpFieldAssignmentTypeMismatchInspection */
-        $this->codes = $mysql->create(CodesTable::class);
+        $this->codes = $this->mysql->create(CodesTable::class);
     }
 
     /**
@@ -44,14 +43,15 @@ class CodeFactory
      * @return array
      * @throws Exception
      */
-    private function generateCode(array $user): array
+    #[ArrayShape(['userId' => "mixed", 'code' => "int", 'expirationTime' => "false|string"])] private function
+    generateCode(array $user): array
     {
         $this->codes->purgeExpired();
         $this->codes->purgeUserId($user['userId']);
 
         try {
             $actualCode = random_int(100000, 999999);
-        } catch (Exception $exception) {
+        } catch (Exception) {
             /** @noinspection RandomApiMigrationInspection */
             $actualCode = rand(100000, 999999);
         }
@@ -99,10 +99,8 @@ class CodeFactory
             $codeRecord = $this->codes->userIdCode($user['userId'], $code);
 
             $this->codes->delete($codeRecord);
-        } catch (DbRecordNotFoundException $e) {
-            $this->services->logger()->error()->log(
-                AuthErrorEvents::AUTH_CODE_EXPIRED()
-            )->throw();
+        } catch (DbRecordNotFoundException) {
+            throw new RuntimeException('The authorization code is incorrect or expired', 412);
         }
     }
 
@@ -113,23 +111,23 @@ class CodeFactory
      */
     private function sendAccessCode(array $user, string $code): void
     {
-        /** @var Encrypter $encrypter */
-        $encrypter = $this->services->service(Encrypter::class);
-
         $data = [];
         $data['title'] = $this->auth->getCodeEmailTitle();
         $data['previewText'] = $this->auth->getCodeEmailTitle();
         $data['username'] = $user['username'];
         $data['code'] = $code;
-        $data['loginUrl'] = $this->services->paths()->getUrl()
+        $data['loginUrl'] = $this->path->getUrl()
             . 'login/'
             . 'docodelogin/'
-            . $encrypter->encryptId($user['userId']) . '/'
+            . $this->encrypter->encryptId($user['userId']) . '/'
             . $code . '/'
             . $this->auth->getClientId() . '/'
             . $this->auth->getState();
 
-        $emailFactory = new EmailFactory($this->services);
+        $emailFactory = new EmailFactory(
+            path: $this->path,
+            mailer: $this->mailer,
+        );
         $emailFactory->sendEmail(
             'Emails/Logincode.twig',
             $this->auth->getCodeEmailTitle(),
@@ -148,22 +146,24 @@ class CodeFactory
      */
     private function sendForgotCode(array $user, string $code): void
     {
-        /** @var Encrypter $encrypter */
-        $encrypter = $this->services->service(Encrypter::class);
-
         $data = [];
         $data['title'] = $this->auth->getForgotEmailTitle();
         $data['previewText'] = $this->auth->getForgotEmailTitle();
         $data['username'] = $user['username'];
         $data['code'] = $code;
-        $data['resetUrl'] = $this->services->paths()->getUrl()
+        $data['resetUrl'] = $this->path->getUrl()
             . 'change/'
-            . $encrypter->encryptId($user['userId']) . '/'
+            . $this->encrypter->encryptId($user['userId']) . '/'
             . $code . '/'
             . $this->auth->getClientId() . '/'
             . $this->auth->getState();
 
-        $emailFactory = new EmailFactory($this->services);
+
+
+        $emailFactory = new EmailFactory(
+            path: $this->path,
+            mailer: $this->mailer,
+        );
         $emailFactory->sendEmail(
             'Emails/Forgot.twig',
             $this->auth->getForgotEmailTitle(),
