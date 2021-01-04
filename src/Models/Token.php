@@ -1,6 +1,7 @@
 <?php
 namespace CarloNicora\Minimalism\Services\Auth\Models;
 
+use CarloNicora\JsonApi\Document;
 use CarloNicora\Minimalism\Services\Auth\Abstracts\AbstractAuthWebModel;
 use CarloNicora\Minimalism\Services\Auth\Data\Databases\OAuth\Tables\AppsTables;
 use CarloNicora\Minimalism\Services\Auth\Data\Databases\OAuth\Tables\AuthsTable;
@@ -15,25 +16,18 @@ class Token extends AbstractAuthWebModel
 {
     /**
      * @param MySQL $mysql
-     * @param string $grantType
-     * @param string|null $code
-     * @param string $client_id
+     * @param array $payload
      * @return int
-     * @throws JsonException|Exception
+     * @throws JsonException
+     * @throws Exception
      */
     public function post(
         MySQL $mysql,
-        string $grantType,
-        ?string $code,
-        string $client_id,
+        array $payload,
     ): int
     {
-        /** @noinspection NotOptimalIfConditionsInspection */
-        if (!(
-            strtolower($grantType) === 'authorization_code'
-            ||
-            strtolower($grantType) === 'client_credentials')
-        ){
+        $grantType = strtolower($payload['grant_type']);
+        if ($grantType !== 'authorization_code' && $grantType !== 'client_credentials'){
             throw new RuntimeException('grant_type not supported', 500);
         }
 
@@ -44,10 +38,10 @@ class Token extends AbstractAuthWebModel
             'token_type' => 'bearer'
         ];
 
-        if (strtolower($grantType) === 'authorization_code') {
+        if ($grantType === 'authorization_code') {
             /** @var AuthsTable $auths */
             $auths = $mysql->create(AuthsTable::class);
-            $auth = $auths->loadByCode($code);
+            $auth = $auths->loadByCode($payload['code']);
 
             if (new DateTime($auth['expiration']) < new DateTime()) {
                 throw new RuntimeException('The authorization code is incorrect or expired', 412);
@@ -63,7 +57,7 @@ class Token extends AbstractAuthWebModel
             /** @var AppsTables $apps */
             $apps = $mysql->create(AppsTables::class);
 
-            $app = $apps->getByClientId($client_id);
+            $app = $apps->getByClientId($payload['client_id']);
 
             $token = [
                 'appId' => $app['appId'],
@@ -78,6 +72,8 @@ class Token extends AbstractAuthWebModel
         $response['access_token'] = $token['token'];
 
         header("Access-Control-Allow-Origin: *");
+
+        $this->document = new Document();
 
         echo json_encode($response, JSON_THROW_ON_ERROR);
         return 201;
