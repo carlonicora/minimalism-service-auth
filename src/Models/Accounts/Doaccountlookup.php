@@ -20,25 +20,23 @@ class Doaccountlookup extends AbstractAuthWebModel
      * @param EncrypterInterface $encrypter
      * @param Path $path
      * @param Mailer $mailer
-     * @param PositionedEncryptedParameter $userId
+     * @param PositionedEncryptedParameter|null $userId
      * @param string|null $email
      * @param bool|null $create
-     * @param bool|null $overridePassword
      * @param bool|null $recoverPassword
      * @return int
      * @throws Exception
      */
-    public function get(
+    public function post(
         Auth $auth,
         MySQL $mysql,
         EncrypterInterface $encrypter,
         Path $path,
         Mailer $mailer,
-        PositionedEncryptedParameter $userId,
-        ?string $email,
-        ?bool $create,
-        ?bool $overridePassword,
-        ?bool $recoverPassword,
+        ?PositionedEncryptedParameter $userId=null,
+        ?string $email=null,
+        ?bool $create=false,
+        ?bool $recoverPassword=false,
     ): int
     {
         $codeFactory = new CodeFactory(
@@ -53,13 +51,84 @@ class Doaccountlookup extends AbstractAuthWebModel
 
         if ($auth->getUserId() !== null) {
             $user = $auth->getAuthenticationTable()->authenticateById($auth->getUserId());
-        } elseif ($create === false && $email !== null &&  ($user = $auth->getAuthenticationTable()->authenticateByEmail($email)) === null) {
+        } elseif ($create === false && $email !== null && ($user = $auth->getAuthenticationTable()->authenticateByEmail($email)) === null) {
             throw new RuntimeException('Could not find your account', 401);
         } elseif ($userId !== null &&  ($user = $auth->getAuthenticationTable()->authenticateById($userId->getValue())) === null) {
             throw new RuntimeException('Could not find your account', 401);
         } elseif ($create === true && ($user = $auth->getAuthenticationTable()->authenticateByEmail($email)) === null) {
             $user = $auth->getAuthenticationTable()->generateNewUser($email);
             $auth->setIsNewRegistration();
+        }
+
+        if ($recoverPassword){
+            $codeFactory->generateAndSendResetCode($user);
+
+            $this->document->meta->add(
+                'message',
+                'If your email is in our database, we have sent you a message to reset your password'
+            );
+        } else {
+            $redirection = null;
+
+            if (empty($user['password'])) {
+                $codeFactory->generateAndSendCode($user);
+
+                if ($create){
+                    $redirection = 'code/' . $encrypter->encryptId($user['userId']) . '/1';
+                } else {
+                    $redirection = 'code/' . $encrypter->encryptId($user['userId']);
+                }
+            } else {
+                $redirection = 'password/' . $encrypter->encryptId($user['userId']);
+            }
+
+            if ($redirection !== null) {
+                $this->document->meta->add(
+                    'redirection',
+                    $path->getUrl() . $redirection
+                );
+            }
+        }
+
+        return 200;
+    }
+    /**
+     * @param Auth $auth
+     * @param MySQL $mysql
+     * @param EncrypterInterface $encrypter
+     * @param Path $path
+     * @param Mailer $mailer
+     * @param PositionedEncryptedParameter|null $userId
+     * @param bool|null $overridePassword
+     * @param bool|null $recoverPassword
+     * @return int
+     * @throws Exception
+     */
+    public function get(
+        Auth $auth,
+        MySQL $mysql,
+        EncrypterInterface $encrypter,
+        Path $path,
+        Mailer $mailer,
+        ?PositionedEncryptedParameter $userId=null,
+        ?bool $overridePassword=false,
+        ?bool $recoverPassword=false,
+    ): int
+    {
+        $codeFactory = new CodeFactory(
+            auth: $auth,
+            mysql: $mysql,
+            encrypter: $encrypter,
+            path: $path,
+            mailer: $mailer,
+        );
+
+        $user = [];
+
+        if ($auth->getUserId() !== null) {
+            $user = $auth->getAuthenticationTable()->authenticateById($auth->getUserId());
+        } elseif ($userId !== null &&  ($user = $auth->getAuthenticationTable()->authenticateById($userId->getValue())) === null) {
+            throw new RuntimeException('Could not find your account', 401);
         }
 
         if ($recoverPassword){
@@ -81,8 +150,6 @@ class Doaccountlookup extends AbstractAuthWebModel
                         . $path->getUrl()
                         . 'code/' . $encrypter->encryptId($user['userId'])
                     );
-                } elseif ($create){
-                    $redirection = 'code/' . $encrypter->encryptId($user['userId']) . '/1';
                 } else {
                     $redirection = 'code/' . $encrypter->encryptId($user['userId']);
                 }

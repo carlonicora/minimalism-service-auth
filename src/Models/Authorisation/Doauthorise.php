@@ -14,7 +14,7 @@ class Doauthorise extends AbstractAuthWebModel
      * @return int
      * @throws DbRecordNotFoundException|Exception
      */
-    public function get(
+    public function post(
         Auth $auth,
     ): int
     {

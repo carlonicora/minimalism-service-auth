@@ -28,16 +28,16 @@ class AppsTables extends AbstractMySqlTable
     ];
 
     /**
-     * @param string $clientId
+     * @param string $client_id
      * @return array
      * @throws DbRecordNotFoundException
      * @throws Exception
      */
-    public function getByClientId(string $clientId): array
+    public function getByClientId(string $client_id): array
     {
         $this->sql = $this->query->SELECT()
             . ' WHERE clientId=?;';
-        $this->parameters = ['s', $clientId];
+        $this->parameters = ['s', $client_id];
 
         return $this->functions->runReadSingle();
     }

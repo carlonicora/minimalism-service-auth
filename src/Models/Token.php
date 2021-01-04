@@ -17,7 +17,7 @@ class Token extends AbstractAuthWebModel
      * @param MySQL $mysql
      * @param string $grantType
      * @param string|null $code
-     * @param string $clientId
+     * @param string $client_id
      * @return int
      * @throws JsonException|Exception
      */
@@ -25,7 +25,7 @@ class Token extends AbstractAuthWebModel
         MySQL $mysql,
         string $grantType,
         ?string $code,
-        string $clientId,
+        string $client_id,
     ): int
     {
         /** @noinspection NotOptimalIfConditionsInspection */
@@ -63,7 +63,7 @@ class Token extends AbstractAuthWebModel
             /** @var AppsTables $apps */
             $apps = $mysql->create(AppsTables::class);
 
-            $app = $apps->getByClientId($clientId);
+            $app = $apps->getByClientId($client_id);
 
             $token = [
                 'appId' => $app['appId'],

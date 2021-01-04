@@ -20,7 +20,7 @@ class Auth implements ServiceInterface, SecurityInterface
     protected ?array $headers = null;
 
     /** @var string|null  */
-    private ?string $clientId=null;
+    private ?string $client_id=null;
 
     /** @var string|null  */
     private ?string $state=null;
@@ -77,7 +77,7 @@ class Auth implements ServiceInterface, SecurityInterface
      */
     public function cleanData(): void 
     {
-        $this->clientId = null;
+        $this->client_id = null;
         $this->state = null;
         $this->userId = null;
         $this->isUser = false;
@@ -88,15 +88,15 @@ class Auth implements ServiceInterface, SecurityInterface
      */
     public function getClientId(): ?string
     {
-        return $this->clientId;
+        return $this->client_id;
     }
 
     /**
-     * @param string|null $clientId
+     * @param string|null $client_id
      */
-    public function setClientId(?string $clientId): void
+    public function setClientId(?string $client_id): void
     {
-        $this->clientId = $clientId;
+        $this->client_id = $client_id;
     }
 
     /**
@@ -195,7 +195,7 @@ class Auth implements ServiceInterface, SecurityInterface
     {
         /** @var AppsTables $apps */
         $apps = $this->mysql->create(AppsTables::class);
-        return $apps->getByClientId($this->clientId);
+        return $apps->getByClientId($this->client_id);
     }
 
     /**

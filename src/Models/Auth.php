@@ -18,7 +18,7 @@ class Auth extends AbstractAuthWebModel
      * @param \CarloNicora\Minimalism\Services\Auth\Auth $auth
      * @param Path $path
      * @param JsonApi $jsonApi
-     * @param string|null $clientId
+     * @param string|null $client_id
      * @param string|null $state
      * @return int
      * @throws Exception
@@ -27,12 +27,12 @@ class Auth extends AbstractAuthWebModel
         \CarloNicora\Minimalism\Services\Auth\Auth $auth,
         Path $path,
         JsonApi $jsonApi,
-        ?string $clientId,
-        ?string $state,
+        ?string $client_id=null,
+        ?string $state=null,
     ): int
     {
-        if ($clientId !== null) {
-            $auth->setClientId($clientId);
+        if ($client_id !== null) {
+            $auth->setClientId($client_id);
         }
 
         if ($state !== null) {

@@ -15,7 +15,7 @@ class Login extends AbstractAuthWebModel
     /**
      * @param \CarloNicora\Minimalism\Services\Auth\Auth $auth
      * @param Path $path
-     * @param string|null $clientId
+     * @param string|null $client_id
      * @param string|null $state
      * @return int
      * @throws Exception
@@ -23,12 +23,12 @@ class Login extends AbstractAuthWebModel
     public function get(
         \CarloNicora\Minimalism\Services\Auth\Auth $auth,
         Path $path,
-        ?string $clientId,
+        ?string $client_id,
         ?string $state,
     ): int
     {
-        if ($clientId !== null) {
-            $auth->setClientId($clientId);
+        if ($client_id !== null) {
+            $auth->setClientId($client_id);
         }
 
         if ($state !== null) {
