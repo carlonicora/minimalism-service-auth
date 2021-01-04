@@ -18,7 +18,7 @@ class Dopasswordreset extends AbstractAuthWebModel
      * @return int
      * @throws Exception
      */
-    public function get(
+    public function post(
         Auth $auth,
         Path $path,
         EncryptedParameter $userId,
