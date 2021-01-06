@@ -41,13 +41,13 @@ class Auth implements ServiceInterface, SecurityInterface
         private MySQL $mysql,
         private string $MINIMALISM_SERVICE_AUTH_SENDER_NAME,
         private string $MINIMALISM_SERVICE_AUTH_SENDER_EMAIL,
-        private ?string $MINIMALISM_SERVICE_AUTH_CODE_EMAIL_TITLE,
-        private ?string $MINIMALISM_SERVICE_AUTH_FORGOT_EMAIL_TITLE,
-        private ?string $MINIMALISM_SERVICE_AUTH_FACEBOOK_ID,
-        private ?string $MINIMALISM_SERVICE_AUTH_FACEBOOK_SECRET,
-        private ?string $MINIMALISM_SERVICE_AUTH_GOOGLE_IDENTITY_FILE,
-        private ?string $MINIMALISM_SERVICE_AUTH_APPLE_CLIENT_ID,
-        private ?string $MINIMALISM_SERVICE_AUTH_APPLE_CLIENT_SECRET,
+        private ?string $MINIMALISM_SERVICE_AUTH_CODE_EMAIL_TITLE='',
+        private ?string $MINIMALISM_SERVICE_AUTH_FORGOT_EMAIL_TITLE='',
+        private ?string $MINIMALISM_SERVICE_AUTH_FACEBOOK_ID=null,
+        private ?string $MINIMALISM_SERVICE_AUTH_FACEBOOK_SECRET=null,
+        private ?string $MINIMALISM_SERVICE_AUTH_GOOGLE_IDENTITY_FILE=null,
+        private ?string $MINIMALISM_SERVICE_AUTH_APPLE_CLIENT_ID=null,
+        private ?string $MINIMALISM_SERVICE_AUTH_APPLE_CLIENT_SECRET=null,
     ) {
     }
 
@@ -225,7 +225,11 @@ class Auth implements ServiceInterface, SecurityInterface
      * @return bool
      * @throws Exception
      */
-    public function isSignatureValid(string $verb, string $uri, array $body = null): bool
+    public function isSignatureValid(
+        string $verb, 
+        string $uri, 
+        array $body = null
+    ): bool
     {
         $bearer = $this->getHeader('Authorization');
 
