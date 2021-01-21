@@ -1,13 +1,12 @@
 <?php
 namespace CarloNicora\Minimalism\Services\Auth\Models;
 
-use CarloNicora\Minimalism\Core\Modules\Interfaces\ResponseInterface;
+use CarloNicora\JsonApi\Document;
 use CarloNicora\Minimalism\Services\Auth\Abstracts\AbstractAuthWebModel;
 use CarloNicora\Minimalism\Services\Auth\Data\Databases\OAuth\Tables\AppsTables;
 use CarloNicora\Minimalism\Services\Auth\Data\Databases\OAuth\Tables\AuthsTable;
 use CarloNicora\Minimalism\Services\Auth\Data\Databases\OAuth\Tables\TokensTable;
-use CarloNicora\Minimalism\Services\Auth\Events\AuthErrorEvents;
-use CarloNicora\Minimalism\Services\ParameterValidator\ParameterValidator;
+use CarloNicora\Minimalism\Services\MySQL\MySQL;
 use DateTime;
 use Exception;
 use JsonException;
@@ -15,34 +14,20 @@ use RuntimeException;
 
 class Token extends AbstractAuthWebModel
 {
-    /** @var string|null  */
-    protected ?string $grantType=null;
-
-    /** @var string|null  */
-    protected ?string $code=null;
-
-    /** @var string|null  */
-    protected ?string $clientId=null;
-
-    /** @var array  */
-    protected array $parameters = [
-        'grant_type' => ['name' => 'grantType', 'required' => true, 'validator' => ParameterValidator::PARAMETER_TYPE_STRING],
-        'code' => ['required' => false, 'validator' => ParameterValidator::PARAMETER_TYPE_STRING],
-        'client_id' => ['name' => 'clientId', 'required' => true, 'validator' => ParameterValidator::PARAMETER_TYPE_STRING]
-    ];
-
     /**
-     * @return ResponseInterface
-     * @throws JsonException|Exception
+     * @param MySQL $mysql
+     * @param array $payload
+     * @return int
+     * @throws JsonException
+     * @throws Exception
      */
-    public function generateData(): ResponseInterface
+    public function post(
+        MySQL $mysql,
+        array $payload,
+    ): int
     {
-        /** @noinspection NotOptimalIfConditionsInspection */
-        if (!(
-            strtolower($this->grantType) === 'authorization_code'
-            ||
-            strtolower($this->grantType) === 'client_credentials')
-        ){
+        $grantType = strtolower($payload['grant_type']);
+        if ($grantType !== 'authorization_code' && $grantType !== 'client_credentials'){
             throw new RuntimeException('grant_type not supported', 500);
         }
 
@@ -53,15 +38,13 @@ class Token extends AbstractAuthWebModel
             'token_type' => 'bearer'
         ];
 
-        if (strtolower($this->grantType) === 'authorization_code') {
+        if ($grantType === 'authorization_code') {
             /** @var AuthsTable $auths */
-            $auths = $this->mysql->create(AuthsTable::class);
-            $auth = $auths->loadByCode($this->code);
+            $auths = $mysql->create(AuthsTable::class);
+            $auth = $auths->loadByCode($payload['code']);
 
             if (new DateTime($auth['expiration']) < new DateTime()) {
-                $this->services->logger()->error()->log(
-                    AuthErrorEvents::AUTH_CODE_EXPIRED()
-                )->throw();
+                throw new RuntimeException('The authorization code is incorrect or expired', 412);
             }
 
             $token = [
@@ -72,9 +55,9 @@ class Token extends AbstractAuthWebModel
             ];
         } else {
             /** @var AppsTables $apps */
-            $apps = $this->mysql->create(AppsTables::class);
+            $apps = $mysql->create(AppsTables::class);
 
-            $app = $apps->getByClientId($this->clientId);
+            $app = $apps->getByClientId($payload['client_id']);
 
             $token = [
                 'appId' => $app['appId'],
@@ -84,13 +67,15 @@ class Token extends AbstractAuthWebModel
             ];
         }
 
-        $this->mysql->create(TokensTable::class)->update($token);
+        $mysql->create(TokensTable::class)->update($token);
 
         $response['access_token'] = $token['token'];
 
         header("Access-Control-Allow-Origin: *");
 
+        $this->document = new Document();
+
         echo json_encode($response, JSON_THROW_ON_ERROR);
-        exit;
+        return 201;
     }
 }

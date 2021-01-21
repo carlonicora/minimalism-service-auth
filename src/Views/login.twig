@@ -26,8 +26,7 @@
                 error: function (XMLHttpRequest, textStatus, errorThrown) {
                 },
                 success: function (result) {
-                    var response = JSON.parse(result);
-                    window.location.replace(response.meta.redirection);
+                    window.location.replace(result.meta.redirection);
                 }
             });
         });

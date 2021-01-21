@@ -2,90 +2,75 @@
 namespace CarloNicora\Minimalism\Services\Auth\Models;
 
 use CarloNicora\JsonApi\Objects\Link;
-use CarloNicora\Minimalism\Core\Modules\Interfaces\ResponseInterface;
 use CarloNicora\Minimalism\Services\Auth\Abstracts\AbstractAuthWebModel;
 use CarloNicora\Minimalism\Services\Auth\Data\Builders\App;
-use CarloNicora\Minimalism\Services\ParameterValidator\Interfaces\ParameterInterface;
-use CarloNicora\Minimalism\Services\ParameterValidator\ParameterValidator;
+use CarloNicora\Minimalism\Services\JsonApi\JsonApi;
+use CarloNicora\Minimalism\Services\Path;
 use Exception;
 use RuntimeException;
 
 class Auth extends AbstractAuthWebModel
 {
-    /** @var string  */
-    protected string $viewName = 'auth';
-
     /** @var string|null  */
-    protected ?string $clientId=null;
-
-    /** @var string|null  */
-    protected ?string $state=null;
-
-    /** @var array|array[]  */
-    protected array $parameters = [
-        'client_id' => [
-            ParameterInterface::NAME => 'clientId',
-            ParameterInterface::VALIDATOR => ParameterValidator::PARAMETER_TYPE_STRING
-        ],
-        'state' => [
-            ParameterInterface::VALIDATOR => ParameterValidator::PARAMETER_TYPE_STRING
-        ]
-    ];
+    protected ?string $view = 'auth';
 
     /**
-     * @param array $passedParameters
-     * @param array|null $file
+     * @param \CarloNicora\Minimalism\Services\Auth\Auth $auth
+     * @param Path $path
+     * @param JsonApi $jsonApi
+     * @param string|null $client_id
+     * @param string|null $state
+     * @return int
      * @throws Exception
      */
-    public function initialise(array $passedParameters, array $file = null): void
+    public function get(
+        \CarloNicora\Minimalism\Services\Auth\Auth $auth,
+        Path $path,
+        JsonApi $jsonApi,
+        ?string $client_id=null,
+        ?string $state=null,
+    ): int
     {
-        parent::initialise($passedParameters, $file);
-
-        if ($this->clientId !== null) {
-            $this->auth->setClientId($this->clientId);
+        if ($client_id !== null) {
+            $auth->setClientId($client_id);
         }
 
-        if ($this->state !== null) {
-            $this->auth->setState($this->state);
+        if ($state !== null) {
+            $auth->setState($state);
         }
 
-        if ($this->auth->getClientId() === null) {
+        if ($auth->getClientId() === null) {
             throw new RuntimeException('client_id missing', 412);
         }
 
-        if ($this->auth->getUserId() === null){
-            $this->redirectPage = 'Login';
+        if ($auth->getUserId() === null){
+            $this->redirection = Login::class;
+            $this->redirectionParameters = null;
+            return 302;
         }
-    }
 
-    /**
-     * @return ResponseInterface
-     * @throws Exception
-     */
-    public function generateData(): ResponseInterface
-    {
-        $app = $this->auth->getAppByClientId();
+        $app = $auth->getAppByClientId();
 
         if (!$app['isActive']) {
             throw new RuntimeException('application is not active', 412);
         }
 
         if ($app['isTrusted']) {
-            $auth = $this->auth->generateAuth($app['appId']);
-            $redirection = $this->auth->generateRedirection($app, $auth);
+            $authorisation = $auth->generateAuth($app['appId']);
+            $redirection = $auth->generateRedirection($app, $authorisation);
 
-            $this->auth->cleanData();
+            $auth->cleanData();
 
             header('Location: ' . $redirection);
             exit;
         }
 
         $this->document->links->add(
-            new Link('authorise', $this->services->paths()->getUrl() . 'Authorisation/Doauthorise')
+            new Link('authorise', $path->getUrl() . 'Authorisation/Doauthorise')
         );
 
         $this->document->addResourceList(
-            $this->mapper->generateResourceObjectByFieldValue(
+            $jsonApi->generateResourceObjectByFieldValue(
                 App::class,
                 null,
                 App::attributeId(),
@@ -94,6 +79,6 @@ class Auth extends AbstractAuthWebModel
             )
         );
 
-        return $this->generateResponse($this->document, ResponseInterface::HTTP_STATUS_200);
+        return 200;
     }
 }

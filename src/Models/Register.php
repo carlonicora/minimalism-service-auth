@@ -2,91 +2,73 @@
 namespace CarloNicora\Minimalism\Services\Auth\Models;
 
 use CarloNicora\JsonApi\Objects\Link;
-use CarloNicora\Minimalism\Core\Modules\Interfaces\ResponseInterface;
 use CarloNicora\Minimalism\Services\Auth\Abstracts\AbstractAuthWebModel;
 use CarloNicora\Minimalism\Services\Auth\Factories\ThirdPartyLoginFactory;
-use CarloNicora\Minimalism\Services\ParameterValidator\ParameterValidator;
+use CarloNicora\Minimalism\Services\Path;
 use Exception;
 
 class Register extends AbstractAuthWebModel
 {
-    /** @var string  */
-    protected string $viewName = 'register';
-
     /** @var string|null  */
-    protected ?string $clientId=null;
-
-    /** @var string|null  */
-    protected ?string $state=null;
-
-    /** @var string|null  */
-    protected ?string $errorMessage=null;
-
-    /** @var array|array[]  */
-    protected array $parameters = [
-        'client_id' => [
-            'name' => 'clientId',
-            'validator' => ParameterValidator::PARAMETER_TYPE_STRING
-        ],
-        'state' => [
-            'validator' => ParameterValidator::PARAMETER_TYPE_STRING
-        ],
-        'errorMessage' => [
-            'name' => 'errorMessage'
-        ]
-    ];
+    protected ?string $view = 'register';
 
     /**
-     * @param array $passedParameters
-     * @param array|null $file
+     * @param \CarloNicora\Minimalism\Services\Auth\Auth $auth
+     * @param Path $path
+     * @param string|null $client_id
+     * @param string|null $state
+     * @param string|null $errorMessage
+     * @return int
      * @throws Exception
      */
-    public function initialise(array $passedParameters, array $file = null): void
+    public function get(
+        \CarloNicora\Minimalism\Services\Auth\Auth $auth,
+        Path $path,
+        ?string $client_id,
+        ?string $state,
+        ?string $errorMessage,
+    ): int
     {
-        parent::initialise($passedParameters, $file);
-
-        if ($this->clientId !== null) {
-            $this->auth->setClientId($this->clientId);
+        if ($client_id !== null) {
+            $auth->setClientId($client_id);
         }
 
-        if ($this->state !== null) {
-            $this->auth->setState($this->state);
+        if ($state !== null) {
+            $auth->setState($state);
         }
 
-        if ($this->auth->getUserId() !== null){
-            $this->redirectPage = 'auth';
+        if ($auth->getUserId() !== null){
+            $this->redirection = Auth::class;
+            $this->redirectionParameters = [];
+            return 302;
         }
-    }
 
-    /**
-     * @return ResponseInterface
-     * @throws Exception
-     */
-    public function generateData(): ResponseInterface
-    {
         $this->document->links->add(
-            new Link('doRegister', $this->services->paths()->getUrl() . 'Accounts/Doaccountlookup')
+            new Link('doRegister', $path->getUrl() . 'Accounts/Doaccountlookup')
         );
 
         try {
-            $app = $this->auth->getAppByClientId();
+            $app = $auth->getAppByClientId();
             $this->document->links->add(
                 new Link('doCancel', $app['url'])
             );
-        } catch (Exception $e) {
+        } catch (Exception) {
         }
 
-        if ($this->errorMessage !== null){
+        if ($errorMessage !== null){
             $this->document->meta->add(
-                'errorMessage', $this->errorMessage
+                'errorMessage', $errorMessage
             );
         }
 
-        $thirdPartyLogins = new ThirdPartyLoginFactory($this->services);
+        $thirdPartyLogins = new ThirdPartyLoginFactory(
+            auth: $auth,
+            path: $path,
+        );
         $thirdPartyLogins->Facebook($this->document);
         $thirdPartyLogins->Google($this->document);
         $thirdPartyLogins->Apple($this->document);
 
-        return $this->generateResponse($this->document, ResponseInterface::HTTP_STATUS_200);
+        return 200;
     }
 }

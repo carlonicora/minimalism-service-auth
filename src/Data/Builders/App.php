@@ -1,11 +1,11 @@
 <?php
 namespace CarloNicora\Minimalism\Services\Auth\Data\Builders;
 
+use CarloNicora\Minimalism\Interfaces\CacheBuilderFactoryInterface;
 use CarloNicora\Minimalism\Services\Auth\Data\Databases\OAuth\Tables\AppScopesTable;
 use CarloNicora\Minimalism\Services\Auth\Data\Databases\OAuth\Tables\AppsTables;
-use CarloNicora\Minimalism\Services\JsonDataMapper\Builders\Abstracts\AbstractResourceBuilder;
-use CarloNicora\Minimalism\Services\JsonDataMapper\Builders\Interfaces\RelationshipTypeInterface;
-use CarloNicora\Minimalism\Services\ParameterValidator\ParameterValidator;
+use CarloNicora\Minimalism\Services\JsonApi\Builders\Abstracts\AbstractResourceBuilder;
+use CarloNicora\Minimalism\Services\JsonApi\Builders\Interfaces\RelationshipTypeInterface;
 use Exception;
 
 class App extends AbstractResourceBuilder
@@ -24,19 +24,15 @@ class App extends AbstractResourceBuilder
         $this->generateAttribute('id')
             ->setDatabaseFieldName('appId')
             ->setIsEncrypted(true)
-            ->setIsRequired(true)
-            ->setType(ParameterValidator::PARAMETER_TYPE_INT);
+            ->setIsRequired(true);
 
-        $this->generateAttribute('name')
-            ->setType(ParameterValidator::PARAMETER_TYPE_STRING);
+        $this->generateAttribute('name');
     }
 
     /**
      *
      */
-    protected function setLinks(): void
-    {
-    }
+    protected function setLinks(): void {}
 
     /**
      * @throws Exception
@@ -56,4 +52,9 @@ class App extends AbstractResourceBuilder
             )
         );
     }
+
+    /**
+     * @param CacheBuilderFactoryInterface $cacheFactory
+     */
+    public function setCacheFactoryInterface(CacheBuilderFactoryInterface $cacheFactory): void {}
 }

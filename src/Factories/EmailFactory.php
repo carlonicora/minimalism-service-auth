@@ -1,25 +1,23 @@
 <?php
 namespace CarloNicora\Minimalism\Services\Auth\Factories;
 
-use CarloNicora\Minimalism\Core\Services\Factories\ServicesFactory;
-use CarloNicora\Minimalism\Services\Mailer\Interfaces\MailerServiceInterface;
 use CarloNicora\Minimalism\Services\Mailer\Mailer;
 use CarloNicora\Minimalism\Services\Mailer\Objects\Email;
+use CarloNicora\Minimalism\Services\Path;
 use Exception;
 
 class EmailFactory
 {
-    /** @var ServicesFactory  */
-    private ServicesFactory $services;
-
     /**
-     * CodeFactory constructor.
-     * @param ServicesFactory $services
-     * @throws Exception
+     * EmailFactory constructor.
+     * @param Path $path
+     * @param Mailer $mailer
      */
-    public function __construct(ServicesFactory $services)
+    public function __construct(
+        private Path $path,
+        private Mailer $mailer,
+    )
     {
-        $this->services = $services;
     }
 
     /**
@@ -43,17 +41,15 @@ class EmailFactory
     ): void
     {
         $paths = [];
-        $defaultDirectory = $this->services->paths()->getRoot() . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'Views';
+        $defaultDirectory = $this->path->getRoot() . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'Views';
         if (file_exists($defaultDirectory)){
             $paths[] = $defaultDirectory;
         }
 
-        foreach ($this->services->paths()->getServicesViewsDirectories() as $additionalPaths) {
+        foreach ($this->path->getServicesViewsDirectories() as $additionalPaths) {
             $paths[] = $additionalPaths;
         }
 
-        /** @var MailerServiceInterface $mailer */
-        $mailer = $this->services->service(Mailer::class);
         $email = new Email(
             $title,
             $paths
@@ -62,7 +58,7 @@ class EmailFactory
 
         $email->addTemplateFile($template);
         $email->addParameters($data);
-        $mailer->setSender($senderEmail, $senderName);
-        $mailer->send($email);
+        $this->mailer->setSender($senderEmail, $senderName);
+        $this->mailer->send($email);
     }
 }

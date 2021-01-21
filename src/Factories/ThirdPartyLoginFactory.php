@@ -3,29 +3,24 @@ namespace CarloNicora\Minimalism\Services\Auth\Factories;
 
 use CarloNicora\JsonApi\Document;
 use CarloNicora\JsonApi\Objects\Link;
-use CarloNicora\Minimalism\Core\Services\Factories\ServicesFactory;
 use CarloNicora\Minimalism\Services\Auth\Auth;
+use CarloNicora\Minimalism\Services\Path;
 use Exception;
 use Facebook\Facebook;
 use Google_Client;
 
 class ThirdPartyLoginFactory
 {
-    /** @var ServicesFactory  */
-    private ServicesFactory $services;
-
-    /** @var Auth  */
-    protected Auth $auth;
-
     /**
      * ThirdPartyLoginFactory constructor.
-     * @param ServicesFactory $services
-     * @throws Exception
+     * @param Auth $auth
+     * @param Path $path
      */
-    public function __construct(ServicesFactory $services)
+    public function __construct(
+        private Auth $auth,
+        private Path $path,
+    )
     {
-        $this->services = $services;
-        $this->auth = $this->services->service(Auth::class);
     }
 
     public function Facebook(Document $document): void
@@ -39,13 +34,13 @@ class ThirdPartyLoginFactory
                 ]);
                 $helper = $fb->getRedirectLoginHelper();
                 $permissions = ['email'];
-                $loginUrl = $helper->getLoginUrl($this->services->paths()->getUrl() . 'facebook', $permissions);
+                $loginUrl = $helper->getLoginUrl($this->path->getUrl() . 'facebook', $permissions);
 
                 $document->links->add(
                     new Link('facebook', $loginUrl)
                 );
             }
-        } catch (Exception $e){}
+        } catch (Exception){}
     }
 
     public function Google(Document $document): void
@@ -53,8 +48,8 @@ class ThirdPartyLoginFactory
         try {
             if ($this->auth->getGoogleIdentityFile() !== null) {
                 $client = new Google_Client();
-                $client->setAuthConfig($this->services->paths()->getRoot() . DIRECTORY_SEPARATOR . $this->auth->getGoogleIdentityFile());
-                $client->setRedirectUri($this->services->paths()->getUrl() . 'google');
+                $client->setAuthConfig($this->path->getRoot() . DIRECTORY_SEPARATOR . $this->auth->getGoogleIdentityFile());
+                $client->setRedirectUri($this->path->getUrl() . 'google');
                 $client->addScope('email');
                 $client->addScope('profile');
                 $authUrl = $client->createAuthUrl();
@@ -63,7 +58,7 @@ class ThirdPartyLoginFactory
                     new Link('google', $authUrl)
                 );
             }
-        } catch (Exception $e){}
+        } catch (Exception){}
     }
 
     public function Apple(Document $document): void
@@ -76,7 +71,7 @@ class ThirdPartyLoginFactory
                         'response_type' => 'code',
                         'response_mode' => 'form_post',
                         'client_id' => $this->auth->getAppleClientId(),
-                        'redirect_uri' => $this->services->paths()->getUrl() . 'apple',
+                        'redirect_uri' => $this->path->getUrl() . 'apple',
                         'state' => $_SESSION['state'],
                         'scope' => 'email',
                     ]);
@@ -86,6 +81,6 @@ class ThirdPartyLoginFactory
                 );
             }
         }
-        catch (Exception $e){}
+        catch (Exception){}
     }
 }

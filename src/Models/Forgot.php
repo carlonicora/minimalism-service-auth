@@ -2,25 +2,28 @@
 namespace CarloNicora\Minimalism\Services\Auth\Models;
 
 use CarloNicora\JsonApi\Objects\Link;
-use CarloNicora\Minimalism\Core\Modules\Interfaces\ResponseInterface;
 use CarloNicora\Minimalism\Services\Auth\Abstracts\AbstractAuthWebModel;
+use CarloNicora\Minimalism\Services\Path;
 use Exception;
 
 class Forgot extends AbstractAuthWebModel
 {
-    /** @var string  */
-    protected string $viewName = 'forgot';
+    /** @var string|null  */
+    protected ?string $view = 'forgot';
 
     /**
-     * @return ResponseInterface
+     * @param Path $path
+     * @return int
      * @throws Exception
      */
-    public function generateData(): ResponseInterface
+    public function get(
+        Path $path,
+    ): int
     {
         $this->document->links->add(
-            new Link('doResend', $this->services->paths()->getUrl() . 'Accounts/Doaccountlookup')
+            new Link('doResend', $path->getUrl() . 'Accounts/Doaccountlookup')
         );
 
-        return $this->generateResponse($this->document, ResponseInterface::HTTP_STATUS_200);
+        return 200;
     }
 }

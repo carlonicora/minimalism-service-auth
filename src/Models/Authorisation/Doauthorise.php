@@ -1,38 +1,40 @@
 <?php
 namespace CarloNicora\Minimalism\Services\Auth\Models\Authorisation;
 
-use CarloNicora\Minimalism\Core\Modules\Interfaces\ResponseInterface;
 use CarloNicora\Minimalism\Services\Auth\Abstracts\AbstractAuthWebModel;
+use CarloNicora\Minimalism\Services\Auth\Auth;
 use CarloNicora\Minimalism\Services\MySQL\Exceptions\DbRecordNotFoundException;
-use CarloNicora\Minimalism\Services\MySQL\Exceptions\DbSqlException;
 use Exception;
 use RuntimeException;
 
 class Doauthorise extends AbstractAuthWebModel
 {
     /**
-     * @return ResponseInterface
-     * @throws DbRecordNotFoundException|DbSqlException|Exception
+     * @param Auth $auth
+     * @return int
+     * @throws DbRecordNotFoundException|Exception
      */
-    public function generateData(): ResponseInterface
+    public function post(
+        Auth $auth,
+    ): int
     {
-        if ($this->auth->getClientId() === null) {
+        if ($auth->getClientId() === null) {
             throw new RuntimeException('client_id missing', 412);
         }
 
-        $app = $this->auth->getAppByClientId();
+        $app = $auth->getAppByClientId();
 
         if (!$app['isActive']) {
             throw new RuntimeException('application is not active', 412);
         }
 
-        $auth = $this->auth->generateAuth($app['appId']);
-        $redirection = $this->auth->generateRedirection($app, $auth);
+        $newAuth = $auth->generateAuth($app['appId']);
+        $redirection = $auth->generateRedirection($app, $newAuth);
 
         $this->document->meta->add('redirection', $redirection);
 
-        $this->auth->cleanData();
+        $auth->cleanData();
 
-        return $this->generateResponse($this->document, ResponseInterface::HTTP_STATUS_200);
+        return 200;
     }
 }

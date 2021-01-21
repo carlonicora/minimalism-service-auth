@@ -1,11 +1,11 @@
 <?php
 namespace CarloNicora\Minimalism\Services\Auth\Data\Databases\OAuth\Tables;
 
-use CarloNicora\Minimalism\Services\MySQL\Abstracts\AbstractTable;
-use CarloNicora\Minimalism\Services\MySQL\Exceptions\DbSqlException;
+use CarloNicora\Minimalism\Services\MySQL\Abstracts\AbstractMySqlTable;
 use CarloNicora\Minimalism\Services\MySQL\Interfaces\FieldInterface;
+use Exception;
 
-class ScopesTable extends AbstractTable
+class ScopesTable extends AbstractMySqlTable
 {
     /** @var string */
     protected string $tableName = 'scopes';
@@ -21,7 +21,7 @@ class ScopesTable extends AbstractTable
     /**
      * @param int $appId
      * @return array
-     * @throws DbSqlException
+     * @throws Exception
      */
     public function getApplicationScopes(int $appId): array
     {

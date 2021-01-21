@@ -1,12 +1,12 @@
 <?php
 namespace CarloNicora\Minimalism\Services\Auth\Data\Databases\OAuth\Tables;
 
-use CarloNicora\Minimalism\Services\MySQL\Abstracts\AbstractTable;
+use CarloNicora\Minimalism\Services\MySQL\Abstracts\AbstractMySqlTable;
 use CarloNicora\Minimalism\Services\MySQL\Exceptions\DbRecordNotFoundException;
-use CarloNicora\Minimalism\Services\MySQL\Exceptions\DbSqlException;
 use CarloNicora\Minimalism\Services\MySQL\Interfaces\FieldInterface;
+use Exception;
 
-class AppsTables extends AbstractTable
+class AppsTables extends AbstractMySqlTable
 {
     /** @var string */
     protected string $tableName = 'apps';
@@ -28,16 +28,16 @@ class AppsTables extends AbstractTable
     ];
 
     /**
-     * @param string $clientId
+     * @param string $client_id
      * @return array
      * @throws DbRecordNotFoundException
-     * @throws DbSqlException
+     * @throws Exception
      */
-    public function getByClientId(string $clientId): array
+    public function getByClientId(string $client_id): array
     {
         $this->sql = $this->query->SELECT()
             . ' WHERE clientId=?;';
-        $this->parameters = ['s', $clientId];
+        $this->parameters = ['s', $client_id];
 
         return $this->functions->runReadSingle();
     }

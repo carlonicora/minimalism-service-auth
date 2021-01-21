@@ -2,48 +2,41 @@
 namespace CarloNicora\Minimalism\Services\Auth\Models;
 
 use CarloNicora\JsonApi\Objects\Link;
-use CarloNicora\Minimalism\Core\Modules\Interfaces\ResponseInterface;
+use CarloNicora\Minimalism\Parameters\PositionedEncryptedParameter;
 use CarloNicora\Minimalism\Services\Auth\Abstracts\AbstractAuthWebModel;
-use CarloNicora\Minimalism\Services\ParameterValidator\Interfaces\ParameterInterface;
+use CarloNicora\Minimalism\Services\Path;
 use Exception;
 
 class Password extends AbstractAuthWebModel
 {
-    /** @var string  */
-    protected string $viewName = 'password';
-
-    /** @var int|null  */
-    protected ?int $userId=null;
-
-    /** @var array|array[]  */
-    protected array $parameters = [
-        0 => [
-            ParameterInterface::NAME => 'userId',
-            ParameterInterface::IS_ENCRYPTED => true,
-            ParameterInterface::IS_REQUIRED => true
-        ]
-    ];
+    /** @var string|null  */
+    protected ?string $view = 'password';
 
     /**
-     * @return ResponseInterface
+     * @param Path $path
+     * @param PositionedEncryptedParameter $userId
+     * @return int
      * @throws Exception
      */
-    public function generateData(): ResponseInterface
+    public function get(
+        Path $path,
+        PositionedEncryptedParameter $userId,
+    ): int
     {
-        $this->document->meta->add('userId', $this->encrypter->encryptId($this->userId));
+        $this->document->meta->add('userId', $userId->getEncryptedValue());
 
         $this->document->links->add(
-            new Link('doLogin', $this->services->paths()->getUrl() . 'Login/Dopasswordlogin')
+            new Link('doLogin', $path->getUrl() . 'Login/Dopasswordlogin')
         );
 
         $this->document->links->add(
-            new Link('doCodeLogin', $this->services->paths()->getUrl() . 'Accounts/Doaccountlookup/' . $this->encrypter->encryptId($this->userId) . '?overridePassword=true')
+            new Link('doCodeLogin', $path->getUrl() . 'Accounts/Doaccountlookup/' . $userId->getEncryptedValue() . '?overridePassword=true')
         );
 
         $this->document->links->add(
-            new Link('forgot', $this->services->paths()->getUrl() . 'forgot')
+            new Link('forgot', $path->getUrl() . 'forgot')
         );
 
-        return $this->generateResponse($this->document, ResponseInterface::HTTP_STATUS_200);
+        return 200;
     }
 }

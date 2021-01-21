@@ -1,32 +1,26 @@
 <?php
 namespace CarloNicora\Minimalism\Services\Auth;
 
-use CarloNicora\Minimalism\Core\Services\Abstracts\AbstractService;
-use CarloNicora\Minimalism\Core\Services\Factories\ServicesFactory;
-use CarloNicora\Minimalism\Core\Services\Interfaces\ServiceConfigurationsInterface;
-use CarloNicora\Minimalism\Core\Traits\HttpHeadersTrait;
 use CarloNicora\Minimalism\Interfaces\SecurityInterface;
-use CarloNicora\Minimalism\Services\Auth\Configurations\AuthConfigurations;
+use CarloNicora\Minimalism\Interfaces\ServiceInterface;
 use CarloNicora\Minimalism\Services\Auth\Data\Databases\OAuth\Tables\AppsTables;
 use CarloNicora\Minimalism\Services\Auth\Data\Databases\OAuth\Tables\AuthsTable;
 use CarloNicora\Minimalism\Services\Auth\Data\Databases\OAuth\Tables\TokensTable;
-use CarloNicora\Minimalism\Services\Auth\Events\AuthErrorEvents;
 use CarloNicora\Minimalism\Services\Auth\Interfaces\AuthenticationInterface;
 use CarloNicora\Minimalism\Services\MySQL\Exceptions\DbRecordNotFoundException;
-use CarloNicora\Minimalism\Services\MySQL\Exceptions\DbSqlException;
 use CarloNicora\Minimalism\Services\MySQL\MySQL;
 use Exception;
+use JetBrains\PhpStorm\ArrayShape;
+use JetBrains\PhpStorm\Pure;
 use RuntimeException;
 
-class Auth  extends AbstractService implements SecurityInterface
+class Auth implements ServiceInterface, SecurityInterface
 {
-    use HttpHeadersTrait;
-
-    /** @var AuthConfigurations  */
-    private AuthConfigurations $configData;
+    /** @var array|null */
+    protected ?array $headers = null;
 
     /** @var string|null  */
-    private ?string $clientId=null;
+    private ?string $client_id=null;
 
     /** @var string|null  */
     private ?string $state=null;
@@ -43,16 +37,18 @@ class Auth  extends AbstractService implements SecurityInterface
     /** @var AuthenticationInterface|null  */
     private ?AuthenticationInterface $authInterfaceClass=null;
 
-    /**
-     * abstractApiCaller constructor.
-     * @param ServiceConfigurationsInterface $configData
-     * @param ServicesFactory $services
-     */
-    public function __construct(ServiceConfigurationsInterface $configData, ServicesFactory $services) {
-        parent::__construct($configData, $services);
-
-        /** @noinspection PhpFieldAssignmentTypeMismatchInspection */
-        $this->configData = $configData;
+    public function __construct(
+        private MySQL $mysql,
+        private string $MINIMALISM_SERVICE_AUTH_SENDER_NAME,
+        private string $MINIMALISM_SERVICE_AUTH_SENDER_EMAIL,
+        private ?string $MINIMALISM_SERVICE_AUTH_CODE_EMAIL_TITLE='',
+        private ?string $MINIMALISM_SERVICE_AUTH_FORGOT_EMAIL_TITLE='',
+        private ?string $MINIMALISM_SERVICE_AUTH_FACEBOOK_ID=null,
+        private ?string $MINIMALISM_SERVICE_AUTH_FACEBOOK_SECRET=null,
+        private ?string $MINIMALISM_SERVICE_AUTH_GOOGLE_IDENTITY_FILE=null,
+        private ?string $MINIMALISM_SERVICE_AUTH_APPLE_CLIENT_ID=null,
+        private ?string $MINIMALISM_SERVICE_AUTH_APPLE_CLIENT_SECRET=null,
+    ) {
     }
 
     /**
@@ -70,9 +66,7 @@ class Auth  extends AbstractService implements SecurityInterface
     public function getAuthenticationTable(): AuthenticationInterface
     {
         if ($this->authInterfaceClass === null){
-            $this->services->logger()->error()->log(
-                AuthErrorEvents::AUTH_INTERFACE_NOT_CONFIGURED()
-            )->throw();
+            throw new RuntimeException('The authorization interface is not configured', 500);
         }
 
         return $this->authInterfaceClass;
@@ -83,7 +77,7 @@ class Auth  extends AbstractService implements SecurityInterface
      */
     public function cleanData(): void 
     {
-        $this->clientId = null;
+        $this->client_id = null;
         $this->state = null;
         $this->userId = null;
         $this->isUser = false;
@@ -94,15 +88,15 @@ class Auth  extends AbstractService implements SecurityInterface
      */
     public function getClientId(): ?string
     {
-        return $this->clientId;
+        return $this->client_id;
     }
 
     /**
-     * @param string|null $clientId
+     * @param string|null $client_id
      */
-    public function setClientId(?string $clientId): void
+    public function setClientId(?string $client_id): void
     {
-        $this->clientId = $clientId;
+        $this->client_id = $client_id;
     }
 
     /**
@@ -156,8 +150,9 @@ class Auth  extends AbstractService implements SecurityInterface
     /**
      * @param int $appId
      * @return array
-     * @throws DbSqlException|Exception
+     * @throws Exception|Exception
      */
+    #[ArrayShape(['appId' => "int", 'userId' => "int|null", 'code' => "string", 'expiration' => "false|string"])]
     public function generateAuth(int $appId): array
     {
         $response = [
@@ -167,9 +162,7 @@ class Auth  extends AbstractService implements SecurityInterface
             'expiration' => date('Y-m-d H:i:s', time() + 30)
         ];
 
-        /** @var MySQL $mysql */
-        $mysql = $this->services->service(MySQL::class);
-        $auths = $mysql->create(AuthsTable::class);
+        $auths = $this->mysql->create(AuthsTable::class);
 
         $auths->update($response);
 
@@ -181,11 +174,11 @@ class Auth  extends AbstractService implements SecurityInterface
      * @param array $auth
      * @return string
      */
-    public function generateRedirection(array $app, array $auth): string
+    #[Pure] public function generateRedirection(array $app, array $auth): string
     {
         $response = $app['url'];
 
-        $join = (strpos($response, '?') !== false) ? '&' : '?';
+        $join = (str_contains($response, '?')) ? '&' : '?';
         $response .= $join
             . 'code=' . $auth['code']
             . '&state=' . $this->state
@@ -196,36 +189,31 @@ class Auth  extends AbstractService implements SecurityInterface
 
     /**
      * @return array
-     * @throws DbSqlException
      * @throws DbRecordNotFoundException|Exception
      */
     public function getAppByClientId(): array
     {
-        /** @var MySQL $mysql */
-        $mysql = $this->services->service(MySQL::class);
         /** @var AppsTables $apps */
-        $apps = $mysql->create(AppsTables::class);
-        return $apps->getByClientId($this->clientId);
+        $apps = $this->mysql->create(AppsTables::class);
+        return $apps->getByClientId($this->client_id);
     }
 
     /**
      * @param string $token
      * @param bool $isUser
-     * @return int
+     * @return int|null
      * @throws Exception
      */
     public function validateToken(string $token, bool &$isUser): ?int
     {
-        /** @var MySQL $mysql */
-        $mysql = $this->services->service(MySQL::class);
         /** @var TokensTable $tokens */
-        $tokens = $mysql->create(TokensTable::class);
+        $tokens = $this->mysql->create(TokensTable::class);
 
         try {
             $tokenArray = $tokens->loadByToken($token);
             $isUser = $tokenArray['isUser'];
             return $tokenArray['userId'];
-        } catch (DbRecordNotFoundException|DbSqlException $e) {
+        } catch (DbRecordNotFoundException|Exception) {
             throw new RuntimeException('token not found', 401);
         }
     }
@@ -237,7 +225,11 @@ class Auth  extends AbstractService implements SecurityInterface
      * @return bool
      * @throws Exception
      */
-    public function isSignatureValid(string $verb, string $uri, array $body = null): bool
+    public function isSignatureValid(
+        string $verb, 
+        string $uri, 
+        array $body = null
+    ): bool
     {
         $bearer = $this->getHeader('Authorization');
 
@@ -269,7 +261,7 @@ class Auth  extends AbstractService implements SecurityInterface
      */
     public function getSenderName(): string
     {
-        return $this->configData->getSenderName();
+        return $this->MINIMALISM_SERVICE_AUTH_SENDER_NAME;
     }
 
     /**
@@ -277,7 +269,7 @@ class Auth  extends AbstractService implements SecurityInterface
      */
     public function getSenderEmail(): string
     {
-        return $this->configData->getSenderEmail();
+        return $this->MINIMALISM_SERVICE_AUTH_SENDER_EMAIL;
     }
 
     /**
@@ -285,7 +277,7 @@ class Auth  extends AbstractService implements SecurityInterface
      */
     public function getCodeEmailTitle(): string
     {
-        return $this->configData->getCodeEmailTitle();
+        return $this->MINIMALISM_SERVICE_AUTH_CODE_EMAIL_TITLE;
     }
 
     /**
@@ -293,7 +285,7 @@ class Auth  extends AbstractService implements SecurityInterface
      */
     public function getForgotEmailTitle(): string
     {
-        return $this->configData->getForgotEmailTitle();
+        return $this->MINIMALISM_SERVICE_AUTH_FORGOT_EMAIL_TITLE;
     }
 
     /**
@@ -309,7 +301,7 @@ class Auth  extends AbstractService implements SecurityInterface
      */
     public function getFacebookId(): ?string
     {
-        return $this->configData->getFacebookId();
+        return $this->MINIMALISM_SERVICE_AUTH_FACEBOOK_ID;
     }
 
     /**
@@ -317,7 +309,7 @@ class Auth  extends AbstractService implements SecurityInterface
      */
     public function getFacebookSecret(): ?string
     {
-        return $this->configData->getFacebookSecret();
+        return $this->MINIMALISM_SERVICE_AUTH_FACEBOOK_SECRET;
     }
 
     /**
@@ -325,7 +317,7 @@ class Auth  extends AbstractService implements SecurityInterface
      */
     public function getGoogleIdentityFile(): ?string
     {
-        return $this->configData->getGoogleIdentityFile();
+        return $this->MINIMALISM_SERVICE_AUTH_GOOGLE_IDENTITY_FILE;
     }
 
     /**
@@ -333,7 +325,7 @@ class Auth  extends AbstractService implements SecurityInterface
      */
     public function getAppleClientId(): ?string
     {
-        return $this->configData->getAppleClientId();
+        return $this->MINIMALISM_SERVICE_AUTH_APPLE_CLIENT_ID;
     }
 
     /**
@@ -341,6 +333,45 @@ class Auth  extends AbstractService implements SecurityInterface
      */
     public function getAppleClientSecret(): ?string
     {
-        return $this->configData->getAppleClientSecret();
+        return $this->MINIMALISM_SERVICE_AUTH_APPLE_CLIENT_SECRET;
     }
+
+    /**
+     * @param string $headerName
+     * @return string|null
+     */
+    public function getHeader(string $headerName): ?string
+    {
+        $this->headers = getallheaders();
+
+        return $this->headers[$headerName] ?? null;
+    }
+
+    /**
+     *
+     */
+    public function initialise(): void {}
+
+    /**
+     *
+     */
+    public function destroy(): void {}
 }
+
+// @codeCoverageIgnoreStart
+if (!function_exists('getallheaders'))
+{
+    // @codeCoverageIgnoreEnd
+    function getallheaders(): array
+    {
+        $headers = [];
+        foreach ($_SERVER ?? [] as $name => $value) {
+            if (str_starts_with($name, 'HTTP_')) {
+                $headers[str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))))] = $value;
+            }
+        }
+        return $headers;
+    }
+    // @codeCoverageIgnoreStart
+}
+// @codeCoverageIgnoreEnd

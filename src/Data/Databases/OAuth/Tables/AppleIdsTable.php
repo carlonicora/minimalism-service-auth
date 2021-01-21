@@ -1,12 +1,12 @@
 <?php
 namespace CarloNicora\Minimalism\Services\Auth\Data\Databases\OAuth\Tables;
 
-use CarloNicora\Minimalism\Services\MySQL\Abstracts\AbstractTable;
+use CarloNicora\Minimalism\Services\MySQL\Abstracts\AbstractMySqlTable;
 use CarloNicora\Minimalism\Services\MySQL\Exceptions\DbRecordNotFoundException;
-use CarloNicora\Minimalism\Services\MySQL\Exceptions\DbSqlException;
 use CarloNicora\Minimalism\Services\MySQL\Interfaces\FieldInterface;
+use Exception;
 
-class AppleIdsTable extends AbstractTable
+class AppleIdsTable extends AbstractMySqlTable
 {
     /** @var string */
     protected string $tableName = 'appleIds';
@@ -22,7 +22,7 @@ class AppleIdsTable extends AbstractTable
      * @param string $appleId
      * @return array
      * @throws DbRecordNotFoundException
-     * @throws DbSqlException
+     * @throws Exception
      */
     public function loadByAppleId(string $appleId): array
     {
