@@ -1,13 +1,13 @@
 <?php
 namespace CarloNicora\Minimalism\Services\Auth;
 
+use CarloNicora\Minimalism\Exceptions\RecordNotFoundException;
 use CarloNicora\Minimalism\Interfaces\SecurityInterface;
 use CarloNicora\Minimalism\Interfaces\ServiceInterface;
 use CarloNicora\Minimalism\Services\Auth\Data\Databases\OAuth\Tables\AppsTables;
 use CarloNicora\Minimalism\Services\Auth\Data\Databases\OAuth\Tables\AuthsTable;
 use CarloNicora\Minimalism\Services\Auth\Data\Databases\OAuth\Tables\TokensTable;
 use CarloNicora\Minimalism\Services\Auth\Interfaces\AuthenticationInterface;
-use CarloNicora\Minimalism\Services\MySQL\Exceptions\DbRecordNotFoundException;
 use CarloNicora\Minimalism\Services\MySQL\MySQL;
 use Exception;
 use JetBrains\PhpStorm\ArrayShape;
@@ -189,7 +189,7 @@ class Auth implements ServiceInterface, SecurityInterface
 
     /**
      * @return array
-     * @throws DbRecordNotFoundException|Exception
+     * @throws RecordNotFoundException|Exception
      */
     public function getAppByClientId(): array
     {
@@ -213,7 +213,7 @@ class Auth implements ServiceInterface, SecurityInterface
             $tokenArray = $tokens->loadByToken($token);
             $isUser = $tokenArray['isUser'];
             return $tokenArray['userId'];
-        } catch (DbRecordNotFoundException|Exception) {
+        } catch (RecordNotFoundException|Exception) {
             throw new RuntimeException('token not found', 401);
         }
     }

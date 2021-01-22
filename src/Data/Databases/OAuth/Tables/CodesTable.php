@@ -2,7 +2,7 @@
 namespace CarloNicora\Minimalism\Services\Auth\Data\Databases\OAuth\Tables;
 
 use CarloNicora\Minimalism\Services\MySQL\Abstracts\AbstractMySqlTable;
-use CarloNicora\Minimalism\Services\MySQL\Exceptions\DbRecordNotFoundException;
+use CarloNicora\Minimalism\Exceptions\RecordNotFoundException;
 use CarloNicora\Minimalism\Services\MySQL\Interfaces\FieldInterface;
 use Exception;
 
@@ -54,7 +54,7 @@ class CodesTable extends AbstractMySqlTable
      * @param int $code
      * @return array
      * @throws Exception
-     * @throws DbRecordNotFoundException
+     * @throws RecordNotFoundException
      */
     public function userIdCode(int $userId, int $code): array
     {

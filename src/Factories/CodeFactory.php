@@ -5,7 +5,7 @@ use CarloNicora\Minimalism\Interfaces\EncrypterInterface;
 use CarloNicora\Minimalism\Services\Auth\Auth;
 use CarloNicora\Minimalism\Services\Auth\Data\Databases\OAuth\Tables\CodesTable;
 use CarloNicora\Minimalism\Services\Mailer\Mailer;
-use CarloNicora\Minimalism\Services\MySQL\Exceptions\DbRecordNotFoundException;
+use CarloNicora\Minimalism\Exceptions\RecordNotFoundException;
 use CarloNicora\Minimalism\Services\MySQL\MySQL;
 use CarloNicora\Minimalism\Services\Path;
 use Exception;
@@ -99,7 +99,7 @@ class CodeFactory
             $codeRecord = $this->codes->userIdCode($user['userId'], $code);
 
             $this->codes->delete($codeRecord);
-        } catch (DbRecordNotFoundException) {
+        } catch (RecordNotFoundException) {
             throw new RuntimeException('The authorization code is incorrect or expired', 412);
         }
     }

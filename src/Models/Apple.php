@@ -3,7 +3,7 @@ namespace CarloNicora\Minimalism\Services\Auth\Models;
 
 use CarloNicora\Minimalism\Services\Auth\Abstracts\AbstractAuthWebModel;
 use CarloNicora\Minimalism\Services\Auth\Data\Databases\OAuth\Tables\AppleIdsTable;
-use CarloNicora\Minimalism\Services\MySQL\Exceptions\DbRecordNotFoundException;
+use CarloNicora\Minimalism\Exceptions\RecordNotFoundException;
 use CarloNicora\Minimalism\Services\MySQL\MySQL;
 use CarloNicora\Minimalism\Services\Path;
 use Exception;
@@ -80,7 +80,7 @@ class Apple extends AbstractAuthWebModel
                     if ($user['isActive'] === false){
                         $auth->getAuthenticationTable()->activateUser($user);
                     }
-                } catch (DbRecordNotFoundException) {
+                } catch (RecordNotFoundException) {
                     header(
                         'location: '
                         . $path->getUrl()
@@ -103,7 +103,7 @@ class Apple extends AbstractAuthWebModel
 
                     try {
                         $appleIdsTable->loadByAppleId($claims['sub']);
-                    } catch (DbRecordNotFoundException) {
+                    } catch (RecordNotFoundException) {
                         $appleIdRecord = [
                             'appleId' => $claims['sub'],
                             'userId' => $user['userId']
