@@ -374,12 +374,30 @@ class Auth implements ServiceInterface, SecurityInterface
     /**
      *
      */
-    public function initialise(): void {}
+    public function initialise(): void {
+        $this->client_id=$_SESSION['client_id']??null;
+        $this->state=$_SESSION['state']??null;
+        $this->userId=$_SESSION['userId']??null;
+        $this->isUser=$_SESSION['isUser']??false;
+        $this->isNewRegistration=$_SESSION['isNewRegistration']??false;
+    }
 
     /**
      *
      */
-    public function destroy(): void {}
+    public function destroy(): void {
+        $_SESSION['userId'] = $this->userId;
+        $_SESSION['client_id'] = $this->client_id;
+        $_SESSION['state'] = $this->state;
+        $_SESSION['isUser'] = $this->isUser();
+        $_SESSION['isNewRegistration'] = $this->isNewRegistration();
+        
+        $this->client_id=null;
+        $this->state=null;
+        $this->userId=null;
+        $this->isUser=false;
+        $this->isNewRegistration=false;
+    }
 }
 
 // @codeCoverageIgnoreStart
