@@ -2,7 +2,7 @@
 namespace CarloNicora\Minimalism\Services\Auth\Data\Databases\OAuth\Tables;
 
 use CarloNicora\Minimalism\Services\MySQL\Abstracts\AbstractMySqlTable;
-use CarloNicora\Minimalism\Services\MySQL\Exceptions\DbRecordNotFoundException;
+use CarloNicora\Minimalism\Exceptions\RecordNotFoundException;
 use CarloNicora\Minimalism\Services\MySQL\Interfaces\FieldInterface;
 use Exception;
 
@@ -30,7 +30,7 @@ class AppsTables extends AbstractMySqlTable
     /**
      * @param string $client_id
      * @return array
-     * @throws DbRecordNotFoundException
+     * @throws RecordNotFoundException
      * @throws Exception
      */
     public function getByClientId(string $client_id): array

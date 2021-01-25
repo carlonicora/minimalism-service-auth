@@ -3,7 +3,7 @@ namespace CarloNicora\Minimalism\Services\Auth\Models\Authorisation;
 
 use CarloNicora\Minimalism\Services\Auth\Abstracts\AbstractAuthWebModel;
 use CarloNicora\Minimalism\Services\Auth\Auth;
-use CarloNicora\Minimalism\Services\MySQL\Exceptions\DbRecordNotFoundException;
+use CarloNicora\Minimalism\Exceptions\RecordNotFoundException;
 use Exception;
 use RuntimeException;
 
@@ -12,7 +12,7 @@ class Doauthorise extends AbstractAuthWebModel
     /**
      * @param Auth $auth
      * @return int
-     * @throws DbRecordNotFoundException|Exception
+     * @throws RecordNotFoundException|Exception
      */
     public function post(
         Auth $auth,

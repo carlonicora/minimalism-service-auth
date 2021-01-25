@@ -1,17 +1,15 @@
 <?php
 namespace CarloNicora\Minimalism\Services\Auth;
 
+use CarloNicora\Minimalism\Exceptions\RecordNotFoundException;
 use CarloNicora\Minimalism\Interfaces\SecurityInterface;
 use CarloNicora\Minimalism\Interfaces\ServiceInterface;
 use CarloNicora\Minimalism\Services\Auth\Data\Databases\OAuth\Tables\AppsTables;
 use CarloNicora\Minimalism\Services\Auth\Data\Databases\OAuth\Tables\AuthsTable;
 use CarloNicora\Minimalism\Services\Auth\Data\Databases\OAuth\Tables\TokensTable;
 use CarloNicora\Minimalism\Services\Auth\Interfaces\AuthenticationInterface;
-use CarloNicora\Minimalism\Services\MySQL\Exceptions\DbRecordNotFoundException;
 use CarloNicora\Minimalism\Services\MySQL\MySQL;
 use Exception;
-use JetBrains\PhpStorm\ArrayShape;
-use JetBrains\PhpStorm\Pure;
 use RuntimeException;
 
 class Auth implements ServiceInterface, SecurityInterface
@@ -37,6 +35,19 @@ class Auth implements ServiceInterface, SecurityInterface
     /** @var AuthenticationInterface|null  */
     private ?AuthenticationInterface $authInterfaceClass=null;
 
+    /**
+     * Auth constructor.
+     * @param MySQL $mysql
+     * @param string $MINIMALISM_SERVICE_AUTH_SENDER_NAME
+     * @param string $MINIMALISM_SERVICE_AUTH_SENDER_EMAIL
+     * @param string|null $MINIMALISM_SERVICE_AUTH_CODE_EMAIL_TITLE
+     * @param string|null $MINIMALISM_SERVICE_AUTH_FORGOT_EMAIL_TITLE
+     * @param string|null $MINIMALISM_SERVICE_AUTH_FACEBOOK_ID
+     * @param string|null $MINIMALISM_SERVICE_AUTH_FACEBOOK_SECRET
+     * @param string|null $MINIMALISM_SERVICE_AUTH_GOOGLE_IDENTITY_FILE
+     * @param string|null $MINIMALISM_SERVICE_AUTH_APPLE_CLIENT_ID
+     * @param string|null $MINIMALISM_SERVICE_AUTH_APPLE_CLIENT_SECRET
+     */
     public function __construct(
         private MySQL $mysql,
         private string $MINIMALISM_SERVICE_AUTH_SENDER_NAME,
@@ -75,7 +86,7 @@ class Auth implements ServiceInterface, SecurityInterface
     /**
      *
      */
-    public function cleanData(): void 
+    public function cleanData(): void
     {
         $this->client_id = null;
         $this->state = null;
@@ -152,7 +163,6 @@ class Auth implements ServiceInterface, SecurityInterface
      * @return array
      * @throws Exception|Exception
      */
-    #[ArrayShape(['appId' => "int", 'userId' => "int|null", 'code' => "string", 'expiration' => "false|string"])]
     public function generateAuth(int $appId): array
     {
         $response = [
@@ -174,7 +184,7 @@ class Auth implements ServiceInterface, SecurityInterface
      * @param array $auth
      * @return string
      */
-    #[Pure] public function generateRedirection(array $app, array $auth): string
+    public function generateRedirection(array $app, array $auth): string
     {
         $response = $app['url'];
 
@@ -189,7 +199,7 @@ class Auth implements ServiceInterface, SecurityInterface
 
     /**
      * @return array
-     * @throws DbRecordNotFoundException|Exception
+     * @throws RecordNotFoundException|Exception
      */
     public function getAppByClientId(): array
     {
@@ -213,9 +223,29 @@ class Auth implements ServiceInterface, SecurityInterface
             $tokenArray = $tokens->loadByToken($token);
             $isUser = $tokenArray['isUser'];
             return $tokenArray['userId'];
-        } catch (DbRecordNotFoundException|Exception) {
+        } catch (RecordNotFoundException|Exception) {
             throw new RuntimeException('token not found', 401);
         }
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getToken(): ?string
+    {
+        $bearer = $this->getHeader('Authorization');
+
+        if ($bearer === null){
+            return null;
+        }
+
+        [,$token] = explode(' ', $bearer);
+
+        if (empty($token)) {
+            return null;
+        }
+
+        return $token;
     }
 
     /**
@@ -226,20 +256,14 @@ class Auth implements ServiceInterface, SecurityInterface
      * @throws Exception
      */
     public function isSignatureValid(
-        string $verb, 
-        string $uri, 
+        string $verb,
+        string $uri,
         array $body = null
     ): bool
     {
-        $bearer = $this->getHeader('Authorization');
+        $token = $this->getToken();
 
-        if ($bearer === null){
-            return false;
-        }
-
-        [,$token] = explode(' ', $bearer);
-
-        if (empty($token)) {
+        if ($token === null){
             return false;
         }
 
@@ -350,12 +374,30 @@ class Auth implements ServiceInterface, SecurityInterface
     /**
      *
      */
-    public function initialise(): void {}
+    public function initialise(): void {
+        $this->client_id=$_SESSION['client_id']??null;
+        $this->state=$_SESSION['state']??null;
+        $this->userId=$_SESSION['userId']??null;
+        $this->isUser=$_SESSION['isUser']??false;
+        $this->isNewRegistration=$_SESSION['isNewRegistration']??false;
+    }
 
     /**
      *
      */
-    public function destroy(): void {}
+    public function destroy(): void {
+        $_SESSION['userId'] = $this->userId;
+        $_SESSION['client_id'] = $this->client_id;
+        $_SESSION['state'] = $this->state;
+        $_SESSION['isUser'] = $this->isUser();
+        $_SESSION['isNewRegistration'] = $this->isNewRegistration();
+        
+        $this->client_id=null;
+        $this->state=null;
+        $this->userId=null;
+        $this->isUser=false;
+        $this->isNewRegistration=false;
+    }
 }
 
 // @codeCoverageIgnoreStart
