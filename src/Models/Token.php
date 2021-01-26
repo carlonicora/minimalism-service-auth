@@ -1,15 +1,14 @@
 <?php
 namespace CarloNicora\Minimalism\Services\Auth\Models;
 
-use CarloNicora\JsonApi\Document;
 use CarloNicora\Minimalism\Services\Auth\Abstracts\AbstractAuthWebModel;
 use CarloNicora\Minimalism\Services\Auth\Data\Databases\OAuth\Tables\AppsTables;
 use CarloNicora\Minimalism\Services\Auth\Data\Databases\OAuth\Tables\AuthsTable;
 use CarloNicora\Minimalism\Services\Auth\Data\Databases\OAuth\Tables\TokensTable;
+use CarloNicora\Minimalism\Services\Auth\JsonApi\NonJsonApiDocument;
 use CarloNicora\Minimalism\Services\MySQL\MySQL;
 use DateTime;
 use Exception;
-use JsonException;
 use RuntimeException;
 
 class Token extends AbstractAuthWebModel
@@ -18,7 +17,6 @@ class Token extends AbstractAuthWebModel
      * @param MySQL $mysql
      * @param array $payload
      * @return int
-     * @throws JsonException
      * @throws Exception
      */
     public function post(
@@ -71,11 +69,12 @@ class Token extends AbstractAuthWebModel
 
         $response['access_token'] = $token['token'];
 
+        header('Content-Type: application/json');
         header("Access-Control-Allow-Origin: *");
 
-        $this->document = new Document();
+        $this->document = new NonJsonApiDocument();
+        $this->document->meta->add('output', $response);
 
-        echo json_encode($response, JSON_THROW_ON_ERROR);
         return 201;
     }
 }
