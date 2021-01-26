@@ -10,6 +10,8 @@ use CarloNicora\Minimalism\Services\Auth\Data\Databases\OAuth\Tables\TokensTable
 use CarloNicora\Minimalism\Services\Auth\Interfaces\AuthenticationInterface;
 use CarloNicora\Minimalism\Services\MySQL\MySQL;
 use Exception;
+use JetBrains\PhpStorm\ArrayShape;
+use JetBrains\PhpStorm\Pure;
 use RuntimeException;
 
 class Auth implements ServiceInterface, SecurityInterface
@@ -163,6 +165,7 @@ class Auth implements ServiceInterface, SecurityInterface
      * @return array
      * @throws Exception|Exception
      */
+    #[ArrayShape(['appId' => "int", 'userId' => "int|null", 'code' => "string", 'expiration' => "false|string"])]
     public function generateAuth(int $appId): array
     {
         $response = [
@@ -184,7 +187,7 @@ class Auth implements ServiceInterface, SecurityInterface
      * @param array $auth
      * @return string
      */
-    public function generateRedirection(array $app, array $auth): string
+    #[Pure] public function generateRedirection(array $app, array $auth): string
     {
         $response = $app['url'];
 
