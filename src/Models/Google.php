@@ -11,14 +11,14 @@ class Google extends AbstractAuthWebModel
     /**
      * @param \CarloNicora\Minimalism\Services\Auth\Auth $auth
      * @param Path $path
-     * @param string|null $googleCode
+     * @param string|null $code
      * @return int
      * @throws Exception
      */
     public function get(
         \CarloNicora\Minimalism\Services\Auth\Auth $auth,
         Path $path,
-        ?string $googleCode,
+        ?string $code,
     ): int
     {
         $client = new Google_Client();
@@ -27,7 +27,7 @@ class Google extends AbstractAuthWebModel
         $client->addScope('email');
         $client->addScope('profile');
 
-        $client->fetchAccessTokenWithAuthCode($googleCode);
+        $client->fetchAccessTokenWithAuthCode($code);
         $token_data = $client->verifyIdToken();
 
         if (!array_key_exists('email', $token_data)){
