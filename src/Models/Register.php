@@ -67,7 +67,10 @@ class Register extends AbstractAuthWebModel
         );
         $thirdPartyLogins->Facebook($this->document);
         $thirdPartyLogins->Google($this->document);
-        $thirdPartyLogins->Apple($this->document);
+        $thirdPartyLogins->Apple(
+            $auth,
+            $this->document
+        );
 
         return 200;
     }

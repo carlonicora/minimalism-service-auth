@@ -398,12 +398,6 @@ class Auth implements ServiceInterface, SecurityInterface
         $_SESSION['state'] = $this->state;
         $_SESSION['isUser'] = $this->isUser();
         $_SESSION['isNewRegistration'] = $this->isNewRegistration();
-        
-        $this->client_id=null;
-        $this->state=null;
-        $this->userId=null;
-        $this->isUser=false;
-        $this->isNewRegistration=false;
     }
 }
 

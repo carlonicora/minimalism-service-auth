@@ -61,18 +61,25 @@ class ThirdPartyLoginFactory
         } catch (Exception){}
     }
 
-    public function Apple(Document $document): void
+    /**
+     * @param Auth $auth
+     * @param Document $document
+     */
+    public function Apple(
+        Auth $auth,
+        Document $document
+    ): void
     {
         try {
             if ($this->auth->getAppleClientId() !== null && $this->auth->getAppleClientSecret() !== null) {
-                $_SESSION['state'] = bin2hex(random_bytes(5));
+                $auth->setState(bin2hex(random_bytes(5)));
 
                 $authUrl = 'https://appleid.apple.com/auth/authorize' . '?' . http_build_query([
                         'response_type' => 'code',
                         'response_mode' => 'form_post',
                         'client_id' => $this->auth->getAppleClientId(),
                         'redirect_uri' => $this->path->getUrl() . 'apple',
-                        'state' => $_SESSION['state'],
+                        'state' => $auth->getState(),
                         'scope' => 'email',
                     ]);
 

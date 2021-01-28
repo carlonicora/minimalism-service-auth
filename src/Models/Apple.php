@@ -27,7 +27,7 @@ class Apple extends AbstractAuthWebModel
         ?string $state,
     ): int
     {
-        if($_SESSION['state'] !== $state) {
+        if($auth->getState() !== $state) {
             die('Authorization server returned an invalid state parameter');
         }
 
