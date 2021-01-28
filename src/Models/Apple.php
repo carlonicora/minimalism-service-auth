@@ -19,7 +19,7 @@ class Apple extends AbstractAuthWebModel
      * @return int
      * @throws Exception
      */
-    public function get(
+    public function post(
         \CarloNicora\Minimalism\Services\Auth\Auth $auth,
         Path $path,
         MySQL $mysql,
