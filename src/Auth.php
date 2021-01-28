@@ -34,6 +34,9 @@ class Auth implements ServiceInterface, SecurityInterface
     /** @var bool  */
     private bool $isNewRegistration=false;
 
+    /** @var string|null  */
+    private ?string $appleState=null;
+
     /** @var AuthenticationInterface|null  */
     private ?AuthenticationInterface $authInterfaceClass=null;
 
@@ -126,6 +129,22 @@ class Auth implements ServiceInterface, SecurityInterface
     public function setState(?string $state): void
     {
         $this->state = $state;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getAppleState(): ?string
+    {
+        return $this->appleState;
+    }
+
+    /**
+     * @param string $appleState
+     */
+    public function setAppleState(string $appleState): void
+    {
+        $this->appleState = $appleState;
     }
 
     /**
@@ -381,6 +400,7 @@ class Auth implements ServiceInterface, SecurityInterface
         $this->client_id=$_SESSION['client_id']??null;
         $this->state=$_SESSION['state']??null;
         $this->userId=$_SESSION['userId']??null;
+        $this->appleState=$_SESSION['appleState']??null;
         $this->isUser=array_key_exists('isUser', $_SESSION)
             ? $_SESSION['isUser']
             : false;
@@ -396,6 +416,7 @@ class Auth implements ServiceInterface, SecurityInterface
         $_SESSION['userId'] = $this->userId;
         $_SESSION['client_id'] = $this->client_id;
         $_SESSION['state'] = $this->state;
+        $_SESSION['appleState'] = $this->appleState;
         $_SESSION['isUser'] = $this->isUser();
         $_SESSION['isNewRegistration'] = $this->isNewRegistration();
     }
