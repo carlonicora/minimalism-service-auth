@@ -41,6 +41,10 @@ class Token extends AbstractAuthWebModel
             $auths = $mysql->create(AuthsTable::class);
             $auth = $auths->loadByCode($payload['code']);
 
+            if ($auth === []){
+                throw new RuntimeException('Auth not found', 404);
+            }
+
             if (new DateTime($auth['expiration']) < new DateTime()) {
                 throw new RuntimeException('The authorization code is incorrect or expired', 412);
             }

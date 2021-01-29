@@ -51,6 +51,10 @@ class Auth extends AbstractAuthWebModel
 
         $app = $auth->getAppByClientId();
 
+        if ($app === []){
+            throw new RuntimeException('App not found', 404);
+        }
+
         if (!$app['isActive']) {
             throw new RuntimeException('application is not active', 412);
         }

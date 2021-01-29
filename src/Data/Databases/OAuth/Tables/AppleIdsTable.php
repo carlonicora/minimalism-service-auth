@@ -2,7 +2,6 @@
 namespace CarloNicora\Minimalism\Services\Auth\Data\Databases\OAuth\Tables;
 
 use CarloNicora\Minimalism\Services\MySQL\Abstracts\AbstractMySqlTable;
-use CarloNicora\Minimalism\Exceptions\RecordNotFoundException;
 use CarloNicora\Minimalism\Services\MySQL\Interfaces\FieldInterface;
 use Exception;
 
@@ -21,7 +20,6 @@ class AppleIdsTable extends AbstractMySqlTable
     /**
      * @param string $appleId
      * @return array
-     * @throws RecordNotFoundException
      * @throws Exception
      */
     public function loadByAppleId(string $appleId): array
@@ -30,6 +28,6 @@ class AppleIdsTable extends AbstractMySqlTable
             . ' WHERE appleId=?';
         $this->parameters = ['s', $appleId];
 
-        return $this->functions->runReadSingle();
+        return $this->functions->runRead();
     }
 }

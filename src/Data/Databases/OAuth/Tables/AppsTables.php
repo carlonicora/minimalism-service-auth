@@ -2,7 +2,6 @@
 namespace CarloNicora\Minimalism\Services\Auth\Data\Databases\OAuth\Tables;
 
 use CarloNicora\Minimalism\Services\MySQL\Abstracts\AbstractMySqlTable;
-use CarloNicora\Minimalism\Exceptions\RecordNotFoundException;
 use CarloNicora\Minimalism\Services\MySQL\Interfaces\FieldInterface;
 use Exception;
 
@@ -30,7 +29,6 @@ class AppsTables extends AbstractMySqlTable
     /**
      * @param string $client_id
      * @return array
-     * @throws RecordNotFoundException
      * @throws Exception
      */
     public function getByClientId(string $client_id): array
@@ -39,6 +37,6 @@ class AppsTables extends AbstractMySqlTable
             . ' WHERE clientId=?;';
         $this->parameters = ['s', $client_id];
 
-        return $this->functions->runReadSingle();
+        return $this->functions->runRead();
     }
 }

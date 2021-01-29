@@ -3,7 +3,6 @@ namespace CarloNicora\Minimalism\Services\Auth\Models;
 
 use CarloNicora\Minimalism\Services\Auth\Abstracts\AbstractAuthWebModel;
 use CarloNicora\Minimalism\Services\Auth\Data\Databases\OAuth\Tables\AppleIdsTable;
-use CarloNicora\Minimalism\Exceptions\RecordNotFoundException;
 use CarloNicora\Minimalism\Services\MySQL\MySQL;
 use CarloNicora\Minimalism\Services\Path;
 use Exception;
@@ -61,26 +60,9 @@ class Apple extends AbstractAuthWebModel
             $claims = json_decode(base64_decode($claims), true, 512, JSON_THROW_ON_ERROR);
 
             if (!array_key_exists('email', $claims)) {
-                try {
-                    $appleIdRecord = $appleIdsTable->loadByAppleId($claims['sub']);
+                $appleIdRecord = $appleIdsTable->loadByAppleId($claims['sub']);
 
-                    $user = $auth->getAuthenticationTable()->authenticateById($appleIdRecord['userId']);
-
-                    if ($user === null) {
-                        header(
-                            'location: '
-                            . $path->getUrl()
-                            . 'register?client_id=' . $auth->getClientId()
-                            . '&state=' . $auth->getState()
-                            . '&errorMessage=There has been an issue finding a user linked to your Apple account'
-                        );
-                        exit;
-                    }
-
-                    if ($user['isActive'] === false){
-                        $auth->getAuthenticationTable()->activateUser($user);
-                    }
-                } catch (RecordNotFoundException) {
+                if ($appleIdRecord === []){
                     header(
                         'location: '
                         . $path->getUrl()
@@ -89,6 +71,23 @@ class Apple extends AbstractAuthWebModel
                         . '&errorMessage=There has been an issue finding a user connected to your Apple account'
                     );
                     exit;
+                }
+
+                $user = $auth->getAuthenticationTable()->authenticateById($appleIdRecord['userId']);
+
+                if ($user === null) {
+                    header(
+                        'location: '
+                        . $path->getUrl()
+                        . 'register?client_id=' . $auth->getClientId()
+                        . '&state=' . $auth->getState()
+                        . '&errorMessage=There has been an issue finding a user linked to your Apple account'
+                    );
+                    exit;
+                }
+
+                if ($user['isActive'] === false){
+                    $auth->getAuthenticationTable()->activateUser($user);
                 }
             } else {
                 if (($user = $auth->getAuthenticationTable()->authenticateByEmail($claims['email'])) === null) {
@@ -101,9 +100,9 @@ class Apple extends AbstractAuthWebModel
                         $auth->getAuthenticationTable()->activateUser($user);
                     }
 
-                    try {
-                        $appleIdsTable->loadByAppleId($claims['sub']);
-                    } catch (RecordNotFoundException) {
+                    $appleIdRecord = $appleIdsTable->loadByAppleId($claims['sub']);
+
+                    if ($appleIdRecord === []){
                         $appleIdRecord = [
                             'appleId' => $claims['sub'],
                             'userId' => $user['userId']

@@ -2,7 +2,6 @@
 namespace CarloNicora\Minimalism\Services\Auth\Data\Databases\OAuth\Tables;
 
 use CarloNicora\Minimalism\Services\MySQL\Abstracts\AbstractMySqlTable;
-use CarloNicora\Minimalism\Exceptions\RecordNotFoundException;
 use CarloNicora\Minimalism\Services\MySQL\Interfaces\FieldInterface;
 use Exception;
 
@@ -25,7 +24,7 @@ class AuthsTable extends AbstractMySqlTable
     /**
      * @param string $code
      * @return array
-     * @throws Exception|RecordNotFoundException
+     * @throws Exception
      */
     public function loadByCode(string $code): array
     {
@@ -33,6 +32,6 @@ class AuthsTable extends AbstractMySqlTable
             . ' WHERE code=?;';
         $this->parameters = ['s', $code];
 
-        return $this->functions->runReadSingle();
+        return $this->functions->runRead();
     }
 }

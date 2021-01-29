@@ -3,7 +3,6 @@ namespace CarloNicora\Minimalism\Services\Auth\Models\Authorisation;
 
 use CarloNicora\Minimalism\Services\Auth\Abstracts\AbstractAuthWebModel;
 use CarloNicora\Minimalism\Services\Auth\Auth;
-use CarloNicora\Minimalism\Exceptions\RecordNotFoundException;
 use Exception;
 use RuntimeException;
 
@@ -12,7 +11,7 @@ class Doauthorise extends AbstractAuthWebModel
     /**
      * @param Auth $auth
      * @return int
-     * @throws RecordNotFoundException|Exception
+     * @throws Exception
      */
     public function post(
         Auth $auth,
@@ -23,6 +22,10 @@ class Doauthorise extends AbstractAuthWebModel
         }
 
         $app = $auth->getAppByClientId();
+
+        if ($app === []){
+            throw new RuntimeException('App not found', 404);
+        }
 
         if (!$app['isActive']) {
             throw new RuntimeException('application is not active', 412);

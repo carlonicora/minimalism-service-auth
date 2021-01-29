@@ -49,9 +49,12 @@ class Register extends AbstractAuthWebModel
 
         try {
             $app = $auth->getAppByClientId();
-            $this->document->links->add(
-                new Link('doCancel', $app['url'])
-            );
+
+            if ($app !== []) {
+                $this->document->links->add(
+                    new Link('doCancel', $app['url'])
+                );
+            }
         } catch (Exception) {
         }
 
