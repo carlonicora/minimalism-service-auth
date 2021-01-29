@@ -45,11 +45,11 @@ class Token extends AbstractAuthWebModel
                 throw new RuntimeException('Auth not found', 404);
             }
 
+            $auth = $auth[0];
+
             if (new DateTime($auth['expiration']) < new DateTime()) {
                 throw new RuntimeException('The authorization code is incorrect or expired', 412);
             }
-
-            $auth = $auth[0];
 
             $token = [
                 'appId' => $auth['appId'],
