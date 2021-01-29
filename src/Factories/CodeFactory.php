@@ -100,6 +100,8 @@ class CodeFactory
             throw new RuntimeException('The authorization code is incorrect or expired', 412);
         }
 
+        $codeRecord = $codeRecord[0];
+
         $this->codes->delete($codeRecord);
     }
 

@@ -245,6 +245,8 @@ class Auth implements ServiceInterface, SecurityInterface
         if ($tokenArray === []){
             throw new RuntimeException('token not found', 401);
         }
+        $tokenArray = $tokenArray[0];
+
         $isUser = $tokenArray['isUser'];
         return $tokenArray['userId'];
     }

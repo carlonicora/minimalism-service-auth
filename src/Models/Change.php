@@ -37,7 +37,7 @@ class Change extends AbstractAuthWebModel
 
             if ($app !== []) {
                 $this->document->links->add(
-                    new Link('doCancel', $app['url'])
+                    new Link('doCancel', $app[0]['url'])
                 );
             }
         } catch (Exception) {

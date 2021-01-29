@@ -27,6 +27,8 @@ class Doauthorise extends AbstractAuthWebModel
             throw new RuntimeException('App not found', 404);
         }
 
+        $app = $app[0];
+
         if (!$app['isActive']) {
             throw new RuntimeException('application is not active', 412);
         }

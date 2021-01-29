@@ -72,6 +72,7 @@ class Apple extends AbstractAuthWebModel
                     );
                     exit;
                 }
+                $appleIdRecord = $appleIdRecord[0];
 
                 $user = $auth->getAuthenticationTable()->authenticateById($appleIdRecord['userId']);
 
