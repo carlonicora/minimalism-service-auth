@@ -396,8 +396,14 @@ class Auth implements ServiceInterface, SecurityInterface
 
     /**
      *
+     * @throws Exception
      */
     public function initialise(): void {
+        if (empty($_SESSION['userId'])) {
+            $this->isSignatureValid('', '', []);
+            return ;
+        }
+
         $this->client_id=$_SESSION['client_id']??null;
         $this->state=$_SESSION['state']??null;
         $this->userId=$_SESSION['userId']??null;
