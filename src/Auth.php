@@ -1,7 +1,6 @@
 <?php
 namespace CarloNicora\Minimalism\Services\Auth;
 
-use CarloNicora\Minimalism\Exceptions\ForbiddenException;
 use CarloNicora\Minimalism\Interfaces\SecurityInterface;
 use CarloNicora\Minimalism\Interfaces\ServiceInterface;
 use CarloNicora\Minimalism\Services\Auth\Data\Databases\OAuth\Tables\AppsTables;
@@ -396,7 +395,7 @@ class Auth implements ServiceInterface, SecurityInterface
     }
 
     /**
-     * @throws Exception
+     *
      */
     public function initialise(): void {
         $this->client_id=$_SESSION['client_id']??null;
@@ -409,10 +408,6 @@ class Auth implements ServiceInterface, SecurityInterface
         $this->isNewRegistration=array_key_exists('isNewRegistration', $_SESSION)
             ? $_SESSION['isNewRegistration']
             : false;
-
-        if (empty($this->userId) && (false === $this->isSignatureValid('', '', []))) {
-            throw new ForbiddenException('anauthorised', 401);
-        }
     }
 
     /**
