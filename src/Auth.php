@@ -395,31 +395,35 @@ class Auth implements ServiceInterface, SecurityInterface
     }
 
     /**
-     *
+     * @throws Exception
      */
     public function initialise(): void {
-        $this->client_id=$_SESSION['client_id']??null;
-        $this->state=$_SESSION['state']??null;
-        $this->userId=$_SESSION['userId']??null;
-        $this->appleState=$_SESSION['appleState']??null;
-        $this->isUser=array_key_exists('isUser', $_SESSION)
-            ? $_SESSION['isUser']
-            : false;
-        $this->isNewRegistration=array_key_exists('isNewRegistration', $_SESSION)
-            ? $_SESSION['isNewRegistration']
-            : false;
+        if ($_SESSION !== null) {
+            $this->client_id = $_SESSION['client_id'] ?? null;
+            $this->state = $_SESSION['state'] ?? null;
+            $this->userId = $_SESSION['userId'] ?? null;
+            $this->appleState = $_SESSION['appleState'] ?? null;
+            $this->isUser = array_key_exists('isUser', $_SESSION)
+                ? $_SESSION['isUser']
+                : false;
+            $this->isNewRegistration = array_key_exists('isNewRegistration', $_SESSION)
+                ? $_SESSION['isNewRegistration']
+                : false;
+        }
     }
 
     /**
      *
      */
     public function destroy(): void {
-        $_SESSION['userId'] = $this->userId;
-        $_SESSION['client_id'] = $this->client_id;
-        $_SESSION['state'] = $this->state;
-        $_SESSION['appleState'] = $this->appleState;
-        $_SESSION['isUser'] = $this->isUser();
-        $_SESSION['isNewRegistration'] = $this->isNewRegistration();
+        if ($_SESSION !== null) {
+            $_SESSION['userId'] = $this->userId;
+            $_SESSION['client_id'] = $this->client_id;
+            $_SESSION['state'] = $this->state;
+            $_SESSION['appleState'] = $this->appleState;
+            $_SESSION['isUser'] = $this->isUser();
+            $_SESSION['isNewRegistration'] = $this->isNewRegistration();
+        }
     }
 }
 
