@@ -32,4 +32,22 @@ class ScopesTable extends AbstractMySqlTable
 
         return $this->functions->runRead();
     }
+
+    /**
+     * @param int $appId
+     * @return array
+     * @throws Exception
+     */
+    public function byAppId(
+        int $appId
+    ): array
+    {
+        $this->sql = 'SELECT *'
+            . ' FROM scopes'
+            . ' JOIN appScopes ON scopes.scopeId=appScopes.scopeId'
+            . ' WHERE appScopes.appId=?;';
+        $this->parameters = ['i', $appId];
+
+        return $this->functions->runRead();
+    }
 }

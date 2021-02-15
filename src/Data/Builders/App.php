@@ -1,11 +1,10 @@
 <?php
 namespace CarloNicora\Minimalism\Services\Auth\Data\Builders;
 
-use CarloNicora\Minimalism\Interfaces\CacheBuilderFactoryInterface;
-use CarloNicora\Minimalism\Services\Auth\Data\Databases\OAuth\Tables\AppScopesTable;
-use CarloNicora\Minimalism\Services\Auth\Data\Databases\OAuth\Tables\AppsTables;
-use CarloNicora\Minimalism\Services\JsonApi\Builders\Abstracts\AbstractResourceBuilder;
-use CarloNicora\Minimalism\Services\JsonApi\Builders\Interfaces\RelationshipTypeInterface;
+use CarloNicora\Minimalism\Objects\DataFunction;
+use CarloNicora\Minimalism\Services\Auth\Data\Databases\OAuth\Tables\ScopesTable;
+use CarloNicora\Minimalism\Services\Builder\Abstracts\AbstractResourceBuilder;
+use CarloNicora\Minimalism\Services\Builder\Objects\RelationshipBuilder;
 use Exception;
 
 class App extends AbstractResourceBuilder
@@ -13,48 +12,38 @@ class App extends AbstractResourceBuilder
     /** @var string  */
     public string $type = 'app';
 
-    /** @var string|null  */
-    public ?string $tableName = AppsTables::class;
-
     /**
-     *
-     */
-    protected function setAttributes(): void
-    {
-        $this->generateAttribute('id')
-            ->setDatabaseFieldName('appId')
-            ->setIsEncrypted(true)
-            ->setIsRequired(true);
-
-        $this->generateAttribute('name');
-    }
-
-    /**
-     *
-     */
-    protected function setLinks(): void {}
-
-    /**
+     * @param array $data
      * @throws Exception
      */
-    protected function setRelationships(): void
+    public function setAttributes(
+        array $data
+    ): void
     {
-        $this->addRelationship(
-            $this->relationshipBuilderInterfaceFactory->create(
-                RelationshipTypeInterface::MANY_TO_MANY,
-                'scopes'
-            )->withBuilder(
-                Scope::attributeId(),
-                'appId'
-            )->throughManyToManyTable(
-                AppScopesTable::class,
-                'scopeId'
-            )
-        );
+        $this->response->id = $this->encrypter->encryptId($data['appId']);
+
+        $this->response->attributes->add('name', $data['name']);
     }
 
     /**
-     * @param CacheBuilderFactoryInterface $cacheFactory
+     * @return array|null
      */
-    public function setCacheFactoryInterface(CacheBuilderFactoryInterface $cacheFactory): void {}
+    public function getRelationshipReaders(): ?array
+    {
+        $response = [];
+
+        /** @see ScopesTable::byAppId() */
+        $response[] = new RelationshipBuilder(
+            name: 'scopes',
+            builderClassName: Scope::class,
+            function: new DataFunction(
+                type: DataFunction::TYPE_TABLE,
+                className: ScopesTable::class,
+                functionName: 'byAppId',
+                parameters: ['appId']
+            )
+        );
+
+        return $response;
+    }
 }

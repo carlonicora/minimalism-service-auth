@@ -4,7 +4,7 @@ namespace CarloNicora\Minimalism\Services\Auth\Models;
 use CarloNicora\JsonApi\Objects\Link;
 use CarloNicora\Minimalism\Services\Auth\Abstracts\AbstractAuthWebModel;
 use CarloNicora\Minimalism\Services\Auth\Data\Builders\App;
-use CarloNicora\Minimalism\Services\JsonApi\JsonApi;
+use CarloNicora\Minimalism\Services\Builder\Builder;
 use CarloNicora\Minimalism\Services\Path;
 use Exception;
 use RuntimeException;
@@ -17,7 +17,7 @@ class Auth extends AbstractAuthWebModel
     /**
      * @param \CarloNicora\Minimalism\Services\Auth\Auth $auth
      * @param Path $path
-     * @param JsonApi $jsonApi
+     * @param Builder $builder
      * @param string|null $client_id
      * @param string|null $state
      * @return int
@@ -26,7 +26,7 @@ class Auth extends AbstractAuthWebModel
     public function get(
         \CarloNicora\Minimalism\Services\Auth\Auth $auth,
         Path $path,
-        JsonApi $jsonApi,
+        Builder $builder,
         ?string $client_id=null,
         ?string $state=null,
     ): int
@@ -76,12 +76,9 @@ class Auth extends AbstractAuthWebModel
         );
 
         $this->document->addResourceList(
-            $jsonApi->generateResourceObjectByFieldValue(
-                App::class,
-                null,
-                App::attributeId(),
-                $app['appId'],
-                true
+            $builder->buildByData(
+                resourceTransformerClass: App::class,
+                data: $app
             )
         );
 

@@ -1,43 +1,24 @@
 <?php
 namespace CarloNicora\Minimalism\Services\Auth\Data\Builders;
 
-use CarloNicora\Minimalism\Interfaces\CacheBuilderFactoryInterface;
-use CarloNicora\Minimalism\Services\Auth\Data\Databases\OAuth\Tables\ScopesTable;
-use CarloNicora\Minimalism\Services\JsonApi\Builders\Abstracts\AbstractResourceBuilder;
+use CarloNicora\Minimalism\Services\Builder\Abstracts\AbstractResourceBuilder;
+use Exception;
 
 class Scope extends AbstractResourceBuilder
 {
     /** @var string  */
     public string $type = 'scope';
 
-    /** @var string|null  */
-    public ?string $tableName = ScopesTable::class;
-
     /**
-     *
+     * @param array $data
+     * @throws Exception
      */
-    protected function setAttributes(): void
+    public function setAttributes(
+        array $data
+    ): void
     {
-        $this->generateAttribute('id')
-            ->setDatabaseFieldName('scopeId')
-            ->setIsEncrypted(true)
-            ->setIsRequired(true);
+        $this->response->id = $this->encrypter->encryptId($data['scopeId']);
 
-        $this->generateAttribute('name');
+        $this->response->attributes->add('name', $data['name']);
     }
-
-    /**
-     *
-     */
-    protected function setLinks(): void {}
-
-    /**
-     *
-     */
-    protected function setRelationships(): void {}
-
-    /**
-     * @param CacheBuilderFactoryInterface $cacheFactory
-     */
-    public function setCacheFactoryInterface(CacheBuilderFactoryInterface $cacheFactory): void {}
 }
