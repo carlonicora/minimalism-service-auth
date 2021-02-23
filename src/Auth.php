@@ -8,9 +8,13 @@ use CarloNicora\Minimalism\Services\Auth\Data\Databases\OAuth\Tables\AuthsTable;
 use CarloNicora\Minimalism\Services\Auth\Data\Databases\OAuth\Tables\TokensTable;
 use CarloNicora\Minimalism\Services\Auth\Interfaces\AuthenticationInterface;
 use CarloNicora\Minimalism\Services\MySQL\MySQL;
+use CarloNicora\Minimalism\Services\Path;
 use Exception;
-use JetBrains\PhpStorm\ArrayShape;
-use JetBrains\PhpStorm\Pure;
+use Jose\Component\Core\AlgorithmManager;
+use Jose\Component\KeyManagement\JWKFactory;
+use Jose\Component\Signature\Algorithm\ES256;
+use Jose\Component\Signature\JWSBuilder;
+use Jose\Component\Signature\Serializer\CompactSerializer;
 use RuntimeException;
 
 class Auth implements ServiceInterface, SecurityInterface
@@ -42,6 +46,7 @@ class Auth implements ServiceInterface, SecurityInterface
     /**
      * Auth constructor.
      * @param MySQL $mysql
+     * @param Path $path
      * @param string $MINIMALISM_SERVICE_AUTH_SENDER_NAME
      * @param string $MINIMALISM_SERVICE_AUTH_SENDER_EMAIL
      * @param string|null $MINIMALISM_SERVICE_AUTH_CODE_EMAIL_TITLE
@@ -50,10 +55,12 @@ class Auth implements ServiceInterface, SecurityInterface
      * @param string|null $MINIMALISM_SERVICE_AUTH_FACEBOOK_SECRET
      * @param string|null $MINIMALISM_SERVICE_AUTH_GOOGLE_IDENTITY_FILE
      * @param string|null $MINIMALISM_SERVICE_AUTH_APPLE_CLIENT_ID
-     * @param string|null $MINIMALISM_SERVICE_AUTH_APPLE_CLIENT_SECRET
+     * @param string|null $MINIMALISM_SERVICE_AUTH_APPLE_TEAM_ID
+     * @param string|null $MINIMALISM_SERVICE_AUTH_APPLE_KEYFILE_ID
      */
     public function __construct(
         private MySQL $mysql,
+        private Path $path,
         private string $MINIMALISM_SERVICE_AUTH_SENDER_NAME,
         private string $MINIMALISM_SERVICE_AUTH_SENDER_EMAIL,
         private ?string $MINIMALISM_SERVICE_AUTH_CODE_EMAIL_TITLE='',
@@ -62,7 +69,8 @@ class Auth implements ServiceInterface, SecurityInterface
         private ?string $MINIMALISM_SERVICE_AUTH_FACEBOOK_SECRET=null,
         private ?string $MINIMALISM_SERVICE_AUTH_GOOGLE_IDENTITY_FILE=null,
         private ?string $MINIMALISM_SERVICE_AUTH_APPLE_CLIENT_ID=null,
-        private ?string $MINIMALISM_SERVICE_AUTH_APPLE_CLIENT_SECRET=null,
+        private ?string $MINIMALISM_SERVICE_AUTH_APPLE_TEAM_ID=null,
+        private ?string $MINIMALISM_SERVICE_AUTH_APPLE_KEYFILE_ID=null,
     ) {
     }
 
@@ -183,7 +191,6 @@ class Auth implements ServiceInterface, SecurityInterface
      * @return array
      * @throws Exception|Exception
      */
-    #[ArrayShape(['appId' => "int", 'userId' => "int|null", 'code' => "string", 'expiration' => "false|string"])]
     public function generateAuth(int $appId): array
     {
         $response = [
@@ -205,7 +212,7 @@ class Auth implements ServiceInterface, SecurityInterface
      * @param array $auth
      * @return string
      */
-    #[Pure] public function generateRedirection(array $app, array $auth): string
+    public function generateRedirection(array $app, array $auth): string
     {
         $response = $app['url'];
 
@@ -380,7 +387,34 @@ class Auth implements ServiceInterface, SecurityInterface
      */
     public function getAppleClientSecret(): ?string
     {
-        return $this->MINIMALISM_SERVICE_AUTH_APPLE_CLIENT_SECRET;
+        $keyFileName = $this->path->getRoot()
+            . DIRECTORY_SEPARATOR
+            . 'AuthKey_' . $this->MINIMALISM_SERVICE_AUTH_APPLE_KEYFILE_ID . '.p8';
+
+        $algorithmManager = new AlgorithmManager([new ES256()]);
+
+        $jwsBuilder = new JWSBuilder($algorithmManager);
+        try {
+            $jws = $jwsBuilder
+                ->create()
+                ->withPayload(json_encode([
+                    'iat' => time(),
+                    'exp' => time() + 3600,
+                    'iss' => $this->MINIMALISM_SERVICE_AUTH_APPLE_TEAM_ID,
+                    'aud' => 'https://appleid.apple.com',
+                    'sub' => $this->MINIMALISM_SERVICE_AUTH_APPLE_CLIENT_ID
+                ], JSON_THROW_ON_ERROR))
+                ->addSignature(JWKFactory::createFromKeyFile($keyFileName), [
+                    'alg' => 'ES256',
+                    'kid' => $this->MINIMALISM_SERVICE_AUTH_APPLE_KEYFILE_ID
+                ])
+                ->build();
+        } catch (Exception) {
+            return '';
+        }
+
+        $serializer = new CompactSerializer();
+        return $serializer->serialize($jws, 0);
     }
 
     /**
