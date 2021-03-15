@@ -387,6 +387,10 @@ class Auth implements ServiceInterface, SecurityInterface
      */
     public function getAppleClientSecret(): ?string
     {
+        if (empty($this->MINIMALISM_SERVICE_AUTH_APPLE_KEYFILE_ID)) {
+            return null;
+        }
+
         $keyFileName = $this->path->getRoot()
             . DIRECTORY_SEPARATOR
             . 'AuthKey_' . $this->MINIMALISM_SERVICE_AUTH_APPLE_KEYFILE_ID . '.p8';
