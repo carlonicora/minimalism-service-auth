@@ -33,7 +33,7 @@ class Code extends AbstractAuthWebModel
 
         $userResource = new ResourceObject('user', $userId->getEncryptedValue());
         $userResource->attributes->add('email', $user['email']);
-        $userResource->attributes->add('new', ($create ? (bool)$create->getValue() : false));
+        $userResource->attributes->add('new', ($create && $create->getValue()));
 
         $this->document->addResource($userResource);
 

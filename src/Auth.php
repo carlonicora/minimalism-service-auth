@@ -436,7 +436,7 @@ class Auth implements ServiceInterface, SecurityInterface
      * @throws Exception
      */
     public function initialise(): void {
-        if ($_SESSION !== null) {
+        if (isset($_SESSION)) {
             $this->client_id = $_SESSION['client_id'] ?? null;
             $this->state = $_SESSION['state'] ?? null;
             $this->userId = $_SESSION['userId'] ?? null;

@@ -68,8 +68,6 @@ class Doaccountlookup extends AbstractAuthWebModel
                 'If your email is in our database, we have sent you a message to reset your password'
             );
         } else {
-            $redirection = null;
-
             if (empty($user['password'])) {
                 $codeFactory->generateAndSendCode($user);
 
