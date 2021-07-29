@@ -32,6 +32,7 @@ class Apple extends AbstractAuthWebModel
         if($auth->getAppleState() !== $state) {
             $logger->error(
                 message: 'Authorization server returned an invalid state parameter',
+                domain: 'auth',
                 context: [
                     'state' => $auth->getAppleState()
                 ]
@@ -55,6 +56,11 @@ class Apple extends AbstractAuthWebModel
             );
 
             if (!isset($response['access_token'])) {
+                $logger->error(
+                    message: 'There has been an issue receiving the information from Apple',
+                    domain: 'auth',
+                    context: ['response' => $response]
+                );
                 header(
                     'location: '
                     . $path->getUrl()
@@ -72,6 +78,11 @@ class Apple extends AbstractAuthWebModel
                 $appleIdRecord = $appleIdsTable->loadByAppleId($claims['sub']);
 
                 if ($appleIdRecord === []){
+                    $logger->error(
+                        message: 'There has been an issue finding a user connected to your Apple account',
+                        domain: 'auth',
+                        context: ['apple id' => $claims['sub']]
+                    );
                     header(
                         'location: '
                         . $path->getUrl()
@@ -86,6 +97,11 @@ class Apple extends AbstractAuthWebModel
                 $user = $auth->getAuthenticationTable()->authenticateById($appleIdRecord['userId']);
 
                 if ($user === null) {
+                    $logger->error(
+                        message: 'There has been an issue finding a user linked to your Apple account',
+                        domain: 'auth',
+                        context: ['user id' => $appleIdRecord['userId']]
+                    );
                     header(
                         'location: '
                         . $path->getUrl()
@@ -128,7 +144,11 @@ class Apple extends AbstractAuthWebModel
                 'location: '
                 . $path->getUrl()
                 . 'auth?client_id=' . $auth->getClientId() . '&state=' . $auth->getState());
-        } catch (Exception) {
+        } catch (Exception $e) {
+            $logger->error(
+                message: 'Error in Apple login',
+                domain: 'auth',
+                context: ['exception' => $e]);
             echo 'error';
         }
 
