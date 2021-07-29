@@ -1,6 +1,7 @@
 <?php
 namespace CarloNicora\Minimalism\Services\Auth\Models;
 
+use CarloNicora\Minimalism\Interfaces\LoggerInterface;
 use CarloNicora\Minimalism\Services\Auth\Abstracts\AbstractAuthWebModel;
 use CarloNicora\Minimalism\Services\Auth\Data\Databases\OAuth\Tables\AppleIdsTable;
 use CarloNicora\Minimalism\Services\MySQL\MySQL;
@@ -10,6 +11,7 @@ use Exception;
 class Apple extends AbstractAuthWebModel
 {
     /**
+     * @param LoggerInterface $logger
      * @param \CarloNicora\Minimalism\Services\Auth\Auth $auth
      * @param Path $path
      * @param MySQL $mysql
@@ -19,6 +21,7 @@ class Apple extends AbstractAuthWebModel
      * @throws Exception
      */
     public function post(
+        LoggerInterface $logger,
         \CarloNicora\Minimalism\Services\Auth\Auth $auth,
         Path $path,
         MySQL $mysql,
@@ -27,6 +30,12 @@ class Apple extends AbstractAuthWebModel
     ): int
     {
         if($auth->getAppleState() !== $state) {
+            $logger->error(
+                message: 'Authorization server returned an invalid state parameter',
+                context: [
+                    'state' => $auth->getAppleState()
+                ]
+            );
             die('Authorization server returned an invalid state parameter');
         }
 
