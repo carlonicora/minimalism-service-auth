@@ -3,6 +3,7 @@ namespace CarloNicora\Minimalism\Services\Auth\Models;
 
 use CarloNicora\JsonApi\Objects\Link;
 use CarloNicora\Minimalism\Services\Auth\Abstracts\AbstractAuthWebModel;
+use CarloNicora\Minimalism\Services\Auth\Auth as AuthService;
 use CarloNicora\Minimalism\Services\Auth\Factories\ThirdPartyLoginFactory;
 use CarloNicora\Minimalism\Services\Path;
 use Exception;
@@ -13,7 +14,7 @@ class Register extends AbstractAuthWebModel
     protected ?string $view = 'register';
 
     /**
-     * @param \CarloNicora\Minimalism\Services\Auth\Auth $auth
+     * @param AuthService $auth
      * @param Path $path
      * @param string|null $client_id
      * @param string|null $state
@@ -22,7 +23,7 @@ class Register extends AbstractAuthWebModel
      * @throws Exception
      */
     public function get(
-        \CarloNicora\Minimalism\Services\Auth\Auth $auth,
+        AuthService $auth,
         Path $path,
         ?string $client_id,
         ?string $state,
@@ -70,10 +71,7 @@ class Register extends AbstractAuthWebModel
         );
         $thirdPartyLogins->Facebook($this->document);
         $thirdPartyLogins->Google($this->document);
-        $thirdPartyLogins->Apple(
-            $auth,
-            $this->document
-        );
+        $thirdPartyLogins->Apple($this->document);
 
         return 200;
     }
