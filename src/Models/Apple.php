@@ -34,7 +34,8 @@ class Apple extends AbstractAuthWebModel
                 message: 'Authorization server returned an invalid state parameter',
                 domain: 'auth',
                 context: [
-                    'state' => $auth->getAppleState()
+                    'saved state' => $auth->getAppleState(),
+                    'received state' => $state
                 ]
             );
             die('Authorization server returned an invalid state parameter');
