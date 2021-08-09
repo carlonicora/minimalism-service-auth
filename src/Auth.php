@@ -102,6 +102,7 @@ class Auth implements ServiceInterface, SecurityInterface
     {
         $this->client_id = null;
         $this->state = null;
+        $this->appleState = null;
         $this->userId = null;
         $this->isUser = false;
     }

@@ -17,7 +17,7 @@ class Doauthorise extends AbstractAuthWebModel
         Auth $auth,
     ): int
     {
-        if ($auth->getClientId() === null) {
+        if (empty($auth->getClientId())) {
             throw new RuntimeException('client_id missing', 412);
         }
 

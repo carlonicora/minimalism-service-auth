@@ -31,15 +31,15 @@ class Auth extends AbstractAuthWebModel
         ?string $state=null,
     ): int
     {
-        if ($client_id !== null) {
+        if (false === empty($client_id)) {
             $auth->setClientId($client_id);
         }
 
-        if ($state !== null) {
+        if (false === empty($state)) {
             $auth->setState($state);
         }
 
-        if ($auth->getClientId() === null) {
+        if (empty($auth->getClientId())) {
             throw new RuntimeException('client_id missing', 412);
         }
 
