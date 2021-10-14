@@ -11,7 +11,7 @@ class AuthsTable extends AbstractMySqlTable
     protected string $tableName = 'auths';
 
     /** @var array  */
-    protected array $fields = [
+    protected static array $fields = [
         'authId'        => FieldInterface::INTEGER
                         +  FieldInterface::PRIMARY_KEY
                         +  FieldInterface::AUTO_INCREMENT,

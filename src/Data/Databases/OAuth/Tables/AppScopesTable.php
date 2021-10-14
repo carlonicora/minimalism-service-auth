@@ -10,7 +10,7 @@ class AppScopesTable extends AbstractMySqlTable
     protected string $tableName = 'appScopes';
 
     /** @var array  */
-    protected array $fields = [
+    protected static array $fields = [
         'appId'     => FieldInterface::INTEGER
                     +  FieldInterface::PRIMARY_KEY,
         'scopeId'   => FieldInterface::INTEGER

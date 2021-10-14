@@ -11,7 +11,7 @@ class TokensTable extends AbstractMySqlTable
     protected string $tableName = 'tokens';
 
     /** @var array  */
-    protected array $fields = [
+    protected static array $fields = [
         'tokenId'   => FieldInterface::INTEGER
                     +  FieldInterface::PRIMARY_KEY
                     +  FieldInterface::AUTO_INCREMENT,

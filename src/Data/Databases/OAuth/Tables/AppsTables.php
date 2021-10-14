@@ -11,7 +11,7 @@ class AppsTables extends AbstractMySqlTable
     protected string $tableName = 'apps';
 
     /** @var array  */
-    protected array $fields = [
+    protected static array $fields = [
         'appId'         => FieldInterface::INTEGER
                         +  FieldInterface::PRIMARY_KEY
                         +  FieldInterface::AUTO_INCREMENT,

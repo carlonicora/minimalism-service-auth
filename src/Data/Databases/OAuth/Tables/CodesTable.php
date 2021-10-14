@@ -11,7 +11,7 @@ class CodesTable extends AbstractMySqlTable
     protected string $tableName = 'codes';
 
     /** @var array  */
-    protected array $fields = [
+    protected static array $fields = [
         'codeId'        => FieldInterface::INTEGER
                         +  FieldInterface::PRIMARY_KEY
                         +  FieldInterface::AUTO_INCREMENT,

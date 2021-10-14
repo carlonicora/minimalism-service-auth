@@ -11,7 +11,7 @@ class AppleIdsTable extends AbstractMySqlTable
     protected string $tableName = 'appleIds';
 
     /** @var array  */
-    protected array $fields = [
+    protected static array $fields = [
         'appleId'   => FieldInterface::STRING
                     +  FieldInterface::PRIMARY_KEY,
         'userId'    => FieldInterface::INTEGER

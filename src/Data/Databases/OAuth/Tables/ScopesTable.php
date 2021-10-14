@@ -11,7 +11,7 @@ class ScopesTable extends AbstractMySqlTable
     protected string $tableName = 'scopes';
 
     /** @var array  */
-    protected array $fields = [
+    protected static array $fields = [
         'scopeId'   => FieldInterface::INTEGER
                     +  FieldInterface::PRIMARY_KEY
                     +  FieldInterface::AUTO_INCREMENT,
