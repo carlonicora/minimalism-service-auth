@@ -7,7 +7,7 @@ use CarloNicora\Minimalism\Services\MySQL\Interfaces\FieldInterface;
 class AppScopesTable extends AbstractMySqlTable
 {
     /** @var string */
-    protected string $tableName = 'appScopes';
+    protected static string $tableName = 'appScopes';
 
     /** @var array  */
     protected static array $fields = [

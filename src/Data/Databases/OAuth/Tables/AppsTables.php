@@ -8,7 +8,7 @@ use Exception;
 class AppsTables extends AbstractMySqlTable
 {
     /** @var string */
-    protected string $tableName = 'apps';
+    protected static string $tableName = 'apps';
 
     /** @var array  */
     protected static array $fields = [
