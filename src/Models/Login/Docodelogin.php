@@ -47,7 +47,7 @@ class Docodelogin extends AbstractAuthWebModel
         if ($userId !== null) {
             $userIdInt = $userId->getValue();
         } else {
-            $userIdInt = $userIdLink ? $userIdLink->getValue() : null;
+            $userIdInt = $userIdLink?->getValue();
         }
 
         if (($user = $auth->getAuthenticationTable()->authenticateById($userIdInt)) === null){

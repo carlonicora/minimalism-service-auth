@@ -1,6 +1,7 @@
 <?php
 namespace CarloNicora\Minimalism\Services\Auth\Data\Builders;
 
+use CarloNicora\Minimalism\Interfaces\DataFunctionInterface;
 use CarloNicora\Minimalism\Objects\DataFunction;
 use CarloNicora\Minimalism\Services\Auth\Data\Databases\OAuth\Tables\ScopesTable;
 use CarloNicora\Minimalism\Services\Builder\Abstracts\AbstractResourceBuilder;
@@ -37,7 +38,7 @@ class App extends AbstractResourceBuilder
             name: 'scopes',
             builderClassName: Scope::class,
             function: new DataFunction(
-                type: DataFunction::TYPE_TABLE,
+                type: DataFunctionInterface::TYPE_TABLE,
                 className: ScopesTable::class,
                 functionName: 'byAppId',
                 parameters: ['appId']
