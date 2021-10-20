@@ -60,11 +60,11 @@ class Auth extends AbstractAuthWebModel
 
         $app = $app[0];
 
-        if ($app['isActive'] === AppStatus::INACTIVE->value) {
+        if ($app['isActive'] === AppStatus::Inactive->value) {
             throw new RuntimeException('application is not active', 412);
         }
 
-        if ($app['isTrusted'] === AppReliability::TRUSTED->value) {
+        if ($app['isTrusted'] === AppReliability::Trusted->value) {
             $authorisation = $auth->generateAuth($app['appId']);
             $redirection = $auth->generateRedirection($app, $authorisation);
 

@@ -55,7 +55,7 @@ class Token extends AbstractAuthWebModel
             $token = [
                 'appId' => $auth['appId'],
                 'userId' => $auth['userId'],
-                'isUser' => TokenUserType::REGISTERED->value,
+                'isUser' => TokenUserType::Registered->value,
                 'token' => bin2hex(random_bytes(32))
             ];
         } else {
@@ -73,7 +73,7 @@ class Token extends AbstractAuthWebModel
             $token = [
                 'appId' => $app['appId'],
                 'userId' => (int)(microtime(true)*1000),
-                'isUser' => TokenUserType::VISITOR->value,
+                'isUser' => TokenUserType::Visitor->value,
                 'token' => bin2hex(random_bytes(32))
             ];
         }

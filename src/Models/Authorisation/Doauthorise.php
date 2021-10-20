@@ -30,7 +30,7 @@ class Doauthorise extends AbstractAuthWebModel
 
         $app = $app[0];
 
-        if ($app['isActive'] === AppStatus::INACTIVE->value) {
+        if ($app['isActive'] === AppStatus::Inactive->value) {
             throw new RuntimeException('application is not active', 412);
         }
 
