@@ -5,6 +5,7 @@ use CarloNicora\JsonApi\Objects\Link;
 use CarloNicora\JsonApi\Objects\ResourceObject;
 use CarloNicora\Minimalism\Parameters\PositionedEncryptedParameter;
 use CarloNicora\Minimalism\Services\Auth\Abstracts\AbstractAuthWebModel;
+use CarloNicora\Minimalism\Services\Auth\Auth as AuthService;
 use CarloNicora\Minimalism\Services\Path;
 use Exception;
 
@@ -14,15 +15,15 @@ class Change extends AbstractAuthWebModel
     protected ?string $view = 'reset';
 
     /**
-     * @param \CarloNicora\Minimalism\Services\Auth\Auth $auth
+     * @param AuthService $auth
      * @param Path $path
      * @param PositionedEncryptedParameter $userId
      * @return int
      * @throws Exception
      */
     public function get(
-        \CarloNicora\Minimalism\Services\Auth\Auth $auth,
-        Path $path,
+        AuthService                  $auth,
+        Path                         $path,
         PositionedEncryptedParameter $userId,
     ): int
     {

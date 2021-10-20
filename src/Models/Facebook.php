@@ -2,6 +2,8 @@
 namespace CarloNicora\Minimalism\Services\Auth\Models;
 
 use CarloNicora\Minimalism\Services\Auth\Abstracts\AbstractAuthWebModel;
+use CarloNicora\Minimalism\Services\Auth\Auth as AuthService;
+use CarloNicora\Minimalism\Services\Auth\Interfaces\AuthenticationInterface;
 use CarloNicora\Minimalism\Services\Path;
 use Exception;
 use Facebook\Authentication\OAuth2Client;
@@ -12,14 +14,14 @@ use Facebook\Helpers\FacebookRedirectLoginHelper;
 class Facebook extends AbstractAuthWebModel
 {
     /**
-     * @param \CarloNicora\Minimalism\Services\Auth\Auth $auth
+     * @param AuthService $auth
      * @param Path $path
      * @return int
      * @throws Exception
      */
     public function get(
-        \CarloNicora\Minimalism\Services\Auth\Auth $auth,
-        Path $path,
+        AuthService $auth,
+        Path        $path,
     ): int
     {
         $app = new FacebookApp(
@@ -57,7 +59,7 @@ class Facebook extends AbstractAuthWebModel
             $user = $auth->getAuthenticationTable()->generateNewUser($fbu['email'], $fbu['name'], 'facebook');
             $auth->setIsNewRegistration();
             $auth->getAuthenticationTable()->activateUser($user);
-        } elseif ($user['isActive'] === false){
+        } elseif ($user['isActive'] === AuthenticationInterface::INACTIVE_USER){
             $auth->getAuthenticationTable()->activateUser($user);
         }
 

@@ -3,6 +3,9 @@ namespace CarloNicora\Minimalism\Services\Auth\Interfaces;
 
 interface AuthenticationInterface
 {
+    public const ACTIVE_USER = true;
+    public const INACTIVE_USER = false;
+
     /**
      * @param string $email
      * @return array|null

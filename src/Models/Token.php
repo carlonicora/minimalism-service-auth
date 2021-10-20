@@ -4,6 +4,7 @@ namespace CarloNicora\Minimalism\Services\Auth\Models;
 use CarloNicora\Minimalism\Services\Auth\Abstracts\AbstractAuthWebModel;
 use CarloNicora\Minimalism\Services\Auth\Data\Databases\OAuth\Tables\AppsTables;
 use CarloNicora\Minimalism\Services\Auth\Data\Databases\OAuth\Tables\AuthsTable;
+use CarloNicora\Minimalism\Services\Auth\Data\Databases\OAuth\Tables\Enums\TokenUserType;
 use CarloNicora\Minimalism\Services\Auth\Data\Databases\OAuth\Tables\TokensTable;
 use CarloNicora\Minimalism\Services\Auth\JsonApi\NonJsonApiDocument;
 use CarloNicora\Minimalism\Services\MySQL\MySQL;
@@ -54,7 +55,7 @@ class Token extends AbstractAuthWebModel
             $token = [
                 'appId' => $auth['appId'],
                 'userId' => $auth['userId'],
-                'isUser' => true,
+                'isUser' => TokenUserType::REGISTERED->value,
                 'token' => bin2hex(random_bytes(32))
             ];
         } else {
@@ -72,7 +73,7 @@ class Token extends AbstractAuthWebModel
             $token = [
                 'appId' => $app['appId'],
                 'userId' => (int)(microtime(true)*1000),
-                'isUser' => false,
+                'isUser' => TokenUserType::VISITOR->value,
                 'token' => bin2hex(random_bytes(32))
             ];
         }

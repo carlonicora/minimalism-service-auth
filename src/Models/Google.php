@@ -2,6 +2,8 @@
 namespace CarloNicora\Minimalism\Services\Auth\Models;
 
 use CarloNicora\Minimalism\Services\Auth\Abstracts\AbstractAuthWebModel;
+use CarloNicora\Minimalism\Services\Auth\Auth as AuthService;
+use CarloNicora\Minimalism\Services\Auth\Interfaces\AuthenticationInterface;
 use CarloNicora\Minimalism\Services\Path;
 use Exception;
 use Google_Client;
@@ -9,16 +11,16 @@ use Google_Client;
 class Google extends AbstractAuthWebModel
 {
     /**
-     * @param \CarloNicora\Minimalism\Services\Auth\Auth $auth
+     * @param AuthService $auth
      * @param Path $path
      * @param string|null $code
      * @return int
      * @throws Exception
      */
     public function get(
-        \CarloNicora\Minimalism\Services\Auth\Auth $auth,
-        Path $path,
-        ?string $code,
+        AuthService $auth,
+        Path        $path,
+        ?string     $code,
     ): int
     {
         $client = new Google_Client();
@@ -45,7 +47,7 @@ class Google extends AbstractAuthWebModel
             $user = $auth->getAuthenticationTable()->generateNewUser($token_data['email'], $token_data['name'], 'google');
             $auth->setIsNewRegistration();
             $auth->getAuthenticationTable()->activateUser($user);
-        } elseif ($user['isActive'] === false){
+        } elseif ($user['isActive'] === AuthenticationInterface::INACTIVE_USER){
             $auth->getAuthenticationTable()->activateUser($user);
         }
 

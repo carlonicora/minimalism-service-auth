@@ -6,6 +6,7 @@ use CarloNicora\JsonApi\Objects\ResourceObject;
 use CarloNicora\Minimalism\Parameters\PositionedEncryptedParameter;
 use CarloNicora\Minimalism\Parameters\PositionedParameter;
 use CarloNicora\Minimalism\Services\Auth\Abstracts\AbstractAuthWebModel;
+use CarloNicora\Minimalism\Services\Auth\Auth as AuthService;
 use CarloNicora\Minimalism\Services\Path;
 use Exception;
 
@@ -15,7 +16,7 @@ class Code extends AbstractAuthWebModel
     protected ?string $view = 'code';
 
     /**
-     * @param \CarloNicora\Minimalism\Services\Auth\Auth $auth
+     * @param AuthService $auth
      * @param Path $path
      * @param PositionedEncryptedParameter $userId
      * @param PositionedParameter|null $create
@@ -23,10 +24,10 @@ class Code extends AbstractAuthWebModel
      * @throws Exception
      */
     public function get(
-        \CarloNicora\Minimalism\Services\Auth\Auth $auth,
-        Path $path,
+        AuthService                  $auth,
+        Path                         $path,
         PositionedEncryptedParameter $userId,
-        ?PositionedParameter $create,
+        ?PositionedParameter         $create,
     ): int
     {
         $user = $auth->getAuthenticationTable()->authenticateById($userId->getValue());

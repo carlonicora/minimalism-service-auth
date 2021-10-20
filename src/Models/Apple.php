@@ -3,16 +3,19 @@ namespace CarloNicora\Minimalism\Services\Auth\Models;
 
 use CarloNicora\Minimalism\Interfaces\LoggerInterface;
 use CarloNicora\Minimalism\Services\Auth\Abstracts\AbstractAuthWebModel;
+use CarloNicora\Minimalism\Services\Auth\Auth as AuthService;
 use CarloNicora\Minimalism\Services\Auth\Data\Databases\OAuth\Tables\AppleIdsTable;
+use CarloNicora\Minimalism\Services\Auth\Interfaces\AuthenticationInterface;
 use CarloNicora\Minimalism\Services\MySQL\MySQL;
 use CarloNicora\Minimalism\Services\Path;
 use Exception;
+use JsonException;
 
 class Apple extends AbstractAuthWebModel
 {
     /**
      * @param LoggerInterface $logger
-     * @param \CarloNicora\Minimalism\Services\Auth\Auth $auth
+     * @param AuthService $auth
      * @param Path $path
      * @param MySQL $mysql
      * @param string|null $code
@@ -22,11 +25,11 @@ class Apple extends AbstractAuthWebModel
      */
     public function post(
         LoggerInterface $logger,
-        \CarloNicora\Minimalism\Services\Auth\Auth $auth,
-        Path $path,
-        MySQL $mysql,
-        ?string $code,
-        ?string $state,
+        AuthService     $auth,
+        Path            $path,
+        MySQL           $mysql,
+        ?string         $code,
+        ?string         $state,
     ): int
     {
         if($auth->getAppleState() !== $state) {
@@ -46,7 +49,6 @@ class Apple extends AbstractAuthWebModel
 
         try {
             $response = $this->httpCall(
-                'https://appleid.apple.com/auth/token',
                 [
                     'grant_type' => 'authorization_code',
                     'code' => $code ?? '',
@@ -113,7 +115,7 @@ class Apple extends AbstractAuthWebModel
                     exit;
                 }
 
-                if ($user['isActive'] === false){
+                if ($user['isActive'] === AuthenticationInterface::INACTIVE_USER){
                     $auth->getAuthenticationTable()->activateUser($user);
                 }
             } else {
@@ -123,7 +125,7 @@ class Apple extends AbstractAuthWebModel
                 }
 
                 if (!empty($user)){
-                    if (!array_key_exists('isActive', $user) || $user['isActive'] === false) {
+                    if (!array_key_exists('isActive', $user) || $user['isActive'] === AuthenticationInterface::INACTIVE_USER) {
                         $auth->getAuthenticationTable()->activateUser($user);
                     }
 
@@ -157,19 +159,16 @@ class Apple extends AbstractAuthWebModel
     }
 
     /**
-     * @param $url
-     * @param false $params
+     * @param array $params
      * @return array
-     * @throws Exception
+     * @throws JsonException
      */
-    private function httpCall($url, $params=false): array
+    private function httpCall(array $params): array
     {
-        $ch = curl_init($url);
+        $ch = curl_init('https://appleid.apple.com/auth/token');
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
-        if($params) {
-            curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($params));
-        }
+        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($params));
 
         curl_setopt($ch, CURLOPT_HTTPHEADER, [
             'Accept: application/json',

@@ -8,6 +8,8 @@ use CarloNicora\Minimalism\Parameters\PositionedParameter;
 use CarloNicora\Minimalism\Services\Auth\Abstracts\AbstractAuthWebModel;
 use CarloNicora\Minimalism\Services\Auth\Auth;
 use CarloNicora\Minimalism\Services\Auth\Factories\CodeFactory;
+use CarloNicora\Minimalism\Services\Auth\Interfaces\AuthenticationInterface;
+use CarloNicora\Minimalism\Services\Auth\Models\Auth as AuthService;
 use CarloNicora\Minimalism\Services\Mailer\Mailer;
 use CarloNicora\Minimalism\Services\MySQL\MySQL;
 use CarloNicora\Minimalism\Services\Path;
@@ -64,7 +66,7 @@ class Docodelogin extends AbstractAuthWebModel
 
         $codeFactory->validateCode($user, $code);
 
-        if (!$user['isActive']) {
+        if ($user['isActive'] === AuthenticationInterface::INACTIVE_USER) {
             $auth->getAuthenticationTable()->activateUser($user);
         }
 
@@ -122,13 +124,13 @@ class Docodelogin extends AbstractAuthWebModel
 
         $codeFactory->validateCode($user, $code);
 
-        if (!$user['isActive']) {
+        if ($user['isActive'] === AuthenticationInterface::INACTIVE_USER) {
             $auth->getAuthenticationTable()->activateUser($user);
         }
 
         $auth->setUserId($user['userId']);
 
-        $this->redirection = \CarloNicora\Minimalism\Services\Auth\Models\Auth::class;
+        $this->redirection = AuthService::class;
         $this->redirectionParameters = [
             'named' => [
                 'client_id' => $client_id->getValue(),

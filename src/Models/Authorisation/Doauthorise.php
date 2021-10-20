@@ -3,6 +3,7 @@ namespace CarloNicora\Minimalism\Services\Auth\Models\Authorisation;
 
 use CarloNicora\Minimalism\Services\Auth\Abstracts\AbstractAuthWebModel;
 use CarloNicora\Minimalism\Services\Auth\Auth;
+use CarloNicora\Minimalism\Services\Auth\Data\Databases\OAuth\Tables\Enums\AppStatus;
 use Exception;
 use RuntimeException;
 
@@ -29,7 +30,7 @@ class Doauthorise extends AbstractAuthWebModel
 
         $app = $app[0];
 
-        if (!$app['isActive']) {
+        if ($app['isActive'] === AppStatus::INACTIVE->value) {
             throw new RuntimeException('application is not active', 412);
         }
 
