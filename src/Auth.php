@@ -1,8 +1,8 @@
 <?php
 namespace CarloNicora\Minimalism\Services\Auth;
 
-use CarloNicora\Minimalism\Interfaces\SecurityInterface;
-use CarloNicora\Minimalism\Interfaces\ServiceInterface;
+use CarloNicora\Minimalism\Abstracts\AbstractService;
+use CarloNicora\Minimalism\Interfaces\Security\Interfaces\SecurityInterface;
 use CarloNicora\Minimalism\Services\Auth\Data\Databases\OAuth\Tables\AppsTables;
 use CarloNicora\Minimalism\Services\Auth\Data\Databases\OAuth\Tables\AuthsTable;
 use CarloNicora\Minimalism\Services\Auth\Data\Databases\OAuth\Tables\TokensTable;
@@ -17,7 +17,7 @@ use Jose\Component\Signature\JWSBuilder;
 use Jose\Component\Signature\Serializer\CompactSerializer;
 use RuntimeException;
 
-class Auth implements ServiceInterface, SecurityInterface
+class Auth extends AbstractService implements SecurityInterface
 {
     /** @var array|null */
     protected ?array $headers = null;
@@ -71,7 +71,18 @@ class Auth implements ServiceInterface, SecurityInterface
         private ?string $MINIMALISM_SERVICE_AUTH_APPLE_CLIENT_ID=null,
         private ?string $MINIMALISM_SERVICE_AUTH_APPLE_TEAM_ID=null,
         private ?string $MINIMALISM_SERVICE_AUTH_APPLE_KEYFILE_ID=null,
-    ) {
+    )
+    {
+        parent::__construct();
+    }
+
+    /**
+     * @return string|null
+     */
+    public static function getBaseInterface(
+    ): ?string
+    {
+        return SecurityInterface::class;
     }
 
     /**
@@ -304,14 +315,6 @@ class Auth implements ServiceInterface, SecurityInterface
     }
 
     /**
-     * @return SecurityInterface
-     */
-    public function getSecurityInterface(): SecurityInterface
-    {
-        return $this;
-    }
-
-    /**
      * @return string
      */
     public function getSenderName(): string
@@ -418,8 +421,7 @@ class Auth implements ServiceInterface, SecurityInterface
             return '';
         }
 
-        $serializer = new CompactSerializer();
-        return $serializer->serialize($jws, 0);
+        return (new CompactSerializer())->serialize($jws, 0);
     }
 
     /**

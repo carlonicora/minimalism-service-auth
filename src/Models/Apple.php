@@ -9,7 +9,6 @@ use CarloNicora\Minimalism\Services\Auth\Interfaces\AuthenticationInterface;
 use CarloNicora\Minimalism\Services\MySQL\MySQL;
 use CarloNicora\Minimalism\Services\Path;
 use Exception;
-use JsonException;
 
 class Apple extends AbstractAuthWebModel
 {
@@ -161,7 +160,7 @@ class Apple extends AbstractAuthWebModel
     /**
      * @param array $params
      * @return array
-     * @throws JsonException
+     * @throws Exception
      */
     private function httpCall(array $params): array
     {

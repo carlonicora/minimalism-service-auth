@@ -1,7 +1,7 @@
 <?php
 namespace CarloNicora\Minimalism\Services\Auth\Models\Reset;
 
-use CarloNicora\Minimalism\Parameters\EncryptedParameter;
+use CarloNicora\Minimalism\Interfaces\Encrypter\Parameters\EncryptedParameter;
 use CarloNicora\Minimalism\Services\Auth\Abstracts\AbstractAuthWebModel;
 use CarloNicora\Minimalism\Services\Auth\Auth;
 use CarloNicora\Minimalism\Services\Path;

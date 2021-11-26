@@ -1,9 +1,9 @@
 <?php
 namespace CarloNicora\Minimalism\Services\Auth\Models\Login;
 
-use CarloNicora\Minimalism\Interfaces\EncrypterInterface;
-use CarloNicora\Minimalism\Parameters\EncryptedParameter;
-use CarloNicora\Minimalism\Parameters\PositionedEncryptedParameter;
+use CarloNicora\Minimalism\Interfaces\Encrypter\Interfaces\EncrypterInterface;
+use CarloNicora\Minimalism\Interfaces\Encrypter\Parameters\EncryptedParameter;
+use CarloNicora\Minimalism\Interfaces\Encrypter\Parameters\PositionedEncryptedParameter;
 use CarloNicora\Minimalism\Parameters\PositionedParameter;
 use CarloNicora\Minimalism\Services\Auth\Abstracts\AbstractAuthWebModel;
 use CarloNicora\Minimalism\Services\Auth\Auth;
@@ -52,6 +52,45 @@ class Docodelogin extends AbstractAuthWebModel
             $userIdInt = $userIdLink?->getValue();
         }
 
+         $this->authenticateAndValidateUser(
+             auth: $auth,
+             mysql: $mysql,
+             encrypter: $encrypter,
+             path: $path,
+             mailer: $mailer,
+             userIdInt: $userIdInt,
+             code: $code,
+        );
+
+        $this->document->meta->add(
+            'redirection',
+            $path->getUrl() . 'auth'
+        );
+
+        return 200;
+    }
+
+    /**
+     * @param Auth $auth
+     * @param MySQL $mysql
+     * @param EncrypterInterface $encrypter
+     * @param Path $path
+     * @param Mailer $mailer
+     * @param int $userIdInt
+     * @param int $code
+     * @return void
+     * @throws Exception
+     */
+    private function authenticateAndValidateUser(
+        Auth $auth,
+        MySQL $mysql,
+        EncrypterInterface $encrypter,
+        Path $path,
+        Mailer $mailer,
+        int $userIdInt,
+        int $code,
+    ): void
+    {
         if (($user = $auth->getAuthenticationTable()->authenticateById($userIdInt)) === null){
             throw new RuntimeException('Could not find your account', 401);
         }
@@ -71,13 +110,6 @@ class Docodelogin extends AbstractAuthWebModel
         }
 
         $auth->setUserId($user['userId']);
-
-        $this->document->meta->add(
-            'redirection',
-            $path->getUrl() . 'auth'
-        );
-
-        return 200;
     }
 
     /**
@@ -110,25 +142,15 @@ class Docodelogin extends AbstractAuthWebModel
         $code = $codeLink->getValue();
         $userIdInt = $userIdLink->getValue();
 
-        if (($user = $auth->getAuthenticationTable()->authenticateById($userIdInt)) === null){
-            throw new RuntimeException('Could not find your account', 401);
-        }
-
-        $codeFactory = new CodeFactory(
+        $this->authenticateAndValidateUser(
             auth: $auth,
             mysql: $mysql,
             encrypter: $encrypter,
             path: $path,
             mailer: $mailer,
+            userIdInt: $userIdInt,
+            code: $code,
         );
-
-        $codeFactory->validateCode($user, $code);
-
-        if ($user['isActive'] === AuthenticationInterface::INACTIVE_USER) {
-            $auth->getAuthenticationTable()->activateUser($user);
-        }
-
-        $auth->setUserId($user['userId']);
 
         $this->redirection = AuthService::class;
         $this->redirectionParameters = [

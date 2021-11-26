@@ -1,8 +1,8 @@
 <?php
 namespace CarloNicora\Minimalism\Services\Auth\Data\Builders;
 
-use CarloNicora\Minimalism\Interfaces\DataFunctionInterface;
-use CarloNicora\Minimalism\Objects\DataFunction;
+use CarloNicora\Minimalism\Interfaces\Data\Interfaces\DataFunctionInterface;
+use CarloNicora\Minimalism\Interfaces\Data\Objects\DataFunction;
 use CarloNicora\Minimalism\Services\Auth\Data\Databases\OAuth\Tables\ScopesTable;
 use CarloNicora\Minimalism\Services\Builder\Abstracts\AbstractResourceBuilder;
 use CarloNicora\Minimalism\Services\Builder\Objects\RelationshipBuilder;

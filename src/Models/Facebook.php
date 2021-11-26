@@ -31,9 +31,7 @@ class Facebook extends AbstractAuthWebModel
         $client = new FacebookClient();
         $oAuth = new OAuth2Client($app, $client);
 
-        $helper = new FacebookRedirectLoginHelper($oAuth);
-
-        $accessToken = $helper->getAccessToken($path->getUrl() . 'facebook');
+        $accessToken = (new FacebookRedirectLoginHelper($oAuth))->getAccessToken($path->getUrl() . 'facebook');
 
         $fb = new \Facebook\Facebook([
             'app_id' => $auth->getFacebookId(),
@@ -41,8 +39,7 @@ class Facebook extends AbstractAuthWebModel
             'default_graph_version' => 'v5.0',
         ]);
 
-        $facebookUser = $fb->get('/me?&fields=name,email,picture', $accessToken);
-        $fbu = $facebookUser->getDecodedBody();
+        $fbu = $fb->get('/me?&fields=name,email,picture', $accessToken)->getDecodedBody();
 
         if (!array_key_exists('email', $fbu) || empty($fbu['email'])){
             header(

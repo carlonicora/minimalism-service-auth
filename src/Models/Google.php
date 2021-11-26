@@ -29,6 +29,7 @@ class Google extends AbstractAuthWebModel
         $client->addScope('email');
         $client->addScope('profile');
 
+        /** @noinspection UnusedFunctionResultInspection */
         $client->fetchAccessTokenWithAuthCode($code);
         $token_data = $client->verifyIdToken();
 

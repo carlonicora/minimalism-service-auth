@@ -1,7 +1,7 @@
 <?php
 namespace CarloNicora\Minimalism\Services\Auth\Factories;
 
-use CarloNicora\Minimalism\Interfaces\EncrypterInterface;
+use CarloNicora\Minimalism\Interfaces\Encrypter\Interfaces\EncrypterInterface;
 use CarloNicora\Minimalism\Services\Auth\Auth;
 use CarloNicora\Minimalism\Services\Auth\Data\Databases\OAuth\Tables\CodesTable;
 use CarloNicora\Minimalism\Services\Mailer\Mailer;
