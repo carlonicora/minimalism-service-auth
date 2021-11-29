@@ -1,5 +1,5 @@
 <?php
-namespace CarloNicora\Minimalism\Services\Auth\Data\Databases\OAuth\Tables;
+namespace CarloNicora\Minimalism\Services\Auth\Databases\OAuth\Tables;
 
 use CarloNicora\Minimalism\Services\MySQL\Abstracts\AbstractMySqlTable;
 use CarloNicora\Minimalism\Services\MySQL\Interfaces\FieldInterface;

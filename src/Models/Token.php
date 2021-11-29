@@ -2,10 +2,10 @@
 namespace CarloNicora\Minimalism\Services\Auth\Models;
 
 use CarloNicora\Minimalism\Services\Auth\Abstracts\AbstractAuthWebModel;
-use CarloNicora\Minimalism\Services\Auth\Data\Databases\OAuth\Tables\AppsTables;
-use CarloNicora\Minimalism\Services\Auth\Data\Databases\OAuth\Tables\AuthsTable;
-use CarloNicora\Minimalism\Services\Auth\Data\Databases\OAuth\Tables\Enums\TokenUserType;
-use CarloNicora\Minimalism\Services\Auth\Data\Databases\OAuth\Tables\TokensTable;
+use CarloNicora\Minimalism\Services\Auth\Databases\OAuth\Tables\AppsTables;
+use CarloNicora\Minimalism\Services\Auth\Databases\OAuth\Tables\AuthsTable;
+use CarloNicora\Minimalism\Services\Auth\Databases\OAuth\Tables\Enums\TokenUserType;
+use CarloNicora\Minimalism\Services\Auth\Databases\OAuth\Tables\TokensTable;
 use CarloNicora\Minimalism\Services\Auth\JsonApi\NonJsonApiDocument;
 use CarloNicora\Minimalism\Services\MySQL\MySQL;
 use DateTime;

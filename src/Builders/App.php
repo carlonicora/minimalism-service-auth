@@ -1,9 +1,9 @@
 <?php
-namespace CarloNicora\Minimalism\Services\Auth\Data\Builders;
+namespace CarloNicora\Minimalism\Services\Auth\Builders;
 
 use CarloNicora\Minimalism\Interfaces\Data\Interfaces\DataFunctionInterface;
 use CarloNicora\Minimalism\Interfaces\Data\Objects\DataFunction;
-use CarloNicora\Minimalism\Services\Auth\Data\Databases\OAuth\Tables\ScopesTable;
+use CarloNicora\Minimalism\Services\Auth\Databases\OAuth\Tables\ScopesTable;
 use CarloNicora\Minimalism\Services\Builder\Abstracts\AbstractResourceBuilder;
 use CarloNicora\Minimalism\Services\Builder\Objects\RelationshipBuilder;
 use Exception;

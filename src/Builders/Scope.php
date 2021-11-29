@@ -1,5 +1,5 @@
 <?php
-namespace CarloNicora\Minimalism\Services\Auth\Data\Builders;
+namespace CarloNicora\Minimalism\Services\Auth\Builders;
 
 use CarloNicora\Minimalism\Services\Builder\Abstracts\AbstractResourceBuilder;
 use Exception;

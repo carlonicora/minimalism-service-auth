@@ -3,7 +3,7 @@ namespace CarloNicora\Minimalism\Services\Auth\Factories;
 
 use CarloNicora\Minimalism\Interfaces\Encrypter\Interfaces\EncrypterInterface;
 use CarloNicora\Minimalism\Services\Auth\Auth;
-use CarloNicora\Minimalism\Services\Auth\Data\Databases\OAuth\Tables\CodesTable;
+use CarloNicora\Minimalism\Services\Auth\Databases\OAuth\Tables\CodesTable;
 use CarloNicora\Minimalism\Services\Mailer\Mailer;
 use CarloNicora\Minimalism\Services\MySQL\MySQL;
 use CarloNicora\Minimalism\Services\Path;

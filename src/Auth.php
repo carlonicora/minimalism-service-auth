@@ -3,9 +3,9 @@ namespace CarloNicora\Minimalism\Services\Auth;
 
 use CarloNicora\Minimalism\Abstracts\AbstractService;
 use CarloNicora\Minimalism\Interfaces\Security\Interfaces\SecurityInterface;
-use CarloNicora\Minimalism\Services\Auth\Data\Databases\OAuth\Tables\AppsTables;
-use CarloNicora\Minimalism\Services\Auth\Data\Databases\OAuth\Tables\AuthsTable;
-use CarloNicora\Minimalism\Services\Auth\Data\Databases\OAuth\Tables\TokensTable;
+use CarloNicora\Minimalism\Services\Auth\Databases\OAuth\Tables\AppsTables;
+use CarloNicora\Minimalism\Services\Auth\Databases\OAuth\Tables\AuthsTable;
+use CarloNicora\Minimalism\Services\Auth\Databases\OAuth\Tables\TokensTable;
 use CarloNicora\Minimalism\Services\Auth\Interfaces\AuthenticationInterface;
 use CarloNicora\Minimalism\Services\MySQL\MySQL;
 use CarloNicora\Minimalism\Services\Path;

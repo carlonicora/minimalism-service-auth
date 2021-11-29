@@ -3,7 +3,7 @@ namespace CarloNicora\Minimalism\Services\Auth\Models\Authorisation;
 
 use CarloNicora\Minimalism\Services\Auth\Abstracts\AbstractAuthWebModel;
 use CarloNicora\Minimalism\Services\Auth\Auth;
-use CarloNicora\Minimalism\Services\Auth\Data\Databases\OAuth\Tables\Enums\AppStatus;
+use CarloNicora\Minimalism\Services\Auth\Databases\OAuth\Tables\Enums\AppStatus;
 use Exception;
 use RuntimeException;
 

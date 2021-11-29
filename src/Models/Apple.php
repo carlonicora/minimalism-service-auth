@@ -4,7 +4,7 @@ namespace CarloNicora\Minimalism\Services\Auth\Models;
 use CarloNicora\Minimalism\Interfaces\LoggerInterface;
 use CarloNicora\Minimalism\Services\Auth\Abstracts\AbstractAuthWebModel;
 use CarloNicora\Minimalism\Services\Auth\Auth as AuthService;
-use CarloNicora\Minimalism\Services\Auth\Data\Databases\OAuth\Tables\AppleIdsTable;
+use CarloNicora\Minimalism\Services\Auth\Databases\OAuth\Tables\AppleIdsTable;
 use CarloNicora\Minimalism\Services\Auth\Interfaces\AuthenticationInterface;
 use CarloNicora\Minimalism\Services\MySQL\MySQL;
 use CarloNicora\Minimalism\Services\Path;
