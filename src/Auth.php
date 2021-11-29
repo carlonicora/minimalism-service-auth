@@ -291,17 +291,17 @@ class Auth extends AbstractService implements SecurityInterface
     }
 
     /**
-     * @param string $verb
-     * @param string $uri
+     * @param string|null $verb
+     * @param string|null $uri
      * @param array|null $body
      * @return bool
      * @throws Exception
      */
     public function isSignatureValid(
-        string $verb,
-        string $uri,
-        array $body = null
-    ): bool
+        ?string $verb=null,
+        ?string $uri=null,
+        ?array $body=null,
+    ) : bool
     {
         $token = $this->getToken();
 
