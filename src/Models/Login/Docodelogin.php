@@ -4,13 +4,13 @@ namespace CarloNicora\Minimalism\Services\Auth\Models\Login;
 use CarloNicora\Minimalism\Interfaces\Encrypter\Interfaces\EncrypterInterface;
 use CarloNicora\Minimalism\Interfaces\Encrypter\Parameters\EncryptedParameter;
 use CarloNicora\Minimalism\Interfaces\Encrypter\Parameters\PositionedEncryptedParameter;
+use CarloNicora\Minimalism\Interfaces\Mailer\Interfaces\MailerInterface;
 use CarloNicora\Minimalism\Parameters\PositionedParameter;
 use CarloNicora\Minimalism\Services\Auth\Abstracts\AbstractAuthWebModel;
 use CarloNicora\Minimalism\Services\Auth\Auth;
 use CarloNicora\Minimalism\Services\Auth\Factories\CodeFactory;
 use CarloNicora\Minimalism\Services\Auth\Interfaces\AuthenticationInterface;
 use CarloNicora\Minimalism\Services\Auth\Models\Auth as AuthService;
-use CarloNicora\Minimalism\Services\Mailer\Mailer;
 use CarloNicora\Minimalism\Services\MySQL\MySQL;
 use CarloNicora\Minimalism\Services\Path;
 use Exception;
@@ -23,7 +23,7 @@ class Docodelogin extends AbstractAuthWebModel
      * @param MySQL $mysql
      * @param EncrypterInterface $encrypter
      * @param Path $path
-     * @param Mailer $mailer
+     * @param MailerInterface $mailer
      * @param PositionedEncryptedParameter|null $userIdLink
      * @param PositionedParameter|null $codeLink
      * @param EncryptedParameter|null $userId
@@ -36,7 +36,7 @@ class Docodelogin extends AbstractAuthWebModel
         MySQL $mysql,
         EncrypterInterface $encrypter,
         Path $path,
-        Mailer $mailer,
+        MailerInterface $mailer,
         ?PositionedEncryptedParameter $userIdLink,
         ?PositionedParameter $codeLink=null,
         ?EncryptedParameter $userId=null,
@@ -75,7 +75,7 @@ class Docodelogin extends AbstractAuthWebModel
      * @param MySQL $mysql
      * @param EncrypterInterface $encrypter
      * @param Path $path
-     * @param Mailer $mailer
+     * @param MailerInterface $mailer
      * @param int $userIdInt
      * @param int $code
      * @return void
@@ -86,7 +86,7 @@ class Docodelogin extends AbstractAuthWebModel
         MySQL $mysql,
         EncrypterInterface $encrypter,
         Path $path,
-        Mailer $mailer,
+        MailerInterface $mailer,
         int $userIdInt,
         int $code,
     ): void
@@ -117,7 +117,7 @@ class Docodelogin extends AbstractAuthWebModel
      * @param MySQL $mysql
      * @param EncrypterInterface $encrypter
      * @param Path $path
-     * @param Mailer $mailer
+     * @param MailerInterface $mailer
      * @param PositionedEncryptedParameter $userIdLink
      * @param PositionedParameter $codeLink
      * @param PositionedParameter $client_id
@@ -130,7 +130,7 @@ class Docodelogin extends AbstractAuthWebModel
         MySQL $mysql,
         EncrypterInterface $encrypter,
         Path $path,
-        Mailer $mailer,
+        MailerInterface $mailer,
         PositionedEncryptedParameter $userIdLink,
         PositionedParameter $codeLink,
         PositionedParameter $client_id,

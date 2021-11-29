@@ -2,9 +2,9 @@
 namespace CarloNicora\Minimalism\Services\Auth\Factories;
 
 use CarloNicora\Minimalism\Interfaces\Encrypter\Interfaces\EncrypterInterface;
+use CarloNicora\Minimalism\Interfaces\Mailer\Interfaces\MailerInterface;
 use CarloNicora\Minimalism\Services\Auth\Auth;
 use CarloNicora\Minimalism\Services\Auth\Databases\OAuth\Tables\CodesTable;
-use CarloNicora\Minimalism\Services\Mailer\Mailer;
 use CarloNicora\Minimalism\Services\MySQL\MySQL;
 use CarloNicora\Minimalism\Services\Path;
 use Exception;
@@ -22,7 +22,7 @@ class CodeFactory
      * @param MySQL $mysql
      * @param EncrypterInterface $encrypter
      * @param Path $path
-     * @param Mailer $mailer
+     * @param MailerInterface $mailer
      * @throws Exception
      */
     public function __construct(
@@ -30,7 +30,7 @@ class CodeFactory
         private MySQL $mysql,
         private EncrypterInterface $encrypter,
         private Path $path,
-        private Mailer $mailer,
+        private MailerInterface $mailer,
     )
     {
         /** @noinspection PhpFieldAssignmentTypeMismatchInspection */

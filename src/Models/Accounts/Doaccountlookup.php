@@ -3,10 +3,10 @@ namespace CarloNicora\Minimalism\Services\Auth\Models\Accounts;
 
 use CarloNicora\Minimalism\Interfaces\Encrypter\Interfaces\EncrypterInterface;
 use CarloNicora\Minimalism\Interfaces\Encrypter\Parameters\PositionedEncryptedParameter;
+use CarloNicora\Minimalism\Interfaces\Mailer\Interfaces\MailerInterface;
 use CarloNicora\Minimalism\Services\Auth\Abstracts\AbstractAuthWebModel;
 use CarloNicora\Minimalism\Services\Auth\Auth;
 use CarloNicora\Minimalism\Services\Auth\Factories\CodeFactory;
-use CarloNicora\Minimalism\Services\Mailer\Mailer;
 use CarloNicora\Minimalism\Services\MySQL\MySQL;
 use CarloNicora\Minimalism\Services\Path;
 use Exception;
@@ -19,7 +19,7 @@ class Doaccountlookup extends AbstractAuthWebModel
      * @param MySQL $mysql
      * @param EncrypterInterface $encrypter
      * @param Path $path
-     * @param Mailer $mailer
+     * @param MailerInterface $mailer
      * @param PositionedEncryptedParameter|null $userId
      * @param string|null $email
      * @param bool|null $create
@@ -32,7 +32,7 @@ class Doaccountlookup extends AbstractAuthWebModel
         MySQL $mysql,
         EncrypterInterface $encrypter,
         Path $path,
-        Mailer $mailer,
+        MailerInterface $mailer,
         ?PositionedEncryptedParameter $userId=null,
         ?string $email=null,
         ?bool $create=false,
@@ -95,7 +95,7 @@ class Doaccountlookup extends AbstractAuthWebModel
      * @param MySQL $mysql
      * @param EncrypterInterface $encrypter
      * @param Path $path
-     * @param Mailer $mailer
+     * @param MailerInterface $mailer
      * @param PositionedEncryptedParameter|null $userId
      * @param bool|null $overridePassword
      * @param bool|null $recoverPassword
@@ -107,7 +107,7 @@ class Doaccountlookup extends AbstractAuthWebModel
         MySQL $mysql,
         EncrypterInterface $encrypter,
         Path $path,
-        Mailer $mailer,
+        MailerInterface $mailer,
         ?PositionedEncryptedParameter $userId=null,
         ?bool $overridePassword=false,
         ?bool $recoverPassword=false,

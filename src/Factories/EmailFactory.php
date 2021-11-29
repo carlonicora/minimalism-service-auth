@@ -1,9 +1,11 @@
 <?php
 namespace CarloNicora\Minimalism\Services\Auth\Factories;
 
-use CarloNicora\Minimalism\Services\Mailer\Mailer;
-use CarloNicora\Minimalism\Services\Mailer\Objects\Email;
+use CarloNicora\Minimalism\Interfaces\Mailer\Enums\RecipientType;
+use CarloNicora\Minimalism\Interfaces\Mailer\Interfaces\MailerInterface;
+use CarloNicora\Minimalism\Interfaces\Mailer\Objects\Recipient;
 use CarloNicora\Minimalism\Services\Path;
+use CarloNicora\Minimalism\Services\TwigMailer\Objects\TwigEmail;
 use Exception;
 
 class EmailFactory
@@ -11,11 +13,11 @@ class EmailFactory
     /**
      * EmailFactory constructor.
      * @param Path $path
-     * @param Mailer $mailer
+     * @param MailerInterface $mailer
      */
     public function __construct(
         private Path $path,
-        private Mailer $mailer,
+        private MailerInterface $mailer,
     )
     {
     }
@@ -50,15 +52,25 @@ class EmailFactory
             $paths[] = $additionalPaths;
         }
 
-        $email = new Email(
-            $title,
-            $paths
+        $email = new TwigEmail(
+            new Recipient(
+                emailAddress: $senderEmail,
+                name: $senderName??'',
+                type: RecipientType::Sender,
+            ),
+            subject: $title,
         );
-        $email->addRecipient($recipientEmail, $recipientName);
+        $email->addTemplateDirectory($paths);
+        $email->addRecipient(
+            new Recipient(
+                emailAddress: $recipientEmail,
+                name: $recipientName??'',
+                type: RecipientType::To,
+            )
+        );
 
         $email->addTemplateFile($template);
-        $email->addParameters($data);
-        $this->mailer->setSender($senderEmail, $senderName);
+        $email->setParameters($data);
         $this->mailer->send($email);
     }
 }
