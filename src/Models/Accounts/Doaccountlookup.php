@@ -80,12 +80,10 @@ class Doaccountlookup extends AbstractAuthWebModel
                 $redirection = 'password/' . $encrypter->encryptId($user['userId']);
             }
 
-            if ($redirection !== null) {
-                $this->document->meta->add(
-                    'redirection',
-                    $path->getUrl() . $redirection
-                );
-            }
+            $this->document->meta->add(
+                'redirection',
+                $path->getUrl() . $redirection
+            );
         }
 
         return 200;

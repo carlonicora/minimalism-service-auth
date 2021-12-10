@@ -3,7 +3,7 @@ version: '3.8'
 services:
   minimalism-service-auth:
     container_name: minimalism-service-auth
-    image: carlonicora/minimalism-service-auth:2.0
+    image: carlonicora/minimalism-service-auth:4.0
     build:
       context: .
       dockerfile: ./php-cli/Dockerfile
