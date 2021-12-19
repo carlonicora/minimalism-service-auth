@@ -47,8 +47,8 @@ class Auth extends AbstractService implements SecurityInterface
      * Auth constructor.
      * @param MySQL $mysql
      * @param Path $path
-     * @param string $MINIMALISM_SERVICE_AUTH_SENDER_NAME
-     * @param string $MINIMALISM_SERVICE_AUTH_SENDER_EMAIL
+     * @param string|null $MINIMALISM_SERVICE_AUTH_SENDER_NAME
+     * @param string|null $MINIMALISM_SERVICE_AUTH_SENDER_EMAIL
      * @param string|null $MINIMALISM_SERVICE_AUTH_CODE_EMAIL_TITLE
      * @param string|null $MINIMALISM_SERVICE_AUTH_FORGOT_EMAIL_TITLE
      * @param string|null $MINIMALISM_SERVICE_AUTH_FACEBOOK_ID
@@ -61,8 +61,8 @@ class Auth extends AbstractService implements SecurityInterface
     public function __construct(
         private MySQL $mysql,
         private Path $path,
-        private string $MINIMALISM_SERVICE_AUTH_SENDER_NAME,
-        private string $MINIMALISM_SERVICE_AUTH_SENDER_EMAIL,
+        private ?string $MINIMALISM_SERVICE_AUTH_SENDER_NAME=null,
+        private ?string $MINIMALISM_SERVICE_AUTH_SENDER_EMAIL=null,
         private ?string $MINIMALISM_SERVICE_AUTH_CODE_EMAIL_TITLE='',
         private ?string $MINIMALISM_SERVICE_AUTH_FORGOT_EMAIL_TITLE='',
         private ?string $MINIMALISM_SERVICE_AUTH_FACEBOOK_ID=null,
@@ -319,6 +319,9 @@ class Auth extends AbstractService implements SecurityInterface
      */
     public function getSenderName(): string
     {
+        if ($this->MINIMALISM_SERVICE_AUTH_SENDER_NAME === null){
+            throw new RuntimeException('Auth sender name not configured', 500);
+        }
         return $this->MINIMALISM_SERVICE_AUTH_SENDER_NAME;
     }
 
@@ -327,6 +330,9 @@ class Auth extends AbstractService implements SecurityInterface
      */
     public function getSenderEmail(): string
     {
+        if ($this->MINIMALISM_SERVICE_AUTH_SENDER_EMAIL === null){
+            throw new RuntimeException('Auth sender email not configured', 500);
+        }
         return $this->MINIMALISM_SERVICE_AUTH_SENDER_EMAIL;
     }
 

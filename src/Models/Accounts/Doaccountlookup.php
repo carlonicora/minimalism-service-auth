@@ -81,6 +81,11 @@ class Doaccountlookup extends AbstractAuthWebModel
             }
 
             $this->document->meta->add(
+                'userId',
+                $encrypter->encryptId($user['userId']),
+            );
+
+            $this->document->meta->add(
                 'redirection',
                 $path->getUrl() . $redirection
             );

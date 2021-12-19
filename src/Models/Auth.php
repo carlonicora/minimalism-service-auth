@@ -34,11 +34,11 @@ class Auth extends AbstractAuthWebModel
         ?string     $state=null,
     ): int
     {
-        if (false === empty($client_id)) {
+        if (!empty($client_id)) {
             $auth->setClientId($client_id);
         }
 
-        if (false === empty($state)) {
+        if (!empty($state)) {
             $auth->setState($state);
         }
 
