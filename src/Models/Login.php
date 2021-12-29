@@ -2,6 +2,7 @@
 namespace CarloNicora\Minimalism\Services\Auth\Models;
 
 use CarloNicora\JsonApi\Objects\Link;
+use CarloNicora\Minimalism\Enums\HttpCode;
 use CarloNicora\Minimalism\Services\Auth\Abstracts\AbstractAuthWebModel;
 use CarloNicora\Minimalism\Services\Auth\Auth as AuthService;
 use CarloNicora\Minimalism\Services\Auth\Factories\ThirdPartyLoginFactory;
@@ -18,7 +19,7 @@ class Login extends AbstractAuthWebModel
      * @param Path $path
      * @param string|null $client_id
      * @param string|null $state
-     * @return int
+     * @return HttpCode
      * @throws Exception
      */
     public function get(
@@ -26,7 +27,7 @@ class Login extends AbstractAuthWebModel
         Path $path,
         ?string $client_id,
         ?string $state,
-    ): int
+    ): HttpCode
     {
         if ($client_id !== null) {
             $auth->setClientId($client_id);
@@ -37,9 +38,9 @@ class Login extends AbstractAuthWebModel
         }
 
         if ($auth->getUserId() !== null){
-            $this->redirection = Auth::class;
-            $this->redirectionParameters = [];
-            return 302;
+            return $this->redirect(
+                modelClass: Auth::class,
+            );
         }
 
         $this->document->links->add(
@@ -62,6 +63,6 @@ class Login extends AbstractAuthWebModel
         $thirdPartyLogins->Google($this->document);
         $thirdPartyLogins->Apple($this->document);
 
-        return 200;
+        return HttpCode::Ok;
     }
 }

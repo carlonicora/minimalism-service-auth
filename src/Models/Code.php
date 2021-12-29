@@ -3,6 +3,7 @@ namespace CarloNicora\Minimalism\Services\Auth\Models;
 
 use CarloNicora\JsonApi\Objects\Link;
 use CarloNicora\JsonApi\Objects\ResourceObject;
+use CarloNicora\Minimalism\Enums\HttpCode;
 use CarloNicora\Minimalism\Interfaces\Encrypter\Parameters\PositionedEncryptedParameter;
 use CarloNicora\Minimalism\Parameters\PositionedParameter;
 use CarloNicora\Minimalism\Services\Auth\Abstracts\AbstractAuthWebModel;
@@ -20,7 +21,7 @@ class Code extends AbstractAuthWebModel
      * @param Path $path
      * @param PositionedEncryptedParameter $userId
      * @param PositionedParameter|null $create
-     * @return int
+     * @return HttpCode
      * @throws Exception
      */
     public function get(
@@ -28,7 +29,7 @@ class Code extends AbstractAuthWebModel
         Path                         $path,
         PositionedEncryptedParameter $userId,
         ?PositionedParameter         $create,
-    ): int
+    ): HttpCode
     {
         $user = $auth->getAuthenticationTable()->authenticateById($userId->getValue());
 
@@ -50,6 +51,6 @@ class Code extends AbstractAuthWebModel
                 . '?overridePassword=true')
         );
 
-        return 200;
+        return HttpCode::Ok;
     }
 }

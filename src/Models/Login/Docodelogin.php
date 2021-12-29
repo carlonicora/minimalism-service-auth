@@ -1,10 +1,12 @@
 <?php
 namespace CarloNicora\Minimalism\Services\Auth\Models\Login;
 
+use CarloNicora\Minimalism\Enums\HttpCode;
 use CarloNicora\Minimalism\Interfaces\Encrypter\Interfaces\EncrypterInterface;
 use CarloNicora\Minimalism\Interfaces\Encrypter\Parameters\EncryptedParameter;
 use CarloNicora\Minimalism\Interfaces\Encrypter\Parameters\PositionedEncryptedParameter;
 use CarloNicora\Minimalism\Interfaces\Mailer\Interfaces\MailerInterface;
+use CarloNicora\Minimalism\Objects\ModelParameters;
 use CarloNicora\Minimalism\Parameters\PositionedParameter;
 use CarloNicora\Minimalism\Services\Auth\Abstracts\AbstractAuthWebModel;
 use CarloNicora\Minimalism\Services\Auth\Auth;
@@ -28,7 +30,7 @@ class Docodelogin extends AbstractAuthWebModel
      * @param PositionedParameter|null $codeLink
      * @param EncryptedParameter|null $userId
      * @param string|null $code
-     * @return int
+     * @return HttpCode
      * @throws Exception
      */
     public function post(
@@ -41,7 +43,7 @@ class Docodelogin extends AbstractAuthWebModel
         ?PositionedParameter $codeLink=null,
         ?EncryptedParameter $userId=null,
         ?string $code=null,
-    ): int
+    ): HttpCode
     {
         if ($code === null && $codeLink !== null){
             $code = $codeLink->getValue();
@@ -67,7 +69,7 @@ class Docodelogin extends AbstractAuthWebModel
             $path->getUrl() . 'auth'
         );
 
-        return 200;
+        return HttpCode::Ok;
     }
 
     /**
@@ -122,7 +124,7 @@ class Docodelogin extends AbstractAuthWebModel
      * @param PositionedParameter $codeLink
      * @param PositionedParameter $client_id
      * @param PositionedParameter $state
-     * @return int
+     * @return HttpCode
      * @throws Exception
      */
     public function get(
@@ -135,7 +137,7 @@ class Docodelogin extends AbstractAuthWebModel
         PositionedParameter $codeLink,
         PositionedParameter $client_id,
         PositionedParameter $state,
-    ): int
+    ): HttpCode
     {
         $auth->setClientId($client_id->getValue());
         $auth->setState($state->getValue());
@@ -152,13 +154,19 @@ class Docodelogin extends AbstractAuthWebModel
             code: $code,
         );
 
-        $this->redirection = AuthService::class;
-        $this->redirectionParameters = [
-            'named' => [
-                'client_id' => $client_id->getValue(),
-                'state' => $state->getValue()
-            ]
-        ];
-        return 302;
+        $modelParameters = new ModelParameters();
+        $modelParameters->addNamedParameter(
+            name: 'client_id',
+            value: $client_id->getValue(),
+        );
+        $modelParameters->addNamedParameter(
+            name: 'state',
+            value: $state->getValue(),
+        );
+
+        return $this->redirect(
+            modelClass: AuthService::class,
+            parameters: $modelParameters,
+        );
     }
 }

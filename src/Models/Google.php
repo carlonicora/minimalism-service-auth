@@ -1,6 +1,7 @@
 <?php
 namespace CarloNicora\Minimalism\Services\Auth\Models;
 
+use CarloNicora\Minimalism\Enums\HttpCode;
 use CarloNicora\Minimalism\Services\Auth\Abstracts\AbstractAuthWebModel;
 use CarloNicora\Minimalism\Services\Auth\Auth as AuthService;
 use CarloNicora\Minimalism\Services\Auth\Interfaces\AuthenticationInterface;
@@ -14,14 +15,14 @@ class Google extends AbstractAuthWebModel
      * @param AuthService $auth
      * @param Path $path
      * @param string|null $code
-     * @return int
+     * @return HttpCode
      * @throws Exception
      */
     public function get(
         AuthService $auth,
         Path        $path,
         ?string     $code,
-    ): int
+    ): HttpCode
     {
         $client = new Google_Client();
         $client->setAuthConfig($path->getRoot() . DIRECTORY_SEPARATOR . $auth->getGoogleIdentityFile());
@@ -59,6 +60,6 @@ class Google extends AbstractAuthWebModel
             . $path->getUrl()
             . 'auth?client_id=' . $auth->getClientId() . '&state=' . $auth->getState());
 
-        return 200;
+        return HttpCode::Ok;
     }
 }

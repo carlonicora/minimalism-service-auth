@@ -2,6 +2,7 @@
 namespace CarloNicora\Minimalism\Services\Auth\Models;
 
 use CarloNicora\JsonApi\Objects\Link;
+use CarloNicora\Minimalism\Enums\HttpCode;
 use CarloNicora\Minimalism\Interfaces\Encrypter\Parameters\PositionedEncryptedParameter;
 use CarloNicora\Minimalism\Services\Auth\Abstracts\AbstractAuthWebModel;
 use CarloNicora\Minimalism\Services\Path;
@@ -15,13 +16,13 @@ class Password extends AbstractAuthWebModel
     /**
      * @param Path $path
      * @param PositionedEncryptedParameter $userId
-     * @return int
+     * @return HttpCode
      * @throws Exception
      */
     public function get(
         Path $path,
         PositionedEncryptedParameter $userId,
-    ): int
+    ): HttpCode
     {
         $this->document->meta->add('userId', $userId->getEncryptedValue());
 
@@ -37,6 +38,6 @@ class Password extends AbstractAuthWebModel
             new Link('forgot', $path->getUrl() . 'forgot')
         );
 
-        return 200;
+        return HttpCode::Ok;
     }
 }

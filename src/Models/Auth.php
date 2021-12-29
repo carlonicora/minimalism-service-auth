@@ -2,6 +2,7 @@
 namespace CarloNicora\Minimalism\Services\Auth\Models;
 
 use CarloNicora\JsonApi\Objects\Link;
+use CarloNicora\Minimalism\Enums\HttpCode;
 use CarloNicora\Minimalism\Services\Auth\Abstracts\AbstractAuthWebModel;
 use CarloNicora\Minimalism\Services\Auth\Auth as AuthService;
 use CarloNicora\Minimalism\Services\Auth\Builders\App;
@@ -23,7 +24,7 @@ class Auth extends AbstractAuthWebModel
      * @param Builder $builder
      * @param string|null $client_id
      * @param string|null $state
-     * @return int
+     * @return HttpCode
      * @throws Exception
      */
     public function get(
@@ -32,7 +33,7 @@ class Auth extends AbstractAuthWebModel
         Builder     $builder,
         ?string     $client_id=null,
         ?string     $state=null,
-    ): int
+    ): HttpCode
     {
         if (!empty($client_id)) {
             $auth->setClientId($client_id);
@@ -47,9 +48,9 @@ class Auth extends AbstractAuthWebModel
         }
 
         if ($auth->getUserId() === null){
-            $this->redirection = Login::class;
-            $this->redirectionParameters = null;
-            return 302;
+            return $this->redirect(
+                modelClass: Login::class,
+            );
         }
 
         $app = $auth->getAppByClientId();
@@ -85,6 +86,6 @@ class Auth extends AbstractAuthWebModel
             )
         );
 
-        return 200;
+        return HttpCode::Ok;
     }
 }

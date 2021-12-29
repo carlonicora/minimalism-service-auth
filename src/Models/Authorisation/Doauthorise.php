@@ -1,6 +1,7 @@
 <?php
 namespace CarloNicora\Minimalism\Services\Auth\Models\Authorisation;
 
+use CarloNicora\Minimalism\Enums\HttpCode;
 use CarloNicora\Minimalism\Services\Auth\Abstracts\AbstractAuthWebModel;
 use CarloNicora\Minimalism\Services\Auth\Auth;
 use CarloNicora\Minimalism\Services\Auth\Databases\OAuth\Tables\Enums\AppStatus;
@@ -11,12 +12,12 @@ class Doauthorise extends AbstractAuthWebModel
 {
     /**
      * @param Auth $auth
-     * @return int
+     * @return HttpCode
      * @throws Exception
      */
     public function post(
         Auth $auth,
-    ): int
+    ): HttpCode
     {
         if (empty($auth->getClientId())) {
             throw new RuntimeException('client_id missing', 412);
@@ -41,6 +42,6 @@ class Doauthorise extends AbstractAuthWebModel
 
         $auth->cleanData();
 
-        return 200;
+        return HttpCode::Ok;
     }
 }

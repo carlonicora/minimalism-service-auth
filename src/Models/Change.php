@@ -3,6 +3,7 @@ namespace CarloNicora\Minimalism\Services\Auth\Models;
 
 use CarloNicora\JsonApi\Objects\Link;
 use CarloNicora\JsonApi\Objects\ResourceObject;
+use CarloNicora\Minimalism\Enums\HttpCode;
 use CarloNicora\Minimalism\Interfaces\Encrypter\Parameters\PositionedEncryptedParameter;
 use CarloNicora\Minimalism\Services\Auth\Abstracts\AbstractAuthWebModel;
 use CarloNicora\Minimalism\Services\Auth\Auth as AuthService;
@@ -18,14 +19,14 @@ class Change extends AbstractAuthWebModel
      * @param AuthService $auth
      * @param Path $path
      * @param PositionedEncryptedParameter $userId
-     * @return int
+     * @return HttpCode
      * @throws Exception
      */
     public function get(
         AuthService                  $auth,
         Path                         $path,
         PositionedEncryptedParameter $userId,
-    ): int
+    ): HttpCode
     {
         $this->document->addResource(new ResourceObject('user', $userId->getEncryptedValue()));
 
@@ -44,6 +45,6 @@ class Change extends AbstractAuthWebModel
         } catch (Exception) {
         }
 
-        return 200;
+        return HttpCode::Ok;
     }
 }

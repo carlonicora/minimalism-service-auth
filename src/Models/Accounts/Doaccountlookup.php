@@ -1,6 +1,7 @@
 <?php
 namespace CarloNicora\Minimalism\Services\Auth\Models\Accounts;
 
+use CarloNicora\Minimalism\Enums\HttpCode;
 use CarloNicora\Minimalism\Interfaces\Encrypter\Interfaces\EncrypterInterface;
 use CarloNicora\Minimalism\Interfaces\Encrypter\Parameters\PositionedEncryptedParameter;
 use CarloNicora\Minimalism\Interfaces\Mailer\Interfaces\MailerInterface;
@@ -24,7 +25,7 @@ class Doaccountlookup extends AbstractAuthWebModel
      * @param string|null $email
      * @param bool|null $create
      * @param bool|null $recoverPassword
-     * @return int
+     * @return HttpCode
      * @throws Exception
      */
     public function post(
@@ -37,7 +38,7 @@ class Doaccountlookup extends AbstractAuthWebModel
         ?string $email=null,
         ?bool $create=false,
         ?bool $recoverPassword=false,
-    ): int
+    ): HttpCode
     {
         $codeFactory = new CodeFactory(
             auth: $auth,
@@ -91,7 +92,7 @@ class Doaccountlookup extends AbstractAuthWebModel
             );
         }
 
-        return 200;
+        return HttpCode::Ok;
     }
     /**
      * @param Auth $auth
@@ -102,7 +103,7 @@ class Doaccountlookup extends AbstractAuthWebModel
      * @param PositionedEncryptedParameter|null $userId
      * @param bool|null $overridePassword
      * @param bool|null $recoverPassword
-     * @return int
+     * @return HttpCode
      * @throws Exception
      */
     public function get(
@@ -114,7 +115,7 @@ class Doaccountlookup extends AbstractAuthWebModel
         ?PositionedEncryptedParameter $userId=null,
         ?bool $overridePassword=false,
         ?bool $recoverPassword=false,
-    ): int
+    ): HttpCode
     {
         $codeFactory = new CodeFactory(
             auth: $auth,
@@ -166,6 +167,6 @@ class Doaccountlookup extends AbstractAuthWebModel
             }
         }
 
-        return 200;
+        return HttpCode::Ok;
     }
 }

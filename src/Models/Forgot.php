@@ -2,6 +2,7 @@
 namespace CarloNicora\Minimalism\Services\Auth\Models;
 
 use CarloNicora\JsonApi\Objects\Link;
+use CarloNicora\Minimalism\Enums\HttpCode;
 use CarloNicora\Minimalism\Services\Auth\Abstracts\AbstractAuthWebModel;
 use CarloNicora\Minimalism\Services\Path;
 use Exception;
@@ -13,17 +14,17 @@ class Forgot extends AbstractAuthWebModel
 
     /**
      * @param Path $path
-     * @return int
+     * @return HttpCode
      * @throws Exception
      */
     public function get(
         Path $path,
-    ): int
+    ): HttpCode
     {
         $this->document->links->add(
             new Link('doResend', $path->getUrl() . 'Accounts/Doaccountlookup')
         );
 
-        return 200;
+        return HttpCode::Ok;
     }
 }

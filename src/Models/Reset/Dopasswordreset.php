@@ -1,6 +1,7 @@
 <?php
 namespace CarloNicora\Minimalism\Services\Auth\Models\Reset;
 
+use CarloNicora\Minimalism\Enums\HttpCode;
 use CarloNicora\Minimalism\Interfaces\Encrypter\Parameters\EncryptedParameter;
 use CarloNicora\Minimalism\Services\Auth\Abstracts\AbstractAuthWebModel;
 use CarloNicora\Minimalism\Services\Auth\Auth;
@@ -15,7 +16,7 @@ class Dopasswordreset extends AbstractAuthWebModel
      * @param Path $path
      * @param EncryptedParameter $userId
      * @param string $password
-     * @return int
+     * @return HttpCode
      * @throws Exception
      */
     public function post(
@@ -23,7 +24,7 @@ class Dopasswordreset extends AbstractAuthWebModel
         Path $path,
         EncryptedParameter $userId,
         string $password,
-    ): int
+    ): HttpCode
     {
         if ($auth->getAuthenticationTable()->authenticateById($userId->getValue()) === null) {
             throw new RuntimeException('Invalid email or password', 401);
@@ -38,6 +39,6 @@ class Dopasswordreset extends AbstractAuthWebModel
             $path->getUrl() . 'auth'
         );
 
-        return 200;
+        return HttpCode::Ok;
     }
 }

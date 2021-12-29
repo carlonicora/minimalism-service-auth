@@ -2,6 +2,7 @@
 namespace CarloNicora\Minimalism\Services\Auth\Models;
 
 use CarloNicora\JsonApi\Objects\Link;
+use CarloNicora\Minimalism\Enums\HttpCode;
 use CarloNicora\Minimalism\Services\Auth\Abstracts\AbstractAuthWebModel;
 use CarloNicora\Minimalism\Services\Auth\Auth as AuthService;
 use CarloNicora\Minimalism\Services\Auth\Factories\ThirdPartyLoginFactory;
@@ -19,7 +20,7 @@ class Register extends AbstractAuthWebModel
      * @param string|null $client_id
      * @param string|null $state
      * @param string|null $errorMessage
-     * @return int
+     * @return HttpCode
      * @throws Exception
      */
     public function get(
@@ -28,7 +29,7 @@ class Register extends AbstractAuthWebModel
         ?string $client_id,
         ?string $state,
         ?string $errorMessage,
-    ): int
+    ): HttpCode
     {
         if ($client_id !== null) {
             $auth->setClientId($client_id);
@@ -39,9 +40,10 @@ class Register extends AbstractAuthWebModel
         }
 
         if ($auth->getUserId() !== null){
-            $this->redirection = Auth::class;
-            $this->redirectionParameters = [];
-            return 302;
+            return $this->redirect(
+                modelClass: Auth::class,
+            );
+            //$this->redirectionParameters = [];
         }
 
         $this->document->links->add(
@@ -73,6 +75,6 @@ class Register extends AbstractAuthWebModel
         $thirdPartyLogins->Google($this->document);
         $thirdPartyLogins->Apple($this->document);
 
-        return 200;
+        return HttpCode::Ok;
     }
 }

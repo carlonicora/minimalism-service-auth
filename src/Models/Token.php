@@ -1,6 +1,7 @@
 <?php
 namespace CarloNicora\Minimalism\Services\Auth\Models;
 
+use CarloNicora\Minimalism\Enums\HttpCode;
 use CarloNicora\Minimalism\Services\Auth\Abstracts\AbstractAuthWebModel;
 use CarloNicora\Minimalism\Services\Auth\Databases\OAuth\Tables\AppsTables;
 use CarloNicora\Minimalism\Services\Auth\Databases\OAuth\Tables\AuthsTable;
@@ -17,13 +18,13 @@ class Token extends AbstractAuthWebModel
     /**
      * @param MySQL $mysql
      * @param array $payload
-     * @return int
+     * @return HttpCode
      * @throws Exception
      */
     public function post(
         MySQL $mysql,
         array $payload,
-    ): int
+    ): HttpCode
     {
         $grantType = strtolower($payload['grant_type']);
         if ($grantType !== 'authorization_code' && $grantType !== 'client_credentials'){
@@ -88,6 +89,6 @@ class Token extends AbstractAuthWebModel
         $this->document = new NonJsonApiDocument();
         $this->document->meta->add('output', $response);
 
-        return 201;
+        return HttpCode::Created;
     }
 }

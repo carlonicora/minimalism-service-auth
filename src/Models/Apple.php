@@ -1,6 +1,7 @@
 <?php
 namespace CarloNicora\Minimalism\Services\Auth\Models;
 
+use CarloNicora\Minimalism\Enums\HttpCode;
 use CarloNicora\Minimalism\Interfaces\LoggerInterface;
 use CarloNicora\Minimalism\Services\Auth\Abstracts\AbstractAuthWebModel;
 use CarloNicora\Minimalism\Services\Auth\Auth as AuthService;
@@ -19,7 +20,7 @@ class Apple extends AbstractAuthWebModel
      * @param MySQL $mysql
      * @param string|null $code
      * @param string|null $state
-     * @return int
+     * @return HttpCode
      * @throws Exception
      */
     public function post(
@@ -29,7 +30,7 @@ class Apple extends AbstractAuthWebModel
         MySQL           $mysql,
         ?string         $code,
         ?string         $state,
-    ): int
+    ): HttpCode
     {
         if($auth->getAppleState() !== $state) {
             $logger->error(
@@ -154,7 +155,7 @@ class Apple extends AbstractAuthWebModel
             echo 'error';
         }
 
-        return 200;
+        return HttpCode::Ok;
     }
 
     /**
