@@ -26,9 +26,7 @@ class DoValidation extends AbstractAuthWebModel
         $authenticator = new PHPGangsta_GoogleAuthenticator();
         $tolerance = 1;
 
-        $salt = $auth->getAuthenticationTable()->getSalt(
-            userId: $auth->getUserId(),
-        );
+        $salt = $auth->getAuthenticationTable()->authenticateById($auth->getUserId())?->getSalt();
 
         if (!$authenticator->verifyCode($salt, $code, $tolerance)){
             return HttpCode::Unauthorized;

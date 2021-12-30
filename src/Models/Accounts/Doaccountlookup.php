@@ -69,21 +69,21 @@ class Doaccountlookup extends AbstractAuthWebModel
                 'If your email is in our database, we have sent you a message to reset your password'
             );
         } else {
-            if (empty($user['password'])) {
+            if ($user->getPassword() === null) {
                 $codeFactory->generateAndSendCode($user);
 
                 if ($create){
-                    $redirection = 'code/' . $encrypter->encryptId($user['userId']) . '/1';
+                    $redirection = 'code/' . $encrypter->encryptId($user->getId()) . '/1';
                 } else {
-                    $redirection = 'code/' . $encrypter->encryptId($user['userId']);
+                    $redirection = 'code/' . $encrypter->encryptId($user->getId());
                 }
             } else {
-                $redirection = 'password/' . $encrypter->encryptId($user['userId']);
+                $redirection = 'password/' . $encrypter->encryptId($user->getId());
             }
 
             $this->document->meta->add(
                 'userId',
-                $encrypter->encryptId($user['userId']),
+                $encrypter->encryptId($user->getId()),
             );
 
             $this->document->meta->add(
@@ -143,20 +143,20 @@ class Doaccountlookup extends AbstractAuthWebModel
         } else {
             $redirection = null;
 
-            if ($overridePassword || empty($user['password'])) {
+            if ($overridePassword || $user->getPassword() === null) {
                 $codeFactory->generateAndSendCode($user);
 
                 if ($overridePassword){
                     header(
                         'location:'
                         . $path->getUrl()
-                        . 'code/' . $encrypter->encryptId($user['userId'])
+                        . 'code/' . $encrypter->encryptId($user->getId())
                     );
                 } else {
-                    $redirection = 'code/' . $encrypter->encryptId($user['userId']);
+                    $redirection = 'code/' . $encrypter->encryptId($user->getId());
                 }
             } else {
-                $redirection = 'password/' . $encrypter->encryptId($user['userId']);
+                $redirection = 'password/' . $encrypter->encryptId($user->getId());
             }
 
             if ($redirection !== null) {

@@ -4,7 +4,6 @@ namespace CarloNicora\Minimalism\Services\Auth\Models;
 use CarloNicora\Minimalism\Enums\HttpCode;
 use CarloNicora\Minimalism\Services\Auth\Abstracts\AbstractAuthWebModel;
 use CarloNicora\Minimalism\Services\Auth\Auth as AuthService;
-use CarloNicora\Minimalism\Services\Auth\Interfaces\AuthenticationInterface;
 use CarloNicora\Minimalism\Services\Path;
 use Exception;
 use Facebook\Authentication\OAuth2Client;
@@ -57,11 +56,11 @@ class Facebook extends AbstractAuthWebModel
             $user = $auth->getAuthenticationTable()->generateNewUser($fbu['email'], $fbu['name'], 'facebook');
             $auth->setIsNewRegistration();
             $auth->getAuthenticationTable()->activateUser($user);
-        } elseif ($user['isActive'] === AuthenticationInterface::INACTIVE_USER){
+        } elseif (!$user->isActive()){
             $auth->getAuthenticationTable()->activateUser($user);
         }
 
-        $auth->setUserId($user['userId']);
+        $auth->setUserId($user->getId());
 
         header(
             'location: '

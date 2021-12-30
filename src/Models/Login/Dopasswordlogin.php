@@ -30,13 +30,13 @@ class Dopasswordlogin extends AbstractAuthWebModel
             throw new RuntimeException('Invalid email or password', 401);
         }
 
-        if (!$this->decryptPassword($password, $user['password'])){
+        if (!$this->decryptPassword($password, $user->getPassword())){
             throw new RuntimeException('Invalid email or password', 401);
         }
 
         $auth->setUserId($userId->getValue());
 
-        if ($user['salt'] === null) {
+        if ($user->getSalt() === null) {
             $this->document->meta->add(
                 'redirection',
                 $path->getUrl() . 'auth'

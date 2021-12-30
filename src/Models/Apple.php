@@ -6,7 +6,6 @@ use CarloNicora\Minimalism\Interfaces\LoggerInterface;
 use CarloNicora\Minimalism\Services\Auth\Abstracts\AbstractAuthWebModel;
 use CarloNicora\Minimalism\Services\Auth\Auth as AuthService;
 use CarloNicora\Minimalism\Services\Auth\Databases\OAuth\Tables\AppleIdsTable;
-use CarloNicora\Minimalism\Services\Auth\Interfaces\AuthenticationInterface;
 use CarloNicora\Minimalism\Services\MySQL\MySQL;
 use CarloNicora\Minimalism\Services\Path;
 use Exception;
@@ -115,7 +114,7 @@ class Apple extends AbstractAuthWebModel
                     exit;
                 }
 
-                if ($user['isActive'] === AuthenticationInterface::INACTIVE_USER){
+                if (!$user->isActive()){
                     $auth->getAuthenticationTable()->activateUser($user);
                 }
             } else {
@@ -124,8 +123,8 @@ class Apple extends AbstractAuthWebModel
                     $auth->setIsNewRegistration();
                 }
 
-                if (!empty($user)){
-                    if (!array_key_exists('isActive', $user) || $user['isActive'] === AuthenticationInterface::INACTIVE_USER) {
+                if ($user !== null){
+                    if (!$user->isActive()) {
                         $auth->getAuthenticationTable()->activateUser($user);
                     }
 
@@ -134,14 +133,14 @@ class Apple extends AbstractAuthWebModel
                     if ($appleIdRecord === []){
                         $appleIdRecord = [
                             'appleId' => $claims['sub'],
-                            'userId' => $user['userId']
+                            'userId' => $user->getId(),
                         ];
                         $appleIdsTable->update($appleIdRecord);
                     }
                 }
             }
 
-            $auth->setUserId($user['userId']);
+            $auth->setUserId($user->getId());
 
             header(
                 'location: '

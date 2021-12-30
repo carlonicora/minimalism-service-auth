@@ -10,8 +10,8 @@ use CarloNicora\Minimalism\Objects\ModelParameters;
 use CarloNicora\Minimalism\Parameters\PositionedParameter;
 use CarloNicora\Minimalism\Services\Auth\Abstracts\AbstractAuthWebModel;
 use CarloNicora\Minimalism\Services\Auth\Auth;
+use CarloNicora\Minimalism\Services\Auth\Data\User;
 use CarloNicora\Minimalism\Services\Auth\Factories\CodeFactory;
-use CarloNicora\Minimalism\Services\Auth\Interfaces\AuthenticationInterface;
 use CarloNicora\Minimalism\Services\Auth\Models\Auth as AuthService;
 use CarloNicora\Minimalism\Services\MySQL\MySQL;
 use CarloNicora\Minimalism\Services\Path;
@@ -65,7 +65,7 @@ class Docodelogin extends AbstractAuthWebModel
              code: $code,
         );
 
-        if ($user['salt'] === null) {
+        if ($user->getSalt() === null) {
             $this->document->meta->add(
                 'redirection',
                 $path->getUrl() . 'auth'
@@ -88,7 +88,7 @@ class Docodelogin extends AbstractAuthWebModel
      * @param MailerInterface $mailer
      * @param int $userIdInt
      * @param int $code
-     * @return array
+     * @return User
      * @throws Exception
      */
     private function authenticateAndValidateUser(
@@ -99,7 +99,7 @@ class Docodelogin extends AbstractAuthWebModel
         MailerInterface $mailer,
         int $userIdInt,
         int $code,
-    ): array
+    ): User
     {
         if (($user = $auth->getAuthenticationTable()->authenticateById($userIdInt)) === null){
             throw new RuntimeException('Could not find your account', 401);
@@ -115,11 +115,11 @@ class Docodelogin extends AbstractAuthWebModel
 
         $codeFactory->validateCode($user, $code);
 
-        if ($user['isActive'] === AuthenticationInterface::INACTIVE_USER) {
+        if (!$user->isActive()) {
             $auth->getAuthenticationTable()->activateUser($user);
         }
 
-        $auth->setUserId($user['userId']);
+        $auth->setUserId($user->getId());
 
         return $user;
     }

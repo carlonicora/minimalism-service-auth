@@ -66,8 +66,12 @@ class Setup extends AbstractAuthWebModel
 
         $user = $auth->getAuthenticationTable()->authenticateById($userId);
 
+        if ($user === null){
+            throw new RuntimeException('missing user details', 500);
+        }
+
         $qrCodeUrl = $authenticator->getQRCodeGoogleUrl(
-            name: $user['email'],
+            name: $user->getEmail(),
             secret: $salt,
             title: $app[0]['name'],
         );

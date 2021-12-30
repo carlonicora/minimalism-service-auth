@@ -1,22 +1,21 @@
 <?php
 namespace CarloNicora\Minimalism\Services\Auth\Interfaces;
 
+use CarloNicora\Minimalism\Services\Auth\Data\User;
+
 interface AuthenticationInterface
 {
-    public const ACTIVE_USER = true;
-    public const INACTIVE_USER = false;
-
     /**
      * @param string $email
-     * @return array|null
+     * @return User|null
      */
-    public function authenticateByEmail(string $email): ?array;
+    public function authenticateByEmail(string $email): ?User;
 
     /**
      * @param int $userId
-     * @return array|null
+     * @return User|null
      */
-    public function authenticateById(int $userId): ?array;
+    public function authenticateById(int $userId): ?User;
 
     /**
      * @param int $userId
@@ -32,21 +31,15 @@ interface AuthenticationInterface
     public function updateSalt(int $userId, string $salt): void;
 
     /**
-     * @param int $userId
-     * @return string|null
-     */
-    public function getSalt(int $userId): ?string;
-
-    /**
      * @param string $email
      * @param string|null $name
      * @param string|null $provider
-     * @return array
+     * @return User
      */
-    public function generateNewUser(string $email, string $name=null, string $provider=null): array;
+    public function generateNewUser(string $email, string $name=null, string $provider=null): User;
 
     /**
-     * @param array $user
+     * @param User $user
      */
-    public function activateUser(array $user): void;
+    public function activateUser(User $user): void;
 }

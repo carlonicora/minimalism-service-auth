@@ -10,6 +10,7 @@ use CarloNicora\Minimalism\Services\Auth\Abstracts\AbstractAuthWebModel;
 use CarloNicora\Minimalism\Services\Auth\Auth as AuthService;
 use CarloNicora\Minimalism\Services\Path;
 use Exception;
+use RuntimeException;
 
 class Code extends AbstractAuthWebModel
 {
@@ -33,8 +34,12 @@ class Code extends AbstractAuthWebModel
     {
         $user = $auth->getAuthenticationTable()->authenticateById($userId->getValue());
 
+        if ($user === null){
+            throw new RuntimeException('missing user details', 500);
+        }
+
         $userResource = new ResourceObject('user', $userId->getEncryptedValue());
-        $userResource->attributes->add('email', $user['email']);
+        $userResource->attributes->add('email', $user->getEmail());
         $userResource->attributes->add('new', ($create && $create->getValue()));
 
         $this->document->addResource($userResource);
