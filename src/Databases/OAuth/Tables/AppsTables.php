@@ -39,4 +39,23 @@ class AppsTables extends AbstractMySqlTable
 
         return $this->functions->runRead();
     }
+
+    /**
+     * @param string $token
+     * @return array
+     * @throws Exception
+     */
+    public function readByToken(
+        string $token,
+    ): array
+    {
+        $this->sql = 'SELECT ' . self::getTableName() . '.*'
+            . ' FROM ' . self::getTableName()
+            . ' JOIN ' . TokensTable::getTableName()
+            . ' ON ' . self::getTableName() . '.appId=' . TokensTable::getTableName() . '.appId'
+            . ' WHERE ' . TokensTable::getTableName() . '.token=?;';
+        $this->parameters = ['s', $token];
+
+        return $this->functions->runRead();
+    }
 }

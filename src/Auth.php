@@ -316,6 +316,24 @@ class Auth extends AbstractService implements SecurityInterface
     }
 
     /**
+     * @return array|null
+     * @throws Exception
+     */
+    public function getAppByToken(
+    ): ?array
+    {
+        /** @var AppsTables $apps */
+        $apps = $this->mysql->create(AppsTables::class);
+        $app = $apps->readByToken($this->getToken());
+
+        if ($app === [] || count($app) > 1){
+            return null;
+        }
+
+        return $app[0];
+    }
+
+    /**
      * @return string|null
      */
     public function getToken(): ?string
