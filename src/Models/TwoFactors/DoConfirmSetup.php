@@ -6,7 +6,7 @@ use CarloNicora\Minimalism\Services\Auth\Abstracts\AbstractAuthWebModel;
 use CarloNicora\Minimalism\Services\Auth\Auth;
 use CarloNicora\Minimalism\Services\Path;
 use Exception;
-use PHPGangsta_GoogleAuthenticator;
+use Sonata\GoogleAuthenticator\GoogleAuthenticator;
 
 class DoConfirmSetup extends AbstractAuthWebModel
 {
@@ -23,12 +23,12 @@ class DoConfirmSetup extends AbstractAuthWebModel
         ?string $code=null,
     ): HttpCode
     {
-        $authenticator = new PHPGangsta_GoogleAuthenticator();
+        $authenticator = new GoogleAuthenticator();
         $tolerance = 1;
 
         $salt = $auth->getSalt();
 
-        if (!$authenticator->verifyCode($salt, $code, $tolerance)){
+        if (!$authenticator->checkCode($salt, $code, $tolerance)){
             return HttpCode::Unauthorized;
         }
 

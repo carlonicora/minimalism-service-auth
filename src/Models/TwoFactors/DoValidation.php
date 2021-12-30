@@ -8,8 +8,8 @@ use CarloNicora\Minimalism\Services\Auth\Databases\OAuth\Tables\OneTimePasswords
 use CarloNicora\Minimalism\Services\MySQL\MySQL;
 use CarloNicora\Minimalism\Services\Path;
 use Exception;
-use PHPGangsta_GoogleAuthenticator;
 use RuntimeException;
+use Sonata\GoogleAuthenticator\GoogleAuthenticator;
 
 class DoValidation extends AbstractAuthWebModel
 {
@@ -28,12 +28,12 @@ class DoValidation extends AbstractAuthWebModel
         string $code,
     ): HttpCode
     {
-        $authenticator = new PHPGangsta_GoogleAuthenticator();
+        $authenticator = new GoogleAuthenticator();
         $tolerance = 1;
 
         $salt = $auth->getAuthenticationTable()->authenticateById($auth->getUserId())?->getSalt();
 
-        if (!$authenticator->verifyCode($salt, $code, $tolerance)){
+        if (!$authenticator->checkCode($salt, $code, $tolerance)){
             /** @var OneTimePasswordsBackupTable $otpbTable */
             $otpbTable = $mysql->create(dbReader: OneTimePasswordsBackupTable::class);
             

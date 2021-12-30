@@ -10,8 +10,9 @@ use CarloNicora\Minimalism\Services\Auth\Databases\OAuth\Tables\TokensTable;
 use CarloNicora\Minimalism\Services\MySQL\MySQL;
 use CarloNicora\Minimalism\Services\Path;
 use Exception;
-use PHPGangsta_GoogleAuthenticator;
 use RuntimeException;
+use Sonata\GoogleAuthenticator\GoogleAuthenticator;
+use Sonata\GoogleAuthenticator\GoogleQrUrl;
 
 class Setup extends AbstractAuthWebModel
 {
@@ -48,8 +49,7 @@ class Setup extends AbstractAuthWebModel
             throw new RuntimeException('Invalid token', HttpCode::Forbidden->value);
         }
 
-        $authenticator = new PHPGangsta_GoogleAuthenticator();
-        $salt = $authenticator->createSecret();
+        $salt = (new GoogleAuthenticator())->generateSecret();
 
         $auth->setClientId($client_id);
         $auth->setState($state);
@@ -70,10 +70,10 @@ class Setup extends AbstractAuthWebModel
             throw new RuntimeException('missing user details', 500);
         }
 
-        $qrCodeUrl = $authenticator->getQRCodeGoogleUrl(
-            name: $user->getEmail(),
+        $qrCodeUrl = GoogleQrUrl::generate(
+            accountName:$user->getEmail(),
             secret: $salt,
-            title: $app[0]['name'],
+            issuer:$app[0]['name'],
         );
 
         $this->document->links->add(

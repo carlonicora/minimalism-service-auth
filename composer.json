@@ -1,7 +1,7 @@
 {
   "name": "carlonicora/minimalism-service-auth",
   "description": "Authentication and Authorisation service for minimalism",
-  "version": "4.1.0-alpha4",
+  "version": "4.1.0-alpha5",
   "homepage": "https://carlonicora.com",
   "time": "2020-06-13",
   "license": "MIT",
@@ -37,6 +37,6 @@
     "web-token/jwt-framework": "~2.2",
     "facebook/graph-sdk":"*",
     "google/apiclient":"*",
-    "phpgangsta/googleauthenticator": "dev-master"
+    "sonata-project/google-authenticator": "~2.3"
   }
 }
