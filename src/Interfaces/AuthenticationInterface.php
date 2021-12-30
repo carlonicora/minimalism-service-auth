@@ -36,7 +36,7 @@ interface AuthenticationInterface
      * @param string|null $provider
      * @return User
      */
-    public function generateNewUser(string $email, string $name=null, string $provider=null): User;
+    public function generateNewUser(string $email, ?string $name=null, ?string $provider=null): User;
 
     /**
      * @param User $user
