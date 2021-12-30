@@ -59,7 +59,7 @@ class Auth extends AbstractAuthWebModel
             throw new RuntimeException('missing user details', 500);
         }
 
-        if ($user->getSalt() !== null && !$auth->isTwoFactorValidationConfirmed()){
+        if (!empty($user->getSalt()) && !$auth->isTwoFactorValidationConfirmed()){
             header('Location: ' . $path->getUrl() . 'TwoFactors/validation');
 
             exit;

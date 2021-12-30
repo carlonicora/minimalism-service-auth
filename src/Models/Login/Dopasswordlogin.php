@@ -36,7 +36,7 @@ class Dopasswordlogin extends AbstractAuthWebModel
 
         $auth->setUserId($userId->getValue());
 
-        if ($user->getSalt() === null) {
+        if (empty($user->getSalt())) {
             $this->document->meta->add(
                 'redirection',
                 $path->getUrl() . 'auth'

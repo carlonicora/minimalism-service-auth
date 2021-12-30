@@ -32,6 +32,8 @@ class DoConfirmSetup extends AbstractAuthWebModel
             return HttpCode::Unauthorized;
         }
 
+        $auth->set2faValiationConfirmed();
+
         $userId = $auth->getUserId();
         $auth->getAuthenticationTable()->updateSalt(
             userId: $userId,
@@ -40,7 +42,7 @@ class DoConfirmSetup extends AbstractAuthWebModel
 
         $this->document->meta->add(
             'redirection',
-            $path->getUrl() . 'auth'
+            $path->getUrl() . 'twofactors/backupcodes'
         );
 
         return HttpCode::Ok;
