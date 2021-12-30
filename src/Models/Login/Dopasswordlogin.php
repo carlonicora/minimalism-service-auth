@@ -36,10 +36,17 @@ class Dopasswordlogin extends AbstractAuthWebModel
 
         $auth->setUserId($userId->getValue());
 
-        $this->document->meta->add(
-            'redirection',
-            $path->getUrl() . 'auth'
-        );
+        if ($user['salt'] === null) {
+            $this->document->meta->add(
+                'redirection',
+                $path->getUrl() . 'auth'
+            );
+        } else {
+            $this->document->meta->add(
+                'redirection',
+                $path->getUrl() . 'TwoFactors/validation'
+            );
+        }
 
         return HttpCode::Ok;
     }

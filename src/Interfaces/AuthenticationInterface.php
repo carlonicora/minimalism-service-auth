@@ -25,6 +25,19 @@ interface AuthenticationInterface
     public function updatePassword(int $userId, string $password): void;
 
     /**
+     * @param int $userId
+     * @param string $salt
+     * @return void
+     */
+    public function updateSalt(int $userId, string $salt): void;
+
+    /**
+     * @param int $userId
+     * @return string|null
+     */
+    public function getSalt(int $userId): ?string;
+
+    /**
      * @param string $email
      * @param string|null $name
      * @param string|null $provider

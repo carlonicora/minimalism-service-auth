@@ -28,11 +28,17 @@ class Auth extends AbstractService implements SecurityInterface
     /** @var string|null  */
     private ?string $state=null;
 
+    /** @var string|null  */
+    private ?string $salt=null;
+
     /** @var int|null */
     private ?int $userId=null;
 
     /** @var bool  */
     private bool $isUser=false;
+
+    /** @var bool  */
+    private bool $twoFactorValidationConfirmed=false;
 
     /** @var bool  */
     private bool $isNewRegistration=false;
@@ -116,6 +122,8 @@ class Auth extends AbstractService implements SecurityInterface
         $this->appleState = null;
         $this->userId = null;
         $this->isUser = false;
+        $this->salt = null;
+        $this->twoFactorValidationConfirmed = false;
     }
 
     /**
@@ -148,6 +156,43 @@ class Auth extends AbstractService implements SecurityInterface
     public function setState(?string $state): void
     {
         $this->state = $state;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getSalt(
+    ): ?string
+    {
+        return $this->salt;
+    }
+
+    /**
+     * @param string|null $salt
+     */
+    public function setSalt(
+        ?string $salt,
+    ): void
+    {
+        $this->salt = $salt;
+    }
+
+    /**
+     * @return void
+     */
+    public function set2faValiationConfirmed(
+    ): void
+    {
+        $this->twoFactorValidationConfirmed = true;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isTwoFactorValidationConfirmed(
+    ): bool
+    {
+        return $this->twoFactorValidationConfirmed;
     }
 
     /**
@@ -448,6 +493,7 @@ class Auth extends AbstractService implements SecurityInterface
         if (isset($_SESSION)) {
             $this->client_id = $_SESSION['client_id'] ?? null;
             $this->state = $_SESSION['state'] ?? null;
+            $this->salt = $_SESSION['salt'] ?? null;
             $this->userId = $_SESSION['userId'] ?? null;
             $this->appleState = $_SESSION['appleState'] ?? null;
             $this->isUser = array_key_exists('isUser', $_SESSION)
@@ -455,6 +501,9 @@ class Auth extends AbstractService implements SecurityInterface
                 : false;
             $this->isNewRegistration = array_key_exists('isNewRegistration', $_SESSION)
                 ? $_SESSION['isNewRegistration']
+                : false;
+            $this->twoFactorValidationConfirmed = array_key_exists('2faConfirmed', $_SESSION)
+                ? $_SESSION['2faConfirmed']
                 : false;
         }
     }
@@ -468,10 +517,12 @@ class Auth extends AbstractService implements SecurityInterface
         if ($_SESSION !== null) {
             $_SESSION['userId'] = $this->userId;
             $_SESSION['client_id'] = $this->client_id;
+            $_SESSION['salt'] = $this->salt;
             $_SESSION['state'] = $this->state;
             $_SESSION['appleState'] = $this->appleState;
             $_SESSION['isUser'] = $this->isUser();
             $_SESSION['isNewRegistration'] = $this->isNewRegistration();
+            $_SESSION['2faConfirmed'] = $this->twoFactorValidationConfirmed;
         }
     }
 }

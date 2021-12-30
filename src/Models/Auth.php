@@ -53,6 +53,14 @@ class Auth extends AbstractAuthWebModel
             );
         }
 
+        $user = $auth->getAuthenticationTable()->authenticateById($auth->getUserId());
+
+        if ($user['salt'] !== null && !$auth->isTwoFactorValidationConfirmed()){
+            header('Location: ' . $path->getUrl() . 'TwoFactors/validation');
+
+            exit;
+        }
+
         $app = $auth->getAppByClientId();
 
         if ($app === []){

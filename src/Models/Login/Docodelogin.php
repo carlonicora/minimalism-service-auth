@@ -48,13 +48,14 @@ class Docodelogin extends AbstractAuthWebModel
         if ($code === null && $codeLink !== null){
             $code = $codeLink->getValue();
         }
+
         if ($userId !== null) {
             $userIdInt = $userId->getValue();
         } else {
             $userIdInt = $userIdLink?->getValue();
         }
 
-         $this->authenticateAndValidateUser(
+         $user = $this->authenticateAndValidateUser(
              auth: $auth,
              mysql: $mysql,
              encrypter: $encrypter,
@@ -64,10 +65,17 @@ class Docodelogin extends AbstractAuthWebModel
              code: $code,
         );
 
-        $this->document->meta->add(
-            'redirection',
-            $path->getUrl() . 'auth'
-        );
+        if ($user['salt'] === null) {
+            $this->document->meta->add(
+                'redirection',
+                $path->getUrl() . 'auth'
+            );
+        } else {
+            $this->document->meta->add(
+                'redirection',
+                $path->getUrl() . 'TwoFactors/validation'
+            );
+        }
 
         return HttpCode::Ok;
     }
@@ -80,7 +88,7 @@ class Docodelogin extends AbstractAuthWebModel
      * @param MailerInterface $mailer
      * @param int $userIdInt
      * @param int $code
-     * @return void
+     * @return array
      * @throws Exception
      */
     private function authenticateAndValidateUser(
@@ -91,7 +99,7 @@ class Docodelogin extends AbstractAuthWebModel
         MailerInterface $mailer,
         int $userIdInt,
         int $code,
-    ): void
+    ): array
     {
         if (($user = $auth->getAuthenticationTable()->authenticateById($userIdInt)) === null){
             throw new RuntimeException('Could not find your account', 401);
@@ -112,6 +120,8 @@ class Docodelogin extends AbstractAuthWebModel
         }
 
         $auth->setUserId($user['userId']);
+
+        return $user;
     }
 
     /**
@@ -144,6 +154,7 @@ class Docodelogin extends AbstractAuthWebModel
         $code = $codeLink->getValue();
         $userIdInt = $userIdLink->getValue();
 
+        /** @noinspection UnusedFunctionResultInspection */
         $this->authenticateAndValidateUser(
             auth: $auth,
             mysql: $mysql,
