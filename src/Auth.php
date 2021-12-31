@@ -532,7 +532,7 @@ class Auth extends AbstractService implements SecurityInterface
     public function destroy(): void
     {
         parent::destroy();
-        if ($_SESSION !== null) {
+        if (isset($_SESSION)) {
             $_SESSION['userId'] = $this->userId;
             $_SESSION['client_id'] = $this->client_id;
             $_SESSION['salt'] = $this->salt;
