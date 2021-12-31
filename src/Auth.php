@@ -334,6 +334,24 @@ class Auth extends AbstractService implements SecurityInterface
     }
 
     /**
+     * @return array|null
+     * @throws Exception
+     */
+    public function getUserIdByToken(
+    ): ?int
+    {
+        /** @var TokensTable $tokens */
+        $tokens = $this->mysql->create(TokensTable::class);
+        $token = $tokens->loadByToken($this->getToken());
+
+        if ($token === [] || count($token) > 1){
+            return null;
+        }
+
+        return $token[0]['userId'];
+    }
+
+    /**
      * @return string|null
      */
     public function getToken(): ?string
