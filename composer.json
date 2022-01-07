@@ -1,12 +1,12 @@
 {
   "name": "carlonicora/minimalism-service-auth",
   "description": "Authentication and Authorisation service for minimalism",
-  "version": "4.1.0-alpha9",
+  "version": "4.1.0",
   "homepage": "https://carlonicora.com",
   "time": "2020-06-13",
   "license": "MIT",
   "type": "library",
-  "minimum-stability": "alpha",
+  "minimum-stability": "stable",
   "authors": [
     {
       "name": "Carlo Nicora",
@@ -26,7 +26,7 @@
     "ext-json": "*",
     "ext-curl": "*",
     "carlonicora/jsonapi": "~3.0",
-    "carlonicora/minimalism": "~13.0.1",
+    "carlonicora/minimalism": "~13.0",
     "carlonicora/minimalism-interface-encrypter": "~1.0",
     "carlonicora/minimalism-interface-security": "~1.0",
     "carlonicora/minimalism-service-mysql": "~5.0",
