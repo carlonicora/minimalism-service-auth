@@ -108,6 +108,24 @@ class CodeFactory
 
     /**
      * @param User $user
+     * @param int $code
+     * @return bool
+     * @throws Exception
+     */
+    public function isCodeValid(
+        User $user,
+        int $code,
+    ): bool
+    {
+        $this->codes->purgeExpired();
+
+        $codeRecord = $this->codes->userIdCode($user->getId(), $code);
+
+        return $codeRecord !== [];
+    }
+
+    /**
+     * @param User $user
      * @param string $code
      * @throws Exception
      */
