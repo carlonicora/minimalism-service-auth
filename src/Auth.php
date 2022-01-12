@@ -79,7 +79,6 @@ class Auth extends AbstractService implements SecurityInterface
         private ?string $MINIMALISM_SERVICE_AUTH_APPLE_KEYFILE_ID=null,
     )
     {
-        parent::__construct();
     }
 
     /**
