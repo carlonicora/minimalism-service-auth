@@ -70,7 +70,6 @@ class Change extends AbstractAuthWebModel
         if ($validCode) {
             $auth->setClientId($clientId->getValue());
             $auth->setState($state->getValue());
-            $auth->setUserId($userId->getValue());
 
             $this->document->addResource(new ResourceObject('user', $userId->getEncryptedValue()));
 

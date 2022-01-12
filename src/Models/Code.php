@@ -52,8 +52,6 @@ class Code extends AbstractAuthWebModel
             $auth->setState($state->getValue());
         }
 
-        $auth->setUserId($userId->getValue());
-
         $userResource = new ResourceObject('user', $userId->getEncryptedValue());
         $userResource->attributes->add('email', $user->getEmail());
         $userResource->attributes->add('new', ($create && $create->getValue()));
