@@ -48,9 +48,7 @@ class EmailFactory
             $paths[] = $defaultDirectory;
         }
 
-        foreach ($this->path->getServicesViewsDirectories() as $additionalPaths) {
-            $paths[] = $additionalPaths;
-        }
+        $paths = array_merge($paths, $this->path->getServicesViewsDirectories());
 
         $email = new TwigEmail(
             new Recipient(

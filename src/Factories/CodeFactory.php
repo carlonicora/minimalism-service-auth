@@ -119,12 +119,12 @@ class CodeFactory
         $data['username'] = $user->getName();
         $data['code'] = $code;
         $data['loginUrl'] = $this->path->getUrl()
-            . 'login/'
-            . 'docodelogin/'
+            . 'code/'
             . $this->encrypter->encryptId($user->getId()) . '/'
-            . $code . '/'
+            . '0/'
             . $this->auth->getClientId() . '/'
-            . $this->auth->getState();
+            . $this->auth->getState() . '/'
+            . $code;
 
         $emailFactory = new EmailFactory(
             path: $this->path,
