@@ -43,25 +43,35 @@ class CodeFactory
      * @return array
      * @throws Exception
      */
-    #[ArrayShape(['userId' => "mixed", 'code' => "int", 'expirationTime' => "false|string"])] private function
-    generateCode(User $user): array
+    #[ArrayShape(['userId' => "mixed", 'code' => "int", 'expirationTime' => "false|string"])]
+    private function generateCode(User $user): array
     {
         $this->codes->purgeExpired();
-        $this->codes->purgeUserId($user->getId());
+        $existingCodes = $this->codes->readByUserId($user->getId());
+        //$this->codes->purgeUserId($user->getId());
 
-        try {
-            $actualCode = random_int(100000, 999999);
-        } catch (Exception) {
-            /** @noinspection RandomApiMigrationInspection */
-            $actualCode = rand(100000, 999999);
+        if ($existingCodes === []) {
+
+            try {
+                $actualCode = random_int(100000, 999999);
+            } catch (Exception) {
+                /** @noinspection RandomApiMigrationInspection */
+                $actualCode = rand(100000, 999999);
+            }
+            $response = [
+                'userId' => $user->getId(),
+                'code' => $actualCode,
+                'expirationTime' => date('Y-m-d H:i:s', time() + 60 * 5)
+            ];
+
+            $this->codes->update($response);
+        } else {
+            $response = [
+                'userId' => $user->getId(),
+                'code' => $existingCodes[0]['code'],
+                'expirationTime' => $existingCodes[0]['expirationTime']
+            ];
         }
-
-        $response = [
-            'userId' => $user->getId(),
-            'code' => $actualCode,
-            'expirationTime' => date('Y-m-d H:i:s', time() + 60 * 5)
-        ];
-        $this->codes->update($response);
 
         return $response;
     }

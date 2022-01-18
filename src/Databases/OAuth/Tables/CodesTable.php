@@ -37,6 +37,23 @@ class CodesTable extends AbstractMySqlTable
 
     /**
      * @param int $userId
+     * @return array
+     * @throws Exception
+     */
+    public function readByUserId(
+        int $userId,
+    ): array
+    {
+        $this->sql = 'SELECT *'
+            . ' FROM ' . self::getTableName()
+            . ' WHERE userId=?;';
+        $this->parameters = ['i', $userId];
+
+        return $this->functions->runRead();
+    }
+
+    /**
+     * @param int $userId
      * @throws Exception
      */
     public function purgeUserId(int $userId) : void
