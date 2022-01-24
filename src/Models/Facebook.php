@@ -16,8 +16,8 @@ class Facebook extends AbstractAuthWebModel
     /**
      * @param AuthService $auth
      * @param Path $path
-     * @param string|null $client_id
-     * @param string|null $state
+     * @param string|null $phlow_client_id
+     * @param string|null $phlow_state
      * @param string|null $facebookToken
      * @return HttpCode
      * @throws Exception
@@ -25,17 +25,17 @@ class Facebook extends AbstractAuthWebModel
     public function get(
         AuthService $auth,
         Path        $path,
-        ?string $client_id=null,
-        ?string $state=null,
+        ?string $phlow_client_id=null,
+        ?string $phlow_state=null,
         ?string $facebookToken=null,
     ): HttpCode
     {
-        if ($client_id !== null){
-            $auth->setClientId($client_id);
+        if ($phlow_client_id !== null){
+            $auth->setClientId($phlow_client_id);
         }
 
-        if ($state !== null){
-            $auth->setState($state);
+        if ($phlow_state !== null){
+            $auth->setState($phlow_state);
         }
 
         $app = new FacebookApp(
