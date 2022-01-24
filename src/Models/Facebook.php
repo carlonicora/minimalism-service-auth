@@ -16,14 +16,28 @@ class Facebook extends AbstractAuthWebModel
     /**
      * @param AuthService $auth
      * @param Path $path
+     * @param string|null $client_id
+     * @param string|null $state
+     * @param string|null $facebookToken
      * @return HttpCode
      * @throws Exception
      */
     public function get(
         AuthService $auth,
         Path        $path,
+        ?string $client_id=null,
+        ?string $state=null,
+        ?string $facebookToken=null,
     ): HttpCode
     {
+        if ($client_id !== null){
+            $auth->setClientId($client_id);
+        }
+
+        if ($state !== null){
+            $auth->setState($state);
+        }
+
         $app = new FacebookApp(
             $auth->getFacebookId(),
             $auth->getFacebookSecret()
@@ -31,7 +45,8 @@ class Facebook extends AbstractAuthWebModel
         $client = new FacebookClient();
         $oAuth = new OAuth2Client($app, $client);
 
-        $accessToken = (new FacebookRedirectLoginHelper($oAuth))->getAccessToken($path->getUrl() . 'facebook');
+        /** @noinspection ProperNullCoalescingOperatorUsageInspection */
+        $accessToken = $facebookToken ?? (new FacebookRedirectLoginHelper($oAuth))->getAccessToken($path->getUrl() . 'facebook');
 
         $fb = new \Facebook\Facebook([
             'app_id' => $auth->getFacebookId(),
