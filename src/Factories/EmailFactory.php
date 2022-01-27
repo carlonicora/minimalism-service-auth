@@ -1,45 +1,43 @@
 <?php
 namespace CarloNicora\Minimalism\Services\Auth\Factories;
 
-use CarloNicora\Minimalism\Interfaces\Mailer\Enums\RecipientType;
 use CarloNicora\Minimalism\Interfaces\Mailer\Interfaces\MailerInterface;
 use CarloNicora\Minimalism\Interfaces\Mailer\Objects\Recipient;
+use CarloNicora\Minimalism\Interfaces\SimpleObjectInterface;
+use CarloNicora\Minimalism\Services\Auth\Auth;
 use CarloNicora\Minimalism\Services\Path;
 use CarloNicora\Minimalism\Services\TwigMailer\Objects\TwigEmail;
 use Exception;
 
-class EmailFactory
+class EmailFactory implements SimpleObjectInterface
 {
     /**
      * EmailFactory constructor.
      * @param Path $path
      * @param MailerInterface $mailer
+     * @param Auth $auth
      */
     public function __construct(
         private Path $path,
         private MailerInterface $mailer,
+        private Auth $auth,
     )
     {
     }
 
     /**
      * @param string $template
-     * @param string $title
-     * @param string $recipientEmail
-     * @param string $recipientName
-     * @param string $senderEmail
-     * @param string $senderName
      * @param array $data
+     * @param Recipient $recipient
+     * @param string $title
      * @throws Exception
      */
     public function sendEmail(
         string $template,
+        array $data,
+        Recipient $recipient,
+
         string $title,
-        string $recipientEmail,
-        string $recipientName,
-        string $senderEmail,
-        string $senderName,
-        array $data
     ): void
     {
         $paths = [];
@@ -51,24 +49,14 @@ class EmailFactory
         $paths = array_merge($paths, $this->path->getServicesViewsDirectories());
 
         $email = new TwigEmail(
-            new Recipient(
-                emailAddress: $senderEmail,
-                name: $senderName??'',
-                type: RecipientType::Sender,
-            ),
+            sender: $this->auth->getSender(),
             subject: $title,
         );
         $email->addTemplateDirectory($paths);
-        $email->addRecipient(
-            new Recipient(
-                emailAddress: $recipientEmail,
-                name: $recipientName??'',
-                type: RecipientType::To,
-            )
-        );
-
+        $email->addRecipient($recipient);
         $email->addTemplateFile($template);
         $email->setParameters($data);
+
         $this->mailer->send($email);
     }
 }

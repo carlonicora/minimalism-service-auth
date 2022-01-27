@@ -5,18 +5,18 @@ class User
 {
     /**
      * @param int $id
-     * @param string $name
+     * @param string $username
      * @param string $email
+     * @param string|null $name
      * @param string|null $password
-     * @param string|null $salt
      * @param bool $isActive
      */
     public function __construct(
         private int $id,
-        private string $name,
+        private string $username,
         private string $email,
+        private ?string $name=null,
         private ?string $password=null,
-        private ?string $salt=null,
         private bool $isActive=false,
     )
     {
@@ -42,20 +42,39 @@ class User
     }
 
     /**
+     * @param string $username
+     */
+    public function setUsername(
+        string $username,
+    ): void
+    {
+        $this->username = $username;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUsername(
+    ): string
+    {
+        return $this->username;
+    }
+
+    /**
      * @param string $name
      */
     public function setName(
-        string $name,
+        string $name
     ): void
     {
         $this->name = $name;
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getName(
-    ): string
+    ): ?string
     {
         return $this->name;
     }
@@ -96,25 +115,6 @@ class User
     ): ?string
     {
         return $this->password;
-    }
-
-    /**
-     * @param string|null $salt
-     */
-    public function setSalt(
-        ?string $salt,
-    ): void
-    {
-        $this->salt = $salt;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getSalt(
-    ): ?string
-    {
-        return $this->salt;
     }
 
     /**

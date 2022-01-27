@@ -22,9 +22,12 @@ class AppleIdsTable extends AbstractMySqlTable
      * @return array
      * @throws Exception
      */
-    public function loadByAppleId(string $appleId): array
+    public function readByAppleId(
+        string $appleId,
+    ): array
     {
-        $this->sql = $this->query->SELECT()
+        $this->sql = 'SELECT *'
+            . ' FROM ' . self::getTableName()
             . ' WHERE appleId=?';
         $this->parameters = ['s', $appleId];
 

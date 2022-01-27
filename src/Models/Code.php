@@ -1,83 +1,67 @@
 <?php
 namespace CarloNicora\Minimalism\Services\Auth\Models;
 
-use CarloNicora\JsonApi\Objects\Link;
 use CarloNicora\JsonApi\Objects\ResourceObject;
 use CarloNicora\Minimalism\Enums\HttpCode;
 use CarloNicora\Minimalism\Interfaces\Encrypter\Parameters\PositionedEncryptedParameter;
 use CarloNicora\Minimalism\Parameters\PositionedParameter;
 use CarloNicora\Minimalism\Services\Auth\Abstracts\AbstractAuthWebModel;
-use CarloNicora\Minimalism\Services\Auth\Auth as AuthService;
-use CarloNicora\Minimalism\Services\Path;
+use CarloNicora\Minimalism\Services\Auth\IO\CodeIO;
 use Exception;
-use RuntimeException;
 
 class Code extends AbstractAuthWebModel
 {
-    /** @var string|null  */
-    protected ?string $view = 'code';
-
     /**
-     * @param AuthService $auth
-     * @param Path $path
      * @param PositionedEncryptedParameter $userId
-     * @param PositionedParameter|null $create
-     * @param PositionedParameter|null $clientId
-     * @param PositionedParameter|null $state
-     * @param PositionedParameter|null $code
+     * @param PositionedParameter $code
+     * @param PositionedParameter $clientId
+     * @param PositionedParameter $state
      * @return HttpCode
      * @throws Exception
      */
     public function get(
-        AuthService $auth,
-        Path $path,
         PositionedEncryptedParameter $userId,
-        ?PositionedParameter $create,
-        ?PositionedParameter $clientId,
-        ?PositionedParameter $state,
-        ?PositionedParameter $code,
+        PositionedParameter $code,
+        PositionedParameter $clientId,
+        PositionedParameter $state,
     ): HttpCode
     {
-        $user = $auth->getAuthenticationTable()->authenticateById($userId->getValue());
+        $this->auth->setClientId($clientId->getValue());
+        $this->auth->setState($state->getValue());
+        $this->auth->setUserId($userId->getValue());
 
-        if ($user === null){
-            throw new RuntimeException('missing user details', 500);
-        }
+        $this->view = 'code';
 
-        if ($clientId !== null){
-            $auth->setClientId($clientId->getValue());
-        }
+        $this->document->meta->add(name: 'code', value: $code->getValue());
 
-        if ($state !== null){
-            $auth->setState($state->getValue());
-        }
-
-        $userResource = new ResourceObject('user', $userId->getEncryptedValue());
-        $userResource->attributes->add('email', $user->getEmail());
-        $userResource->attributes->add('new', ($create && $create->getValue()));
-
-        $this->document->addResource($userResource);
-        if ($code !== null) {
-            $codeElements = str_split($code->getValue());
-
-            $digit = 0;
-            foreach ($codeElements as $codeElement) {
-                $digit++;
-                $this->document->meta->add(name: 'code' . $digit, value: $codeElement);
-            }
-        }
-
-        $this->document->links->add(
-            new Link('doLogin', $path->getUrl() . 'Login/Docodelogin')
+        $this->document->addResource(
+            new ResourceObject(
+                type: 'user',
+                id: $userId->getEncryptedValue(),
+            )
         );
 
-        $this->document->links->add(
-            new Link('doCodeLogin',
-                $path->getUrl()
-                . 'Accounts/Doaccountlookup/'
-                . $userId->getEncryptedValue()
-                . '?overridePassword=true')
-        );
+        return HttpCode::Ok;
+    }
+
+    /**
+     * @param string $code
+     * @return HttpCode
+     * @throws Exception
+     */
+    public function post(
+        string $code,
+    ): HttpCode
+    {
+        $user = $this->auth->getAuthenticationTable()->authenticateById($this->auth->getUserId());
+
+        $this->objectFactory->create(CodeIO::class)->validate($user->getId(), $code);
+
+        if(!$user->isActive()) {
+            $this->auth->getAuthenticationTable()->activateUser($user);
+        }
+
+        $this->addCorrectRedirection();
 
         return HttpCode::Ok;
     }

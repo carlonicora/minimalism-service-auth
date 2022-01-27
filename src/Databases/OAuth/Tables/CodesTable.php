@@ -26,7 +26,8 @@ class CodesTable extends AbstractMySqlTable
     /**
      * @throws Exception
      */
-    public function purgeExpired() : void
+    public function purgeExpired(
+    ) : void
     {
         $this->sql = $this->query->DELETE()
             . ' WHERE expirationTime<?;';
@@ -56,9 +57,12 @@ class CodesTable extends AbstractMySqlTable
      * @param int $userId
      * @throws Exception
      */
-    public function purgeUserId(int $userId) : void
+    public function purgeUserId(
+        int $userId,
+    ) : void
     {
-        $this->sql = $this->query->DELETE()
+        $this->sql = 'DELETE'
+            . ' FROM ' . self::getTableName()
             . ' WHERE userId=?;';
         $this->parameters = ['i', $userId];
 
@@ -71,10 +75,15 @@ class CodesTable extends AbstractMySqlTable
      * @return array
      * @throws Exception
      */
-    public function userIdCode(int $userId, int $code): array
+    public function readByUserIdCode(
+        int $userId,
+        int $code,
+    ): array
     {
-        $this->sql = $this->query->SELECT()
-            . ' WHERE userId=? AND code=?;';
+        $this->sql = 'SELECT *'
+            . ' FROM ' . self::getTableName()
+            . ' WHERE userId=?'
+            . ' AND code=?;';
         $this->parameters = ['ii', $userId, $code];
 
         return $this->functions->runRead();

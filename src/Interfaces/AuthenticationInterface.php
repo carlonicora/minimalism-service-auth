@@ -7,15 +7,15 @@ interface AuthenticationInterface
 {
     /**
      * @param string $email
-     * @return User|null
+     * @return User
      */
-    public function authenticateByEmail(string $email): ?User;
+    public function authenticateByEmail(string $email): User;
 
     /**
      * @param int $userId
-     * @return User|null
+     * @return User
      */
-    public function authenticateById(int $userId): ?User;
+    public function authenticateById(int $userId): User;
 
     /**
      * @param int $userId
@@ -25,10 +25,9 @@ interface AuthenticationInterface
 
     /**
      * @param int $userId
-     * @param string $salt
-     * @return void
+     * @param string $password
      */
-    public function updateSalt(int $userId, string $salt): void;
+    public function updateUsername(int $userId, string $password): void;
 
     /**
      * @param string $email
