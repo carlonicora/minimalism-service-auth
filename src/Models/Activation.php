@@ -7,7 +7,6 @@ use CarloNicora\Minimalism\Interfaces\Encrypter\Interfaces\EncrypterInterface;
 use CarloNicora\Minimalism\Interfaces\Encrypter\Parameters\EncryptedParameter;
 use CarloNicora\Minimalism\Services\Auth\Abstracts\AbstractAuthWebModel;
 use CarloNicora\Minimalism\Services\Auth\Factories\ExceptionFactory;
-use CarloNicora\Minimalism\Services\Auth\IO\CodeIO;
 use Exception;
 
 class Activation extends AbstractAuthWebModel

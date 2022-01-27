@@ -91,6 +91,6 @@ class Reset extends AbstractAuthWebModel
 
         $this->addCorrectRedirection();
 
-        return HttpCode::NoContent;
+        return HttpCode::Ok;
     }
 }

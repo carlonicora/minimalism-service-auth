@@ -114,6 +114,11 @@ trait ParametersTrait
         $_SESSION['client_id'] = $this->client_id;
         $_SESSION['state'] = $this->state;
         $_SESSION['isNewRegistration'] = $this->isNewRegistration;
+
+        $this->client_id = null;
+        $this->state = null;
+        $this->userId = null;
+        $this->isNewRegistration = false;
     }
 
     /**

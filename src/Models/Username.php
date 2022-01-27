@@ -62,7 +62,7 @@ class Username extends AbstractAuthWebModel
             $this->auth->getAuthenticationTable()->updateUsername($user->getId(), $username);
         }
 
-        if ($password !== null){
+        if (!empty($password)){
             $this->auth->getAuthenticationTable()->updatePassword($user->getId(), password_hash($password, PASSWORD_BCRYPT));
         }
 
