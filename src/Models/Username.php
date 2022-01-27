@@ -86,7 +86,7 @@ class Username extends AbstractAuthWebModel
         $data = [
             'username' => $user->getName() ?? $user->getUsername(),
             'code' => $code,
-            'url' => $this->url . 'code'
+            'url' => $this->url . 'code/'
                 . $encrypter->encryptId($user->getId()) . '/'
                 . $code . '/'
                 . $this->auth->getClientId() . '/'
@@ -100,10 +100,10 @@ class Username extends AbstractAuthWebModel
         );
 
         $this->objectFactory->create(EmailFactory::class)->sendEmail(
-            template: 'code',
+            template: 'emails/logincode',
             data: $data,
             recipient: $recipient,
-            title: $this->auth->getForgotEmailTitle() ?? 'Your passwordless access code and link',
+            title: $this->auth->getCodeEmailTitle() ?? 'Your passwordless access code and link',
         );
     }
 }

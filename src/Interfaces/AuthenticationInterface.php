@@ -25,9 +25,9 @@ interface AuthenticationInterface
 
     /**
      * @param int $userId
-     * @param string $password
+     * @param string $username
      */
-    public function updateUsername(int $userId, string $password): void;
+    public function updateUsername(int $userId, string $username): void;
 
     /**
      * @param string $email

@@ -40,10 +40,10 @@ class AppleIdIO extends AbstractLoader
     {
         return $this->data->insert(
             tableInterfaceClassName: AppleIdsTable::class,
-            records: [[
+            records: [
                 'appleId' => $appleId,
                 'userId' => $userId,
-            ]]
+            ]
         );
     }
 }

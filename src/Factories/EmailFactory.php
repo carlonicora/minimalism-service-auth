@@ -54,7 +54,7 @@ class EmailFactory implements SimpleObjectInterface
         );
         $email->addTemplateDirectory($paths);
         $email->addRecipient($recipient);
-        $email->addTemplateFile($template);
+        $email->addTemplateFile($template . '.twig');
         $email->setParameters($data);
 
         $this->mailer->send($email);

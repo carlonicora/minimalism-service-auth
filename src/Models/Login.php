@@ -43,7 +43,11 @@ class Login extends AbstractAuthWebModel
             try {
                 $user = $this->auth->getAuthenticationTable()->authenticateByEmail($email);
 
-                if ($user->getPassword() !== null) {
+                if (!$user->isActive()){
+                    $this->auth->setIsNewRegistration();
+
+                    $this->view = 'username';
+                } else if ($user->getPassword() !== null) {
                     $this->view = 'password';
                 } else {
                     $this->view = 'code';
@@ -96,7 +100,6 @@ class Login extends AbstractAuthWebModel
 
         if ($userId !== null) {
             $user = $this->auth->getAuthenticationTable()->authenticateById($userId->getValue());
-            $this->auth->setUserId($user->getId());
         } else {
             $user = $this->auth->getAuthenticationTable()->authenticateById($this->auth->getUserId());
         }
@@ -109,7 +112,7 @@ class Login extends AbstractAuthWebModel
             $this->document->links->add(
                 new Link(
                     name: 'redirect',
-                    href: $this->url . 'login?forceCode=true',
+                    href: $this->url . 'login?forceCode=true&userId=' . $encrypter->encryptId($user->getId()),
                 ),
             );
 
@@ -151,7 +154,7 @@ class Login extends AbstractAuthWebModel
         $data = [
             'username' => $user->getName() ?? $user->getUsername(),
             'code' => $code,
-            'url' => $this->url . 'code'
+            'url' => $this->url . 'code/'
                 . $encrypter->encryptId($user->getId()) . '/'
                 . $code . '/'
                 . $this->auth->getClientId() . '/'
@@ -165,10 +168,10 @@ class Login extends AbstractAuthWebModel
         );
 
         $this->objectFactory->create(EmailFactory::class)->sendEmail(
-            template: 'code',
+            template: 'emails/logincode',
             data: $data,
             recipient: $recipient,
-            title: $this->auth->getForgotEmailTitle() ?? 'Your passwordless access code and link',
+            title: $this->auth->getCodeEmailTitle() ?? 'Your passwordless access code and link',
         );
     }
 }

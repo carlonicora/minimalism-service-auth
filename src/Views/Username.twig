@@ -4,7 +4,7 @@
     <input type="text" name="username" id="username" value="{{ data.attributes.username }}">
     <label for="password">password</label>
     <input type="password" name="password" id="password">
-    <button type="submit"/>
+    <button type="submit">Confirm username and password</button>
 </form>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script>
@@ -21,7 +21,7 @@
                 data: postData,
                 error: function (XMLHttpRequest, textStatus, errorThrown) {
                     error = JSON.parse(XMLHttpRequest.responseText);
-                    alert(error.errors[0].detail);
+                    alert(error.errors[0].title);
                 },
                 success: function (result) {
                     window.location.replace('{{ links.home }}activation');

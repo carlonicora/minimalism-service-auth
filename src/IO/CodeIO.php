@@ -65,7 +65,13 @@ class CodeIO extends AbstractLoader
             parameters: [$userId, $code],
         );
 
-        if ($recordset === [] || strtotime($recordset[0]['expirationTime']) > time()){
+        $expiration = strtotime($recordset[0]['expirationTime']);
+        if ($expiration === false){
+            $expiration = time();
+        }
+
+        /** @noinspection InsufficientTypesControlInspection */
+        if ($recordset === [] || time() > $expiration){
             throw ExceptionFactory::CodeInvalidOrExpired->create();
         }
 
@@ -111,7 +117,7 @@ class CodeIO extends AbstractLoader
             /** @noinspection UnusedFunctionResultInspection */
             $this->data->insert(
                 tableInterfaceClassName: CodesTable::class,
-                records: [$codeRecord]
+                records: $codeRecord,
             );
         } else {
             $response = $recordset[0]['code'];
