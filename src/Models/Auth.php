@@ -11,7 +11,7 @@ use CarloNicora\Minimalism\Services\Auth\Services\FacebookLogin\FacebookLogin;
 use CarloNicora\Minimalism\Services\Auth\Services\GoogleLogin\GoogleLogin;
 use Exception;
 
-class Index extends AbstractAuthWebModel
+class Auth extends AbstractAuthWebModel
 {
     /**
      * @param AppleLogin $appleLogin

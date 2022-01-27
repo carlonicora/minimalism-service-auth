@@ -45,7 +45,7 @@ class FacebookLogin extends AbstractService implements SocialLoginInterface
         ]);
         $helper = $fb->getRedirectLoginHelper();
         $permissions = ['email'];
-        return $helper->getLoginUrl($this->path->getUrl() . 'facebook', $permissions);
+        return $helper->getLoginUrl($this->path->getUrl() . 'social/facebook', $permissions);
     }
 
     /**

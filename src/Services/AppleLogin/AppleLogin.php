@@ -135,7 +135,7 @@ class AppleLogin extends AbstractService implements SocialLoginInterface
                 'response_type' => 'code',
                 'response_mode' => 'form_post',
                 'client_id' => $this->MINIMALISM_SERVICE_AUTH_APPLE_CLIENT_ID,
-                'redirect_uri' => $this->path->getUrl() . 'apple',
+                'redirect_uri' => $this->path->getUrl() . 'social/apple',
                 'state' => $this->getAppleState(),
                 'scope' => 'email',
             ]);
