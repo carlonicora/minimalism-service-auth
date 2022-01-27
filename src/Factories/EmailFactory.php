@@ -46,8 +46,8 @@ class EmailFactory implements SimpleObjectInterface
             $paths[] = $defaultDirectory;
         }
 
-        $data['title'] = $title;
         $paths = array_merge($paths, $this->path->getServicesViewsDirectories());
+        $data['title'] = $title;
 
         $email = new TwigEmail(
             sender: $this->auth->getSender(),

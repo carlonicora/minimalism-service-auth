@@ -57,7 +57,7 @@ class CodeIO extends AbstractLoader
     ): void
     {
         $this->purgeExpired();
-
+        
         /** @see CodesTable::readByUserIdCode() */
         $recordset = $this->data->read(
             tableInterfaceClassName: CodesTable::class,

@@ -1,3 +1,8 @@
+{% if meta.activation %}
+    activate your account
+{% else %}
+    login without password
+{% endif %}
 <form method="post" action="{{ links.home }}login" id="loginForm">
     <input type="hidden" name="userId" value="{{ data.id }}"/>
     <label for="code">code</label>

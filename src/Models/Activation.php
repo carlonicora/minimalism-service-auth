@@ -61,6 +61,8 @@ class Activation extends AbstractAuthWebModel
             );
         }
 
+        $this->document->meta->add(name: 'activation', value: true);
+
         $this->document->addResource(
             resource: $userResource,
         );
