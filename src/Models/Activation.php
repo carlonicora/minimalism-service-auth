@@ -29,7 +29,7 @@ class Activation extends AbstractAuthWebModel
         ?string $code=null,
     ): HttpCode
     {
-        $this->view = 'activation';
+        $this->view = 'code';
 
         if ($client_id !== null) {
             $this->auth->setClientId($client_id);
@@ -65,31 +65,6 @@ class Activation extends AbstractAuthWebModel
         $this->document->addResource(
             resource: $userResource,
         );
-
-        return HttpCode::Ok;
-    }
-
-    /**
-     * @param EncryptedParameter $userId
-     * @param string $code
-     * @return HttpCode
-     * @throws Exception
-     */
-    public function post(
-        EncryptedParameter $userId,
-        string $code,
-    ): HttpCode
-    {
-        $user = $this->auth->getAuthenticationTable()->authenticateById($userId->getValue());
-
-        $this->objectFactory->create(CodeIO::class)->validate($user->getId(), $code);
-
-        if(!$user->isActive()) {
-            $this->auth->getAuthenticationTable()->activateUser($user);
-        }
-        $this->auth->setUserId($user->getId());
-
-        $this->addCorrectRedirection();
 
         return HttpCode::Ok;
     }

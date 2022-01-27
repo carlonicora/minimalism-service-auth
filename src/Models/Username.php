@@ -4,7 +4,12 @@ namespace CarloNicora\Minimalism\Services\Auth\Models;
 use CarloNicora\JsonApi\Objects\ResourceObject;
 use CarloNicora\Minimalism\Enums\HttpCode;
 use CarloNicora\Minimalism\Interfaces\Encrypter\Interfaces\EncrypterInterface;
+use CarloNicora\Minimalism\Interfaces\Mailer\Enums\RecipientType;
+use CarloNicora\Minimalism\Interfaces\Mailer\Objects\Recipient;
 use CarloNicora\Minimalism\Services\Auth\Abstracts\AbstractAuthWebModel;
+use CarloNicora\Minimalism\Services\Auth\Data\User;
+use CarloNicora\Minimalism\Services\Auth\Factories\EmailFactory;
+use CarloNicora\Minimalism\Services\Auth\IO\CodeIO;
 use Exception;
 
 class Username extends AbstractAuthWebModel
@@ -39,12 +44,14 @@ class Username extends AbstractAuthWebModel
     }
 
     /**
+     * @param EncrypterInterface $encrypter
      * @param string $username
      * @param string|null $password
      * @return HttpCode
      * @throws Exception
      */
     public function post(
+        EncrypterInterface $encrypter,
         string $username,
         ?string $password=null,
     ): HttpCode
@@ -59,6 +66,44 @@ class Username extends AbstractAuthWebModel
             $this->auth->getAuthenticationTable()->updatePassword($user->getId(), password_hash($password, PASSWORD_BCRYPT));
         }
 
+        $this->sendCode($encrypter, $user);
+
         return HttpCode::NoContent;
+    }
+
+    /**
+     * @param EncrypterInterface $encrypter
+     * @param User $user
+     * @return void
+     * @throws Exception
+     */
+    private function sendCode(
+        EncrypterInterface $encrypter,
+        User $user,
+    ): void
+    {
+        $code = $this->objectFactory->create(CodeIO::class)->generateCode($user->getId());
+        $data = [
+            'username' => $user->getName() ?? $user->getUsername(),
+            'code' => $code,
+            'url' => $this->url . 'code'
+                . $encrypter->encryptId($user->getId()) . '/'
+                . $code . '/'
+                . $this->auth->getClientId() . '/'
+                . $this->auth->getState(),
+        ];
+
+        $recipient = new Recipient(
+            emailAddress: $user->getEmail(),
+            name: $user->getName() ?? $user->getUsername(),
+            type: RecipientType::To,
+        );
+
+        $this->objectFactory->create(EmailFactory::class)->sendEmail(
+            template: 'code',
+            data: $data,
+            recipient: $recipient,
+            title: $this->auth->getForgotEmailTitle() ?? 'Your passwordless access code and link',
+        );
     }
 }

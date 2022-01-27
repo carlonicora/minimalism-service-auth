@@ -6,7 +6,6 @@ use CarloNicora\Minimalism\Enums\HttpCode;
 use CarloNicora\Minimalism\Interfaces\Encrypter\Parameters\PositionedEncryptedParameter;
 use CarloNicora\Minimalism\Parameters\PositionedParameter;
 use CarloNicora\Minimalism\Services\Auth\Abstracts\AbstractAuthWebModel;
-use CarloNicora\Minimalism\Services\Auth\IO\CodeIO;
 use Exception;
 
 class Code extends AbstractAuthWebModel
@@ -40,28 +39,6 @@ class Code extends AbstractAuthWebModel
                 id: $userId->getEncryptedValue(),
             )
         );
-
-        return HttpCode::Ok;
-    }
-
-    /**
-     * @param string $code
-     * @return HttpCode
-     * @throws Exception
-     */
-    public function post(
-        string $code,
-    ): HttpCode
-    {
-        $user = $this->auth->getAuthenticationTable()->authenticateById($this->auth->getUserId());
-
-        $this->objectFactory->create(CodeIO::class)->validate($user->getId(), $code);
-
-        if(!$user->isActive()) {
-            $this->auth->getAuthenticationTable()->activateUser($user);
-        }
-
-        $this->addCorrectRedirection();
 
         return HttpCode::Ok;
     }

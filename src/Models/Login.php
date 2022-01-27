@@ -19,7 +19,7 @@ class Login extends AbstractAuthWebModel
 {
     /**
      * @param EncrypterInterface $encrypter
-     * @param string $email
+     * @param string|null $email
      * @param bool|null $forceCode
      * @param EncryptedParameter|null $userId
      * @return HttpCode
@@ -27,7 +27,7 @@ class Login extends AbstractAuthWebModel
      */
     public function get(
         EncrypterInterface $encrypter,
-        string $email,
+        ?string $email=null,
         ?bool $forceCode=null,
         ?EncryptedParameter $userId=null,
     ): HttpCode{
@@ -59,11 +59,14 @@ class Login extends AbstractAuthWebModel
 
             $this->auth->setUserId($user->getId());
 
+            $userResource = new ResourceObject(
+                type: 'user',
+                id: $encrypter->encryptId($user->getId()),
+            );
+            $userResource->attributes->add(name: 'username', value: $user->getUsername());
+
             $this->document->addResource(
-                new ResourceObject(
-                    type: 'user',
-                    id: $encrypter->encryptId($user->getId()),
-                )
+                resource: $userResource,
             );
         }
 
@@ -98,30 +101,37 @@ class Login extends AbstractAuthWebModel
             $user = $this->auth->getAuthenticationTable()->authenticateById($this->auth->getUserId());
         }
 
-        if ($password !== null){
-            if (!password_verify($password, $user->getPassword())){
-                throw ExceptionFactory::WrongPassword->create();
-            }
-        } elseif ($code !== null) {
-            $this->objectFactory->create(CodeIO::class)->validate($user->getId(), $code);
-        } elseif ($resendCode !== null){
-            $this->sendCode($encrypter, $user);
-        } else {
-            throw ExceptionFactory::PasswordOrCodeMising->create();
-        }
-
         $this->auth->setUserId($user->getId());
 
-        if ($resendCode === null) {
-            $this->addCorrectRedirection();
-        } else {
+        if ($resendCode !== null){
+            $this->sendCode($encrypter, $user);
+
             $this->document->links->add(
                 new Link(
                     name: 'redirect',
                     href: $this->url . 'login?forceCode=true',
                 ),
             );
+
+            return HttpCode::Ok;
         }
+
+        if ($password !== null){
+            if (!password_verify($password, $user->getPassword())){
+                throw ExceptionFactory::WrongPassword->create();
+            }
+        } elseif ($code !== null) {
+            $this->objectFactory->create(CodeIO::class)->validate($user->getId(), $code);
+        } else {
+            throw ExceptionFactory::PasswordOrCodeMising->create();
+        }
+
+        if(!$user->isActive()) {
+            $this->auth->getAuthenticationTable()->activateUser($user);
+        }
+        $this->auth->setUserId($user->getId());
+
+        $this->addCorrectRedirection();
 
         return HttpCode::Ok;
     }

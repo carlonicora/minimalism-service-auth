@@ -1,0 +1,55 @@
+<form method="post" action="{{ links.home }}login" id="loginForm">
+    <input type="hidden" name="userId" value="{{ data.id }}"/>
+    <label for="code">code</label>
+    <input type="text" name="code" id="code">
+    <button type="submit"/>
+</form>
+<form method="post" action="{{ links.home }}login" id="sendCodeForm">
+    <input type="hidden" name="userId" value="{{ data.id }}"/>
+    <input type="hidden" name="resendCode" value="true"/>
+    <button type="submit" value="login with code instead"/>
+</form>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $("#loginForm").submit(function (e) {
+            e.preventDefault();
+
+            var postData = $(this).serializeArray();
+
+            $.ajax({
+                url: $(this).attr('action'),
+                type: $(this).attr('method'),
+                enctype: 'multipart/form-data',
+                data: postData,
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    error = JSON.parse(XMLHttpRequest.responseText);
+                    alert(error.errors[0].detail);
+                },
+                success: function (result) {
+                    window.location.replace(result.links.redirection);
+                }
+            });
+        });
+
+        $("#sendCodeForm").submit(function (e) {
+            e.preventDefault();
+
+            var postData = $(this).serializeArray();
+
+            $.ajax({
+                url: $(this).attr('action'),
+                type: $(this).attr('method'),
+                enctype: 'multipart/form-data',
+                data: postData,
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    error = JSON.parse(XMLHttpRequest.responseText);
+                    alert(error.errors[0].detail);
+                },
+                success: function (result) {
+                    window.location.replace(result.links.redirection);
+                }
+            });
+        });
+    });
+</script>

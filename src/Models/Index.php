@@ -32,6 +32,8 @@ class Index extends AbstractAuthWebModel
         ?int $error=null,
     ): HttpCode
     {
+        $this->view = 'index';
+        
         $this->auth->setClientId($client_id);
 
         if (!empty($state)) {
