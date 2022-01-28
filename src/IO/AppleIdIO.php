@@ -1,11 +1,11 @@
 <?php
 namespace CarloNicora\Minimalism\Services\Auth\IO;
 
+use CarloNicora\Minimalism\Interfaces\Data\Abstracts\AbstractIO;
 use CarloNicora\Minimalism\Services\Auth\Databases\OAuth\Tables\AppleIdsTable;
-use CarloNicora\Minimalism\Services\DataMapper\Abstracts\AbstractLoader;
 use Exception;
 
-class AppleIdIO extends AbstractLoader
+class AppleIdIO extends AbstractIO
 {
     /**
      * @param string $appleId

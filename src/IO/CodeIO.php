@@ -1,12 +1,12 @@
 <?php
 namespace CarloNicora\Minimalism\Services\Auth\IO;
 
+use CarloNicora\Minimalism\Interfaces\Data\Abstracts\AbstractIO;
 use CarloNicora\Minimalism\Services\Auth\Databases\OAuth\Tables\CodesTable;
 use CarloNicora\Minimalism\Services\Auth\Factories\ExceptionFactory;
-use CarloNicora\Minimalism\Services\DataMapper\Abstracts\AbstractLoader;
 use Exception;
 
-class CodeIO extends AbstractLoader
+class CodeIO extends AbstractIO
 {
     /**
      * @return void

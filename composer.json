@@ -6,7 +6,7 @@
   "time": "2020-06-13",
   "license": "MIT",
   "type": "library",
-  "minimum-stability": "beta",
+  "minimum-stability": "stable",
   "authors": [
     {
       "name": "Carlo Nicora",
@@ -27,6 +27,7 @@
     "ext-curl": "*",
     "carlonicora/jsonapi": "~3.0",
     "carlonicora/minimalism": "~13.0",
+    "carlonicora/minimalism-interface-data": "~1.0",
     "carlonicora/minimalism-interface-encrypter": "~1.0",
     "carlonicora/minimalism-interface-mailer": "~1.0",
     "carlonicora/minimalism-service-builder": "~2.0",
@@ -37,6 +38,7 @@
     "web-token/jwt-framework": "~2.2",
     "facebook/graph-sdk":"*",
     "google/apiclient":"*",
-    "sonata-project/google-authenticator": "~2.3"
+    "sonata-project/google-authenticator": "~2.3",
+    "google/apiclient-services": "v0.231.0"
   }
 }
