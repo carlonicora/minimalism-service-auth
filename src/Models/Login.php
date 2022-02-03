@@ -29,11 +29,12 @@ class Login extends AbstractAuthWebModel
     ): HttpCode{
         if ($forceCode && $userId !== null){
             $this->view = 'code';
-            $this->document->addResource(
-                new ResourceObject(
-                    type: 'user',
-                    id: $userId->getEncryptedValue(),
-                )
+
+            $user = $this->auth->getAuthenticationTable()->authenticateById($userId->getValue());
+            
+            $userResource = new ResourceObject(
+                type: 'user',
+                id: $userId->getEncryptedValue(),
             );
         } else {
             try {
@@ -47,6 +48,7 @@ class Login extends AbstractAuthWebModel
 
                     if (!$user->isActive()){
                         $this->auth->setIsNewRegistration();
+                        $this->document->meta->add(name: 'activation', value: true);
                     }
                 }
             } catch (Exception) {
@@ -54,20 +56,22 @@ class Login extends AbstractAuthWebModel
                 $this->auth->setIsNewRegistration();
                 $this->view = 'code';
                 $this->auth->sendCode($user);
+                $this->document->meta->add(name: 'activation', value: true);
             }
-
-            $this->auth->setUserId($user->getId());
 
             $userResource = new ResourceObject(
                 type: 'user',
                 id: $encrypter->encryptId($user->getId()),
             );
-            $userResource->attributes->add(name: 'username', value: $user->getUsername());
-
-            $this->document->addResource(
-                resource: $userResource,
-            );
         }
+
+        $this->auth->setUserId($user->getId());
+
+        $userResource->attributes->add(name: 'email', value: $user->getEmail());
+
+        $this->document->addResource(
+            resource: $userResource,
+        );
 
         return HttpCode::Ok;
     }

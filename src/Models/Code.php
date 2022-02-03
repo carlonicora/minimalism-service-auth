@@ -31,13 +31,28 @@ class Code extends AbstractAuthWebModel
 
         $this->view = 'code';
 
-        $this->document->meta->add(name: 'code', value: $code->getValue());
+        $user = $this->auth->getAuthenticationTable()->authenticateById($userId->getValue());
+        $this->auth->setUserId($user->getId());
+
+        $userResource = new ResourceObject(
+            type: 'user',
+            id: $userId->getEncryptedValue(),
+        );
+        $userResource->attributes->add(name: 'email', value: $user->getEmail());
+
+        if (!$user->isActive()){
+            $this->document->meta->add(name: 'activation', value: true);
+        }
+
+        $codeElements = str_split($code->getValue());
+        $digit = 0;
+        foreach ($codeElements as $codeElement) {
+            $digit++;
+            $this->document->meta->add(name: 'code' . $digit, value: $codeElement);
+        }
 
         $this->document->addResource(
-            new ResourceObject(
-                type: 'user',
-                id: $userId->getEncryptedValue(),
-            )
+            resource: $userResource,
         );
 
         return HttpCode::Ok;

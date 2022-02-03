@@ -2,8 +2,10 @@
 namespace CarloNicora\Minimalism\Services\Auth\Models;
 
 use CarloNicora\JsonApi\Objects\Link;
+use CarloNicora\JsonApi\Objects\ResourceObject;
 use CarloNicora\Minimalism\Enums\HttpCode;
 use CarloNicora\Minimalism\Interfaces\Encrypter\Interfaces\EncrypterInterface;
+use CarloNicora\Minimalism\Interfaces\Encrypter\Parameters\EncryptedParameter;
 use CarloNicora\Minimalism\Interfaces\Mailer\Enums\RecipientType;
 use CarloNicora\Minimalism\Interfaces\Mailer\Objects\Recipient;
 use CarloNicora\Minimalism\Services\Auth\Abstracts\AbstractAuthWebModel;
@@ -15,16 +17,29 @@ class Forgot extends AbstractAuthWebModel
 {
     /**
      * @param bool|null $sent
+     * @param EncryptedParameter|null $userId
      * @return HttpCode
+     * @throws Exception
      */
     public function get(
         ?bool $sent=false,
+        ?EncryptedParameter $userId=null,
     ): HttpCode
     {
         if ($sent){
             $this->view = 'resetemailsent';
         } else {
             $this->view = 'forgot';
+        }
+
+        if ($userId !== null){
+            $user = $this->auth->getAuthenticationTable()->authenticateById($userId->getValue());
+
+            $userResource = new ResourceObject(type: 'user', id: $userId->getEncryptedValue());
+            $userResource->attributes->add(name: 'email', value: $user->getEmail());
+            $this->document->addResource(
+                resource: $userResource,
+            );
         }
 
         return HttpCode::Ok;
@@ -70,7 +85,7 @@ class Forgot extends AbstractAuthWebModel
         $this->document->links->add(
             new Link(
                 name: 'redirect',
-                href: $this->url . 'forgot?sent=true',
+                href: $this->url . 'forgot?sent=true&userId=' . $encrypter->encryptId($user->getId()),
             ),
         );
 

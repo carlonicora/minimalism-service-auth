@@ -54,6 +54,11 @@ class Activation extends AbstractAuthWebModel
             id: $encrypter->encryptId($user->getId()),
         );
 
+        $userResource->attributes->add(
+            name: 'email',
+            value: $user->getEmail(),
+        );
+
         if ($code !== null) {
             $userResource->attributes->add(
                 name: 'code',
