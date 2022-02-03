@@ -24,7 +24,7 @@
                     alert(error.errors[0].title);
                 },
                 success: function (result) {
-                    window.location.replace('{{ links.home }}activation');
+                    window.location.replace(result.links.redirect);
                 }
             });
         });

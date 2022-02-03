@@ -6,11 +6,7 @@ use CarloNicora\JsonApi\Objects\ResourceObject;
 use CarloNicora\Minimalism\Enums\HttpCode;
 use CarloNicora\Minimalism\Interfaces\Encrypter\Interfaces\EncrypterInterface;
 use CarloNicora\Minimalism\Interfaces\Encrypter\Parameters\EncryptedParameter;
-use CarloNicora\Minimalism\Interfaces\Mailer\Enums\RecipientType;
-use CarloNicora\Minimalism\Interfaces\Mailer\Objects\Recipient;
 use CarloNicora\Minimalism\Services\Auth\Abstracts\AbstractAuthWebModel;
-use CarloNicora\Minimalism\Services\Auth\Data\User;
-use CarloNicora\Minimalism\Services\Auth\Factories\EmailFactory;
 use CarloNicora\Minimalism\Services\Auth\Factories\ExceptionFactory;
 use CarloNicora\Minimalism\Services\Auth\IO\CodeIO;
 use Exception;
@@ -43,22 +39,21 @@ class Login extends AbstractAuthWebModel
             try {
                 $user = $this->auth->getAuthenticationTable()->authenticateByEmail($email);
 
-                if (!$user->isActive()){
-                    $this->auth->setIsNewRegistration();
-
-                    $this->view = 'username';
-                } else if ($user->getPassword() !== null) {
+                if ($user->getPassword() !== null) {
                     $this->view = 'password';
                 } else {
                     $this->view = 'code';
+                    $this->auth->sendCode($user);
 
-                    $this->sendCode($encrypter, $user);
+                    if (!$user->isActive()){
+                        $this->auth->setIsNewRegistration();
+                    }
                 }
             } catch (Exception) {
                 $user = $this->auth->getAuthenticationTable()->generateNewUser($email);
                 $this->auth->setIsNewRegistration();
-
-                $this->view = 'username';
+                $this->view = 'code';
+                $this->auth->sendCode($user);
             }
 
             $this->auth->setUserId($user->getId());
@@ -107,7 +102,7 @@ class Login extends AbstractAuthWebModel
         $this->auth->setUserId($user->getId());
 
         if ($resendCode !== null){
-            $this->sendCode($encrypter, $user);
+            $this->auth->sendCode($user);
 
             $this->document->links->add(
                 new Link(
@@ -134,44 +129,17 @@ class Login extends AbstractAuthWebModel
         }
         $this->auth->setUserId($user->getId());
 
-        $this->addCorrectRedirection();
+        if ($this->auth->isNewRegistration()){
+            $this->document->links->add(
+                new Link(
+                    name: 'redirect',
+                    href: $this->url . 'username',
+                ),
+            );
+        } else {
+            $this->addCorrectRedirection();
+        }
 
         return HttpCode::Ok;
-    }
-
-    /**
-     * @param EncrypterInterface $encrypter
-     * @param User $user
-     * @return void
-     * @throws Exception
-     */
-    private function sendCode(
-        EncrypterInterface $encrypter,
-        User $user,
-    ): void
-    {
-        $code = $this->objectFactory->create(CodeIO::class)->generateCode($user->getId());
-        $data = [
-            'username' => $user->getName() ?? $user->getUsername(),
-            'code' => $code,
-            'url' => $this->url . 'code/'
-                . $encrypter->encryptId($user->getId()) . '/'
-                . $code . '/'
-                . $this->auth->getClientId() . '/'
-                . $this->auth->getState(),
-        ];
-
-        $recipient = new Recipient(
-            emailAddress: $user->getEmail(),
-            name: $user->getName() ?? $user->getUsername(),
-            type: RecipientType::To,
-        );
-
-        $this->objectFactory->create(EmailFactory::class)->sendEmail(
-            template: 'emails/logincode',
-            data: $data,
-            recipient: $recipient,
-            title: $this->auth->getCodeEmailTitle() ?? 'Your passwordless access code and link',
-        );
     }
 }

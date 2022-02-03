@@ -45,6 +45,13 @@ class Facebook extends AbstractAuthWebModel
 
         $this->auth->setUserId($user->getId());
 
+        if ($this->auth->isNewRegistration()){
+            $this->auth->sendCode($user);
+
+            header('Location:' . $this->url . 'username');
+            exit;
+        }
+
         $this->addCorrectRedirection(true);
 
         return HttpCode::Ok;
