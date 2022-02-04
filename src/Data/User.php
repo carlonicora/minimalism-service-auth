@@ -3,6 +3,9 @@ namespace CarloNicora\Minimalism\Services\Auth\Data;
 
 class User
 {
+    /** @var bool  */
+    private bool $isSocialLogin=false;
+
     /**
      * @param int $id
      * @param string $username
@@ -124,5 +127,24 @@ class User
     ): bool
     {
         return $this->isActive;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isSocialLogin(
+    ): bool
+    {
+        return $this->isSocialLogin;
+    }
+
+    /**
+     * @param bool $isSocialLogin
+     */
+    public function setIsSocialLogin(
+        bool $isSocialLogin,
+    ): void
+    {
+        $this->isSocialLogin = $isSocialLogin;
     }
 }

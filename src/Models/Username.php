@@ -31,6 +31,10 @@ class Username extends AbstractAuthWebModel
             value: $user->getUsername(),
         );
 
+        if ($user->isSocialLogin()){
+            $this->document->meta->add(name: 'isSocialLogin', value: true);
+        }
+
         $this->document->addResource(
             resource: $userResource,
         );
