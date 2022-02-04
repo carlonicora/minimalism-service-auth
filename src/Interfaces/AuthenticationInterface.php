@@ -18,6 +18,12 @@ interface AuthenticationInterface
     public function authenticateById(int $userId): User;
 
     /**
+     * @param string $username
+     * @return User
+     */
+    public function authenticateByUsername(string $username): User;
+
+    /**
      * @param int $userId
      * @param string $password
      */
