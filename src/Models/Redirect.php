@@ -19,7 +19,7 @@ class Redirect extends AbstractAuthWebModel
     {
         $redirection = $OAuth->generateRedirection(
             clientId: $this->auth->getClientId(),
-            userId: $this->auth->getUserId(),
+            userId: $this->auth->isAuthenticated() ? $this->auth->getUserId() : null,
             state: $this->auth->getState()
         );
 

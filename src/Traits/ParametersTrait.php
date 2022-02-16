@@ -15,6 +15,9 @@ trait ParametersTrait
     /** @var int|null */
     private ?int $userId=null;
 
+    /** @var bool  */
+    private bool $isAuthenticated=false;
+
     /**
      * @return string|null
      */
@@ -91,6 +94,24 @@ trait ParametersTrait
     }
 
     /**
+     * @return bool
+     */
+    public function isAuthenticated(): bool
+    {
+        return $this->isAuthenticated;
+    }
+
+    /**
+     * @param bool $isAuthenticated
+     */
+    public function setIsAuthenticated(
+        bool $isAuthenticated,
+    ): void
+    {
+        $this->isAuthenticated = $isAuthenticated;
+    }
+
+    /**
      * @return void
      */
     protected function readParametersFromSession(
@@ -99,6 +120,7 @@ trait ParametersTrait
         $this->client_id = $_SESSION['client_id'] ?? null;
         $this->state = $_SESSION['state'] ?? null;
         $this->userId = $_SESSION['userId'] ?? null;
+        $this->isAuthenticated = array_key_exists('isAuthenticated', $_SESSION) ? $_SESSION['isAuthenticated'] : false;
         $this->isNewRegistration = array_key_exists('isNewRegistration', $_SESSION)
             ? $_SESSION['isNewRegistration']
             : false;
@@ -113,6 +135,7 @@ trait ParametersTrait
         $_SESSION['userId'] = $this->userId;
         $_SESSION['client_id'] = $this->client_id;
         $_SESSION['state'] = $this->state;
+        $_SESSION['isAuthenticated'] = $this->isAuthenticated;
         $_SESSION['isNewRegistration'] = $this->isNewRegistration;
 
         $this->client_id = null;
@@ -131,5 +154,6 @@ trait ParametersTrait
         $this->state = null;
         $this->userId = null;
         $this->isNewRegistration = false;
+        $this->isAuthenticated = false;
     }
 }

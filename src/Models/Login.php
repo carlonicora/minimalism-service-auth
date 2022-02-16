@@ -132,6 +132,7 @@ class Login extends AbstractAuthWebModel
             $this->auth->getAuthenticationTable()->activateUser($user);
         }
         $this->auth->setUserId($user->getId());
+        $this->auth->setIsAuthenticated(true);
 
         if ($this->auth->isNewRegistration()){
             $this->document->links->add(
