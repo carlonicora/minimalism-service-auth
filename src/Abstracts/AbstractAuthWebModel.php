@@ -36,7 +36,7 @@ class AbstractAuthWebModel extends AbstractModel
             $function
         );
 
-        $this->url = $minimalismFactories->getServiceFactory()->getPath()->getUrl();
+        $this->url = $minimalismFactories->getServiceFactory()->getPath()?->getUrl();
         $this->auth = $minimalismFactories->getServiceFactory()->create(Auth::class);
         $this->OAuth = $minimalismFactories->getServiceFactory()->create(OAuth::class);
 
