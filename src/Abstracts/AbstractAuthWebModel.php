@@ -6,12 +6,16 @@ use CarloNicora\Minimalism\Abstracts\AbstractModel;
 use CarloNicora\Minimalism\Factories\MinimalismFactories;
 use CarloNicora\Minimalism\Services\Auth\Auth;
 use CarloNicora\Minimalism\Services\OAuth\IO\AppIO;
+use CarloNicora\Minimalism\Services\OAuth\OAuth;
 use Exception;
 
 class AbstractAuthWebModel extends AbstractModel
 {
     /** @var Auth  */
     protected Auth $auth;
+
+    /** @var OAuth  */
+    protected OAuth $OAuth;
 
     /** @var string  */
     protected string $url;
@@ -34,9 +38,35 @@ class AbstractAuthWebModel extends AbstractModel
 
         $this->url = $minimalismFactories->getServiceFactory()->getPath()->getUrl();
         $this->auth = $minimalismFactories->getServiceFactory()->create(Auth::class);
+        $this->OAuth = $minimalismFactories->getServiceFactory()->create(OAuth::class);
 
         $this->document->links->add(
             new Link('home', $this->url)
+        );
+
+        if ($this->auth->getClientId() !== null) {
+            $this->generateReturnToAppLink();
+        }
+    }
+
+    /**
+     * @return void
+     * @throws Exception
+     */
+    protected function generateReturnToAppLink(
+    ): void
+    {
+        if ($this->document->links->has(name: 'return')) {
+            $this->document->links->remove(linkName: 'return');
+        }
+
+        $returnLink = $this->OAuth->generateRedirection(
+            clientId: $this->auth->getClientId(),
+            userId: $this->auth->getUserId(),
+            state: $this->auth->getState()
+        );
+        $this->document->links->add(
+            new Link(name: 'return', href: $returnLink),
         );
     }
 

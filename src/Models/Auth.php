@@ -35,6 +35,7 @@ class Auth extends AbstractAuthWebModel
         $this->view = 'index';
         
         $this->auth->setClientId($client_id);
+        $this->generateReturnToAppLink();
 
         if (!empty($state)) {
             $this->auth->setState($state);
