@@ -28,12 +28,12 @@ enum ExceptionFactory: int
         return match ($this) {
             self::WrongPassword => new MinimalismException(
                 status: HttpCode::Unauthorized,
-                message: 'The inserted password is wrong.',
+                message: 'Password is incorrect.',
                 code: self::SERVICE_IDENTIFIER + $this->value,
             ),
             self::CodeInvalidOrExpired => new MinimalismException(
                 status: HttpCode::Unauthorized,
-                message: 'The inserted code is invalid or expired.',
+                message: 'This code is invalid or has expired.',
                 code: self::SERVICE_IDENTIFIER + $this->value,
             ),
             self::PasswordOrCodeMising => new MinimalismException(
