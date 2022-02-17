@@ -81,7 +81,7 @@ class Login extends AbstractAuthWebModel
      * @param EncryptedParameter|null $userId
      * @param bool|null $resendCode
      * @param string|null $password
-     * @param int|string|null $code
+     * @param string|null $code
      * @return HttpCode
      * @throws Exception
      */
@@ -90,7 +90,7 @@ class Login extends AbstractAuthWebModel
         ?EncryptedParameter $userId=null,
         ?bool $resendCode=null,
         ?string $password=null,
-        int|string|null $code=null,
+        ?string $code=null,
     ): HttpCode
     {
         if ($userId === null && $this->auth->getUserId() === null){
