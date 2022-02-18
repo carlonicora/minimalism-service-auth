@@ -88,6 +88,7 @@ class Reset extends AbstractAuthWebModel
             $this->auth->getAuthenticationTable()->activateUser($user);
         }
         $this->auth->setUserId($user->getId());
+        $this->auth->setIsAuthenticated(true);
 
         $this->addCorrectRedirection();
 
