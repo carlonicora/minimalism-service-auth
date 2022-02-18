@@ -68,20 +68,20 @@ class Reset extends AbstractAuthWebModel
 
     /**
      * @param EncryptedParameter $userId
-     * @param int $code
+     * @param string $code
      * @param string $password
      * @return HttpCode
      * @throws Exception
      */
     public function post(
         EncryptedParameter $userId,
-        int $code,
+        string $code,
         string $password,
     ): HttpCode
     {
         $user = $this->auth->getAuthenticationTable()->authenticateById($userId->getValue());
 
-        $this->objectFactory->create(CodeIO::class)->validate($user->getId(), $code);
+        $this->objectFactory->create(CodeIO::class)->validate($user->getId(), (int)$code);
         $this->auth->getAuthenticationTable()->updatePassword($user->getId(), password_hash($password, PASSWORD_BCRYPT));
         /** @noinspection RepetitiveMethodCallsInspection */
         if(!$user->isActive()) {
