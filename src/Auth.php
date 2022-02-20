@@ -5,12 +5,12 @@ use CarloNicora\Minimalism\Abstracts\AbstractService;
 use CarloNicora\Minimalism\Interfaces\Encrypter\Interfaces\EncrypterInterface;
 use CarloNicora\Minimalism\Interfaces\Mailer\Enums\RecipientType;
 use CarloNicora\Minimalism\Interfaces\Mailer\Objects\Recipient;
-use CarloNicora\Minimalism\Services\Auth\Data\User;
+use CarloNicora\Minimalism\Services\Auth\Data\Codes\IO\CodeIO;
 use CarloNicora\Minimalism\Services\Auth\Factories\EmailFactory;
-use CarloNicora\Minimalism\Services\Auth\Interfaces\AuthenticationInterface;
-use CarloNicora\Minimalism\Services\Auth\IO\CodeIO;
 use CarloNicora\Minimalism\Services\Auth\Traits\ParametersTrait;
 use CarloNicora\Minimalism\Services\Path;
+use CarloNicora\Minimalism\Services\Users\Data\Users\DataObjects\User;
+use CarloNicora\Minimalism\Services\Users\Interfaces\AuthenticationInterface;
 use Exception;
 use RuntimeException;
 
@@ -52,7 +52,7 @@ class Auth extends AbstractService
     {
         $code = $this->objectFactory->create(CodeIO::class)->generateCode($user->getId());
         $data = [
-            'username' => $user->getName() ?? $user->getUsername(),
+            'username' => $user->getSingleMeta(metaId: 'name') ?? $user->getUsername(),
             'code' => $code,
             'url' => $this->path->getUrl() . 'code/'
                 . $this->encrypter->encryptId($user->getId()) . '/'
@@ -63,7 +63,7 @@ class Auth extends AbstractService
 
         $recipient = new Recipient(
             emailAddress: $user->getEmail(),
-            name: $user->getName() ?? $user->getUsername(),
+            name: $user->getSingleMeta(metaId: 'name') ?? $user->getUsername(),
             type: RecipientType::To,
         );
 

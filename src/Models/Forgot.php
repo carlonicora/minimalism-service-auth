@@ -9,8 +9,8 @@ use CarloNicora\Minimalism\Interfaces\Encrypter\Parameters\EncryptedParameter;
 use CarloNicora\Minimalism\Interfaces\Mailer\Enums\RecipientType;
 use CarloNicora\Minimalism\Interfaces\Mailer\Objects\Recipient;
 use CarloNicora\Minimalism\Services\Auth\Abstracts\AbstractAuthWebModel;
+use CarloNicora\Minimalism\Services\Auth\Data\Codes\IO\CodeIO;
 use CarloNicora\Minimalism\Services\Auth\Factories\EmailFactory;
-use CarloNicora\Minimalism\Services\Auth\IO\CodeIO;
 use Exception;
 
 class Forgot extends AbstractAuthWebModel
@@ -60,7 +60,7 @@ class Forgot extends AbstractAuthWebModel
 
         $code = $this->objectFactory->create(CodeIO::class)->generateCode($user->getId());
         $data = [
-            'username' => $user->getName() ?? $user->getUsername(),
+            'username' => $user->getSingleMeta(metaId: 'name') ?? $user->getUsername(),
             'code' => $code,
             'url' => $this->url . 'reset/'
                 . $encrypter->encryptId($user->getId()) . '/'
@@ -71,7 +71,7 @@ class Forgot extends AbstractAuthWebModel
 
         $recipient = new Recipient(
             emailAddress: $user->getEmail(),
-            name: $user->getName() ?? $user->getUsername(),
+            name: $user->getSingleMeta(metaId: 'name') ?? $user->getUsername(),
             type: RecipientType::To,
         );
 

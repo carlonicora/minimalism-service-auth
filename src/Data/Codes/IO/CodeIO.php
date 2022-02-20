@@ -1,25 +1,26 @@
 <?php
-namespace CarloNicora\Minimalism\Services\Auth\IO;
+namespace CarloNicora\Minimalism\Services\Auth\Data\Codes\IO;
 
-use CarloNicora\Minimalism\Interfaces\Data\Abstracts\AbstractIO;
-use CarloNicora\Minimalism\Services\Auth\Databases\OAuth\Tables\CodesTable;
+use CarloNicora\Minimalism\Interfaces\Sql\Abstracts\AbstractSqlIO;
+use CarloNicora\Minimalism\Interfaces\Sql\Enums\SqlComparison;
+use CarloNicora\Minimalism\Services\Auth\Data\Codes\Databases\CodesTable;
+use CarloNicora\Minimalism\Services\Auth\Data\Codes\DataObjects\Code;
 use CarloNicora\Minimalism\Services\Auth\Factories\ExceptionFactory;
+use CarloNicora\Minimalism\Services\MySQL\Factories\SqlQueryFactory;
 use Exception;
 
-class CodeIO extends AbstractIO
+class CodeIO extends AbstractSqlIO
 {
     /**
      * @return void
+     * @throws Exception
      */
     public function purgeExpired(
     ): void
     {
-        /** @noinspection UnusedFunctionResultInspection */
-        /** @see CodesTable::purgeExpired() */
-        $this->data->run(
-            tableInterfaceClassName: CodesTable::class,
-            functionName: 'purgeExpired',
-            parameters: [],
+        $this->data->delete(
+            queryFactory: SqlQueryFactory::create(CodesTable::class)
+                ->addParameter(field: CodesTable::expirationTime, value: date('Y-m-d H:i:s'), comparison: SqlComparison::LesserThan),
         );
     }
 
@@ -27,6 +28,7 @@ class CodeIO extends AbstractIO
      * @param int $userId
      * @param int $code
      * @return bool
+     * @throws Exception
      */
     public function isCodeValid(
         int $userId,
@@ -35,11 +37,10 @@ class CodeIO extends AbstractIO
     {
         $this->purgeExpired();
 
-        /** @see CodesTable::readByUserIdCode() */
         $recordset = $this->data->read(
-            tableInterfaceClassName: CodesTable::class,
-            functionName: 'readByUserIdCode',
-            parameters: [$userId, $code],
+            queryFactory: SqlQueryFactory::create(CodesTable::class)
+                ->addParameter(CodesTable::userId, $userId)
+                ->addParameter(CodesTable::code, $code),
         );
 
         return $recordset !== [];
@@ -57,12 +58,11 @@ class CodeIO extends AbstractIO
     ): void
     {
         $this->purgeExpired();
-        
-        /** @see CodesTable::readByUserIdCode() */
+
         $recordset = $this->data->read(
-            tableInterfaceClassName: CodesTable::class,
-            functionName: 'readByUserIdCode',
-            parameters: [$userId, $code],
+            queryFactory: SqlQueryFactory::create(CodesTable::class)
+                ->addParameter(CodesTable::userId, $userId)
+                ->addParameter(CodesTable::code, $code),
         );
 
         $expiration = strtotime($recordset[0]['expirationTime']);
@@ -75,29 +75,25 @@ class CodeIO extends AbstractIO
             throw ExceptionFactory::CodeInvalidOrExpired->create();
         }
 
-        /** @noinspection UnusedFunctionResultInspection */
-        /** @see CodesTable::purgeUserId() */
-        $this->data->run(
-            tableInterfaceClassName: CodesTable::class,
-            functionName: 'purgeUserId',
-            parameters: [$userId],
+        $this->data->delete(
+            queryFactory: SqlQueryFactory::create(CodesTable::class)
+                ->addParameter(field: CodesTable::userId, value: $userId),
         );
     }
 
     /**
      * @param int $userId
      * @return string
+     * @throws Exception
      */
     public function generateCode(
         int $userId,
     ): string{
         $this->purgeExpired();
 
-        /** @see CodesTable::readByUserId() */
         $recordset = $this->data->read(
-            tableInterfaceClassName: CodesTable::class,
-            functionName: 'readByUserId',
-            parameters: [$userId],
+            queryFactory: SqlQueryFactory::create(CodesTable::class)
+                ->addParameter(CodesTable::userId, $userId),
         );
 
         if ($recordset === []) {
@@ -108,16 +104,14 @@ class CodeIO extends AbstractIO
                 $response = rand(100000, 999999);
             }
 
-            $codeRecord = [
-                'userId' => $userId,
-                'code' => $response,
-                'expirationTime' => date('Y-m-d H:i:s', time() + 60 * 5)
-            ];
+            $code = new Code();
+            $code->setUserId($userId);
+            $code->setCode($response);
+            $code->setExpirationTime(time() + 60 * 5);
 
             /** @noinspection UnusedFunctionResultInspection */
-            $this->data->insert(
-                tableInterfaceClassName: CodesTable::class,
-                records: $codeRecord,
+            $this->data->create(
+                queryFactory: $code,
             );
         } else {
             $response = $recordset[0]['code'];

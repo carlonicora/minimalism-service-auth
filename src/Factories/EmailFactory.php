@@ -36,7 +36,6 @@ class EmailFactory implements SimpleObjectInterface
         string $template,
         array $data,
         Recipient $recipient,
-
         string $title,
     ): void
     {

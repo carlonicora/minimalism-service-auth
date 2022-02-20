@@ -3,8 +3,9 @@ namespace CarloNicora\Minimalism\Services\Auth\Models\Social;
 
 use CarloNicora\Minimalism\Enums\HttpCode;
 use CarloNicora\Minimalism\Services\Auth\Abstracts\AbstractAuthWebModel;
+use CarloNicora\Minimalism\Services\Auth\Data\AppleIds\DataObjects\AppleId;
+use CarloNicora\Minimalism\Services\Auth\Data\AppleIds\IO\AppleIdIO;
 use CarloNicora\Minimalism\Services\Auth\Factories\ExceptionFactory;
-use CarloNicora\Minimalism\Services\Auth\IO\AppleIdIO;
 use CarloNicora\Minimalism\Services\Auth\Services\AppleLogin\AppleLogin;
 use Exception;
 
@@ -33,8 +34,8 @@ class Apple extends AbstractAuthWebModel
                 $user = $this->auth->getAuthenticationTable()->authenticateByEmail($appleUser['email']);
             } catch (Exception) {
                 try {
-                    $appleIdData = $this->objectFactory->create(AppleIdIO::class)->readByAppleId($appleUser['sub']);
-                    $user = $this->auth->getAuthenticationTable()->authenticateById($appleIdData['userId']);
+                    $appleId = $this->objectFactory->create(AppleIdIO::class)->readByAppleId($appleUser['sub']);
+                    $user = $this->auth->getAuthenticationTable()->authenticateById($appleId->getUserId());
                 } catch (Exception) {
                     $user = $this->auth->getAuthenticationTable()->generateNewUser($appleUser['email'], $appleUser['name'] ?? '', 'apple');
                     $this->auth->setIsNewRegistration();
@@ -42,15 +43,18 @@ class Apple extends AbstractAuthWebModel
                         $this->auth->getAuthenticationTable()->activateUser($user);
                     }
 
+                    $appleId = new AppleId();
+                    $appleId->setAppleId($appleUser['sub']);
+                    $appleId->setUserId($user->getId());
                     /** @noinspection UnusedFunctionResultInspection */
-                    $this->objectFactory->create(AppleIdIO::class)->insert($appleUser['sub'], $user->getId());
+                    $this->objectFactory->create(AppleIdIO::class)->insert($appleId);
                 }
             }
         } else {
             try {
-                $appleIdData = $this->objectFactory->create(AppleIdIO::class)->readByAppleId($appleUser['sub']);
+                $appleId = $this->objectFactory->create(AppleIdIO::class)->readByAppleId($appleUser['sub']);
                 try {
-                    $user = $this->auth->getAuthenticationTable()->authenticateById($appleIdData['userId']);
+                    $user = $this->auth->getAuthenticationTable()->authenticateById($appleId->getUserId());
                 } catch (Exception) {
                     header('Location:' . $this->url . 'index?error=' . ExceptionFactory::AppleIdNotMatchingAccount->value);
                     exit;
