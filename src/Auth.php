@@ -155,5 +155,7 @@ class Auth extends AbstractService
         if (isset($_SESSION)) {
             $this->saveParametersInSession();
         }
+
+        $this->authInterfaceClass = null;
     }
 }
