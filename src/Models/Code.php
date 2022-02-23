@@ -29,7 +29,7 @@ class Code extends AbstractAuthWebModel
         $this->auth->setState($state->getValue());
         $this->auth->setUserId($userId->getValue());
 
-        $this->view = 'code';
+        $this->view = 'auth/code';
 
         $user = $this->auth->getAuthenticationTable()->authenticateById($userId->getValue());
         $this->auth->setUserId($user->getId());

@@ -32,7 +32,7 @@ class Auth extends AbstractAuthWebModel
         ?int $error=null,
     ): HttpCode
     {
-        $this->view = 'auth';
+        $this->view = 'auth/auth';
         
         $this->auth->setClientId($client_id);
         $this->generateReturnToAppLink();

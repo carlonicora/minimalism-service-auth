@@ -18,7 +18,7 @@ class Username extends AbstractAuthWebModel
         EncrypterInterface $encrypter,
     ): HttpCode
     {
-        $this->view = 'username';
+        $this->view = 'auth/username';
 
         $user = $this->auth->getAuthenticationTable()->authenticateById($this->auth->getUserId());
 

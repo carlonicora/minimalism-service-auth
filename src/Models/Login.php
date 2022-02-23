@@ -28,7 +28,7 @@ class Login extends AbstractAuthWebModel
         ?EncryptedParameter $userId=null,
     ): HttpCode{
         if ($forceCode && $userId !== null){
-            $this->view = 'code';
+            $this->view = 'auth/code';
 
             $user = $this->auth->getAuthenticationTable()->authenticateById($userId->getValue());
             
@@ -41,9 +41,9 @@ class Login extends AbstractAuthWebModel
                 $user = $this->auth->getAuthenticationTable()->authenticateByEmail($email);
 
                 if ($user->getPassword() !== null) {
-                    $this->view = 'password';
+                    $this->view = 'auth/password';
                 } else {
-                    $this->view = 'code';
+                    $this->view = 'auth/code';
                     $this->auth->sendCode($user);
 
                     if (!$user->isActive()){
@@ -54,7 +54,7 @@ class Login extends AbstractAuthWebModel
             } catch (Exception) {
                 $user = $this->auth->getAuthenticationTable()->generateNewUser($email);
                 $this->auth->setIsNewRegistration();
-                $this->view = 'code';
+                $this->view = 'auth/code';
                 $this->auth->sendCode($user);
                 $this->document->meta->add(name: 'activation', value: true);
             }

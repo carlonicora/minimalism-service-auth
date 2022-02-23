@@ -28,7 +28,7 @@ class Activation extends AbstractAuthWebModel
         ?string $code=null,
     ): HttpCode
     {
-        $this->view = 'code';
+        $this->view = 'auth/code';
 
         if ($client_id !== null) {
             $this->auth->setClientId($client_id);

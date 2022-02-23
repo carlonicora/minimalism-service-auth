@@ -30,7 +30,7 @@ class Reset extends AbstractAuthWebModel
         PositionedParameter $state,
     ): HttpCode
     {
-        $this->view = 'reset';
+        $this->view = 'auth/reset';
         $this->auth->setClientId($clientId->getValue());
         $this->auth->setState($state->getValue());
 

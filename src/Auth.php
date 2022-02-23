@@ -68,7 +68,7 @@ class Auth extends AbstractService
         );
 
         $this->objectFactory->create(EmailFactory::class)->sendEmail(
-            template: 'emails/logincode',
+            template: 'auth/emails/logincode',
             data: $data,
             recipient: $recipient,
             title: $this->getCodeEmailTitle() ?? 'Your passwordless access code and link',

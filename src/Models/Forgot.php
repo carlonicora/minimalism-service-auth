@@ -27,9 +27,9 @@ class Forgot extends AbstractAuthWebModel
     ): HttpCode
     {
         if ($sent){
-            $this->view = 'resetemailsent';
+            $this->view = 'auth/resetemailsent';
         } else {
-            $this->view = 'forgot';
+            $this->view = 'auth/forgot';
         }
 
         if ($userId !== null){
@@ -76,7 +76,7 @@ class Forgot extends AbstractAuthWebModel
         );
 
         $this->objectFactory->create(EmailFactory::class)->sendEmail(
-            template: 'emails/forgot',
+            template: 'auth/emails/forgot',
             data: $data,
             recipient: $recipient,
             title: $this->auth->getForgotEmailTitle() ?? 'Reset your account password',
