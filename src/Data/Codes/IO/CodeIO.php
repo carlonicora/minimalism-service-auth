@@ -20,6 +20,7 @@ class CodeIO extends AbstractSqlIO
     {
         $this->data->delete(
             queryFactory: SqlQueryFactory::create(CodesTable::class)
+                ->delete()
                 ->addParameter(field: CodesTable::expirationTime, value: date('Y-m-d H:i:s'), comparison: SqlComparison::LesserThan),
         );
     }
@@ -77,6 +78,7 @@ class CodeIO extends AbstractSqlIO
 
         $this->data->delete(
             queryFactory: SqlQueryFactory::create(CodesTable::class)
+                ->delete()
                 ->addParameter(field: CodesTable::userId, value: $userId),
         );
     }
