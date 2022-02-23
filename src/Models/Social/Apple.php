@@ -56,11 +56,11 @@ class Apple extends AbstractAuthWebModel
                 try {
                     $user = $this->auth->getAuthenticationTable()->authenticateById($appleId->getUserId());
                 } catch (Exception) {
-                    header('Location:' . $this->url . 'index?error=' . ExceptionFactory::AppleIdNotMatchingAccount->value);
+                    header('Location:' . $this->url . 'auth?error=' . ExceptionFactory::AppleIdNotMatchingAccount->value);
                     exit;
                 }
             } catch (Exception) {
-                header('Location:' . $this->url . 'index?error=' . ExceptionFactory::AppleIdNotFound->value);
+                header('Location:' . $this->url . 'auth?error=' . ExceptionFactory::AppleIdNotFound->value);
                 exit;
             }
         }
