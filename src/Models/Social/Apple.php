@@ -66,6 +66,7 @@ class Apple extends AbstractAuthWebModel
         }
 
         $this->auth->setUserId($user->getId());
+        $this->auth->setIsAuthenticated(true);
 
         if ($this->auth->isNewRegistration()){
             $this->auth->sendCode($user);
