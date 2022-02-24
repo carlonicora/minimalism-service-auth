@@ -18,6 +18,8 @@ class Login extends AbstractAuthWebModel
      * @param string|null $email
      * @param bool|null $forceCode
      * @param EncryptedParameter|null $userId
+     * @param string|null $client_id
+     * @param string|null $state
      * @return HttpCode
      * @throws Exception
      */
@@ -26,7 +28,14 @@ class Login extends AbstractAuthWebModel
         ?string $email=null,
         ?bool $forceCode=null,
         ?EncryptedParameter $userId=null,
+        ?string $client_id=null,
+        ?string $state=null,
     ): HttpCode{
+        if ($email === null && $forceCode === null && $userId === null && $client_id !== null && $state !== null){
+            header('Location: ' . $this->url . '?client_id=' . $client_id . '&state=' . $state);
+            exit;
+        }
+
         if ($forceCode && $userId !== null){
             $this->view = 'auth/code';
 
