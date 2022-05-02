@@ -20,7 +20,7 @@ class User
         private string $email,
         private ?string $name=null,
         private ?string $password=null,
-        private bool $isActive=false,
+        private readonly bool $isActive=false,
     )
     {
     }

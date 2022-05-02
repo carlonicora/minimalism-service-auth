@@ -18,9 +18,9 @@ class EmailFactory implements SimpleObjectInterface
      * @param Auth $auth
      */
     public function __construct(
-        private Path $path,
-        private MailerInterface $mailer,
-        private Auth $auth,
+        private readonly Path $path,
+        private readonly MailerInterface $mailer,
+        private readonly Auth $auth,
     )
     {
     }

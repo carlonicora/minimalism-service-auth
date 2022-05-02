@@ -15,8 +15,8 @@ class GoogleLogin extends AbstractService implements SocialLoginInterface
      * @param string|null $MINIMALISM_SERVICE_AUTH_GOOGLE_IDENTITY_FILE
      */
     public function __construct(
-        private Path $path,
-        private ?string $MINIMALISM_SERVICE_AUTH_GOOGLE_IDENTITY_FILE=null,
+        private readonly Path $path,
+        private readonly ?string $MINIMALISM_SERVICE_AUTH_GOOGLE_IDENTITY_FILE=null,
     )
     {
     }

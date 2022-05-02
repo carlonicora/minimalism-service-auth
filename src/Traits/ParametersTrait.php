@@ -18,6 +18,9 @@ trait ParametersTrait
     /** @var bool  */
     private bool $isAuthenticated=false;
 
+    /** @var string|null  */
+    private ?string $source=null;
+
     /**
      * @return string|null
      */
@@ -112,6 +115,25 @@ trait ParametersTrait
     }
 
     /**
+     * @return string|null
+     */
+    public function getSource(
+    ): ?string
+    {
+        return $this->source;
+    }
+
+    /**
+     * @param string|null $source
+     */
+    public function setSource(
+        ?string $source
+    ): void
+    {
+        $this->source = $source;
+    }
+
+    /**
      * @return void
      */
     protected function readParametersFromSession(
@@ -120,6 +142,7 @@ trait ParametersTrait
         $this->client_id = $_SESSION['client_id'] ?? null;
         $this->state = $_SESSION['state'] ?? null;
         $this->userId = $_SESSION['userId'] ?? null;
+        $this->source = $_SESSION['source'] ?? null;
         $this->isAuthenticated = array_key_exists('isAuthenticated', $_SESSION) ? $_SESSION['isAuthenticated'] : false;
         $this->isNewRegistration = array_key_exists('isNewRegistration', $_SESSION)
             ? $_SESSION['isNewRegistration']
@@ -135,12 +158,14 @@ trait ParametersTrait
         $_SESSION['userId'] = $this->userId;
         $_SESSION['client_id'] = $this->client_id;
         $_SESSION['state'] = $this->state;
+        $_SESSION['source'] = $this->source;
         $_SESSION['isAuthenticated'] = $this->isAuthenticated;
         $_SESSION['isNewRegistration'] = $this->isNewRegistration;
 
         $this->client_id = null;
         $this->state = null;
         $this->userId = null;
+        $this->source = null;
         $this->isNewRegistration = false;
     }
 
@@ -153,6 +178,7 @@ trait ParametersTrait
         $this->client_id = null;
         $this->state = null;
         $this->userId = null;
+        $this->source = null;
         $this->isNewRegistration = false;
         $this->isAuthenticated = false;
     }

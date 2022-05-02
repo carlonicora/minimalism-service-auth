@@ -31,12 +31,12 @@ class Auth extends AbstractService
      * @param string|null $MINIMALISM_SERVICE_AUTH_FORGOT_EMAIL_TITLE
      */
     public function __construct(
-        private Path $path,
-        private EncrypterInterface $encrypter,
-        private string $MINIMALISM_SERVICE_AUTH_SENDER_NAME,
-        private string $MINIMALISM_SERVICE_AUTH_SENDER_EMAIL,
-        private ?string $MINIMALISM_SERVICE_AUTH_CODE_EMAIL_TITLE='',
-        private ?string $MINIMALISM_SERVICE_AUTH_FORGOT_EMAIL_TITLE='',
+        private readonly Path $path,
+        private readonly EncrypterInterface $encrypter,
+        private readonly string $MINIMALISM_SERVICE_AUTH_SENDER_NAME,
+        private readonly string $MINIMALISM_SERVICE_AUTH_SENDER_EMAIL,
+        private readonly ?string $MINIMALISM_SERVICE_AUTH_CODE_EMAIL_TITLE='',
+        private readonly ?string $MINIMALISM_SERVICE_AUTH_FORGOT_EMAIL_TITLE='',
     )
     {
     }
