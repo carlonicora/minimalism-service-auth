@@ -72,6 +72,15 @@ trait ParametersTrait
     }
 
     /**
+     *
+     */
+    public function resetIsNewRegistration(
+    ): void
+    {
+        $this->isNewRegistration = false;
+    }
+
+    /**
      * @return bool
      */
     public function isNewRegistration(

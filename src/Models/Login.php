@@ -48,6 +48,7 @@ class Login extends AbstractAuthWebModel
             );
         } else {
             try {
+                $this->auth->resetIsNewRegistration();
                 $user = $this->auth->getAuthenticationTable()->authenticateByEmail($email);
 
                 if ($user->getPassword() !== null) {
