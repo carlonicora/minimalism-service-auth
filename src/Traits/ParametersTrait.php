@@ -21,6 +21,9 @@ trait ParametersTrait
     /** @var string|null  */
     private ?string $source=null;
 
+    /** @var bool  */
+    private bool $saveInSession=true;
+
     /**
      * @return string|null
      */
@@ -144,9 +147,7 @@ trait ParametersTrait
         $this->userId = $_SESSION['userId'] ?? null;
         $this->source = $_SESSION['source'] ?? null;
         $this->isAuthenticated = array_key_exists('isAuthenticated', $_SESSION) ? $_SESSION['isAuthenticated'] : false;
-        $this->isNewRegistration = array_key_exists('isNewRegistration', $_SESSION)
-            ? $_SESSION['isNewRegistration']
-            : false;
+        $this->isNewRegistration = array_key_exists('isNewRegistration', $_SESSION) ? $_SESSION['isNewRegistration'] : false;
     }
 
     /**
@@ -155,12 +156,14 @@ trait ParametersTrait
     protected function saveParametersInSession(
     ): void
     {
-        $_SESSION['userId'] = $this->userId;
-        $_SESSION['client_id'] = $this->client_id;
-        $_SESSION['state'] = $this->state;
-        $_SESSION['source'] = $this->source;
-        $_SESSION['isAuthenticated'] = $this->isAuthenticated;
-        $_SESSION['isNewRegistration'] = $this->isNewRegistration;
+        if ($this->saveInSession) {
+            $_SESSION['userId'] = $this->userId;
+            $_SESSION['client_id'] = $this->client_id;
+            $_SESSION['state'] = $this->state;
+            $_SESSION['source'] = $this->source;
+            $_SESSION['isAuthenticated'] = $this->isAuthenticated;
+            $_SESSION['isNewRegistration'] = $this->isNewRegistration;
+        }
 
         $this->client_id = null;
         $this->state = null;
@@ -181,5 +184,8 @@ trait ParametersTrait
         $this->source = null;
         $this->isNewRegistration = false;
         $this->isAuthenticated = false;
+
+        unset($_SESSION['userId'],$_SESSION['client_id'],$_SESSION['state'],$_SESSION['source'],$_SESSION['isAuthenticated'],$_SESSION['isNewRegistration']);
+        $this->saveInSession = false;
     }
 }

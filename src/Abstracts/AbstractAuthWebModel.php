@@ -60,13 +60,8 @@ class AbstractAuthWebModel extends AbstractModel
             $this->document->links->remove(linkName: 'return');
         }
 
-        $returnLink = $this->OAuth->generateRedirection(
-            clientId: $this->auth->getClientId(),
-            userId: $this->auth->isAuthenticated() ? $this->auth->getUserId() : null,
-            state: $this->auth->getState()
-        );
         $this->document->links->add(
-            new Link(name: 'return', href: $returnLink),
+            new Link(name: 'return', href: $this->url . 'cancel'),
         );
     }
 
