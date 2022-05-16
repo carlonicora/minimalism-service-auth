@@ -20,6 +20,7 @@ class Auth extends AbstractAuthWebModel
      * @param string $client_id
      * @param string|null $state
      * @param int|null $error
+     * @param string|null $source
      * @return HttpCode
      * @throws Exception
      */
@@ -30,9 +31,14 @@ class Auth extends AbstractAuthWebModel
         string $client_id,
         ?string $state=null,
         ?int $error=null,
+        ?string $source=null,
     ): HttpCode
     {
-        $this->view = 'auth/auth';
+        $this->view = 'index';
+
+        if ($source !== null){
+            $this->auth->setSource($source);
+        }
         
         $this->auth->setClientId($client_id);
         $this->generateReturnToAppLink();

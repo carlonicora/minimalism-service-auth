@@ -20,9 +20,9 @@ class FacebookLogin extends AbstractService implements SocialLoginInterface
      * @param string|null $MINIMALISM_SERVICE_AUTH_FACEBOOK_SECRET
      */
     public function __construct(
-        private Path $path,
-        private ?string $MINIMALISM_SERVICE_AUTH_FACEBOOK_ID=null,
-        private ?string $MINIMALISM_SERVICE_AUTH_FACEBOOK_SECRET=null,
+        private readonly Path $path,
+        private readonly ?string $MINIMALISM_SERVICE_AUTH_FACEBOOK_ID=null,
+        private readonly ?string $MINIMALISM_SERVICE_AUTH_FACEBOOK_SECRET=null,
     )
     {
     }
