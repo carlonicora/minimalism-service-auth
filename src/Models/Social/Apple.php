@@ -40,6 +40,7 @@ class Apple extends AbstractAuthWebModel
                     $this->auth->setIsNewRegistration();
                     if(!$user->isActive()) {
                         $this->auth->getAuthenticationTable()->activateUser($user);
+                        $user->setIsActive(true);
                     }
 
                     /** @noinspection UnusedFunctionResultInspection */
