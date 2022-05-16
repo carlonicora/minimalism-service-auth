@@ -20,7 +20,7 @@ class User
         private string $email,
         private ?string $name=null,
         private ?string $password=null,
-        private readonly bool $isActive=false,
+        private bool $isActive=false,
     )
     {
     }
@@ -127,6 +127,14 @@ class User
     ): bool
     {
         return $this->isActive;
+    }
+
+    /**
+     * @param bool $isActive
+     */
+    public function setIsActive(bool $isActive): void
+    {
+        $this->isActive = $isActive;
     }
 
     /**
