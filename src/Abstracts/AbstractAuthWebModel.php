@@ -5,7 +5,7 @@ use CarloNicora\JsonApi\Objects\Link;
 use CarloNicora\Minimalism\Abstracts\AbstractModel;
 use CarloNicora\Minimalism\Factories\MinimalismFactories;
 use CarloNicora\Minimalism\Services\Auth\Auth;
-use CarloNicora\Minimalism\Services\OAuth\IO\AppIO;
+use CarloNicora\Minimalism\Services\OAuth\Data\Apps\IO\AppIO;
 use CarloNicora\Minimalism\Services\OAuth\OAuth;
 use Exception;
 

@@ -155,7 +155,7 @@ class AppleLogin extends AbstractService implements SocialLoginInterface
         curl_setopt($ch, CURLOPT_HTTPHEADER, [
             'Accept: application/json',
             'Content-Type: application/x-www-form-urlencoded',
-            'User-Agent: curl',
+            'Users-Agent: curl',
         ]);
 
         $response = curl_exec($ch);

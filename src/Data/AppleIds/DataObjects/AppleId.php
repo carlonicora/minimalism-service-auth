@@ -1,0 +1,47 @@
+<?php
+namespace CarloNicora\Minimalism\Services\Auth\Data\AppleIds\DataObjects;
+
+use CarloNicora\Minimalism\Interfaces\Sql\Attributes\DbField;
+use CarloNicora\Minimalism\Interfaces\Sql\Attributes\DbTable;
+use CarloNicora\Minimalism\Interfaces\Sql\Interfaces\SqlDataObjectInterface;
+use CarloNicora\Minimalism\Services\Auth\Data\AppleIds\Databases\AppleIdsTable;
+use CarloNicora\Minimalism\Services\MySQL\Traits\SqlDataObjectTrait;
+
+#[DbTable(tableClass: AppleIdsTable::class)]
+class AppleId implements SqlDataObjectInterface
+{
+    use SqlDataObjectTrait;
+
+    /** @var string  */
+    #[DbField(field: AppleIdsTable::appleId)]
+    protected string $appleId;
+
+    /** @var int  */
+    #[DbField(field: AppleIdsTable::userId)]
+    protected int $userId;
+
+    /**
+     * @param string $appleId
+     * @param int $userId
+     */
+    public function __construct(
+        string $appleId,
+        int $userId,
+    )
+    {
+        $this->appleId = $appleId;
+        $this->userId = $userId;
+    }
+
+    /** @return string */
+    public function getAppleId(): string{return $this->appleId;}
+
+    /** @param string $appleId */
+    public function setAppleId(string $appleId): void{$this->appleId = $appleId;}
+
+    /** @return int */
+    public function getUserId(): int{return $this->userId;}
+
+    /** @param int $userId */
+    public function setUserId(int $userId): void{$this->userId = $userId;}
+}

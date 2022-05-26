@@ -1,5 +1,5 @@
 <?php
-namespace CarloNicora\Minimalism\Services\Auth\Data;
+namespace CarloNicora\Minimalism\Services\Auth\Data\Users\DataObjects;
 
 class User
 {

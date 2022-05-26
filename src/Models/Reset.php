@@ -8,9 +8,9 @@ use CarloNicora\Minimalism\Interfaces\Encrypter\Parameters\EncryptedParameter;
 use CarloNicora\Minimalism\Interfaces\Encrypter\Parameters\PositionedEncryptedParameter;
 use CarloNicora\Minimalism\Parameters\PositionedParameter;
 use CarloNicora\Minimalism\Services\Auth\Abstracts\AbstractAuthWebModel;
+use CarloNicora\Minimalism\Services\Auth\Data\Codes\IO\CodeIO;
 use CarloNicora\Minimalism\Services\Auth\Factories\ExceptionFactory;
-use CarloNicora\Minimalism\Services\Auth\IO\CodeIO;
-use CarloNicora\Minimalism\Services\OAuth\IO\AppIO;
+use CarloNicora\Minimalism\Services\OAuth\Data\Apps\IO\AppIO;
 use Exception;
 
 class Reset extends AbstractAuthWebModel

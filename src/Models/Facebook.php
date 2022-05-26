@@ -15,6 +15,7 @@ class Facebook extends AbstractAuthWebModel
      * @param string|null $facebookToken
      * @return HttpCode
      * @throws Exception
+     * @noinspection PhpUnusedParameterInspection
      */
     public function get(
         FacebookLogin $facebookLogin,

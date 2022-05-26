@@ -3,8 +3,9 @@ namespace CarloNicora\Minimalism\Services\Auth\Models\Social;
 
 use CarloNicora\Minimalism\Enums\HttpCode;
 use CarloNicora\Minimalism\Services\Auth\Abstracts\AbstractAuthWebModel;
+use CarloNicora\Minimalism\Services\Auth\Data\AppleIds\DataObjects\AppleId;
+use CarloNicora\Minimalism\Services\Auth\Data\AppleIds\IO\AppleIdIO;
 use CarloNicora\Minimalism\Services\Auth\Factories\ExceptionFactory;
-use CarloNicora\Minimalism\Services\Auth\IO\AppleIdIO;
 use CarloNicora\Minimalism\Services\Auth\Services\AppleLogin\AppleLogin;
 use Exception;
 
@@ -44,7 +45,9 @@ class Apple extends AbstractAuthWebModel
                     }
 
                     /** @noinspection UnusedFunctionResultInspection */
-                    $this->objectFactory->create(AppleIdIO::class)->insert($appleUser['sub'], $user->getId());
+                    $appleId = new AppleId(appleId: $appleUser['sub'], userId: $user->getId());
+                    /** @noinspection UnusedFunctionResultInspection */
+                    $this->objectFactory->create(AppleIdIO::class)->insert($appleId);
                 }
             }
         } else {

@@ -1,7 +1,7 @@
 <?php
 namespace CarloNicora\Minimalism\Services\Auth\Interfaces;
 
-use CarloNicora\Minimalism\Services\Auth\Data\User;
+use CarloNicora\Minimalism\Services\Auth\Data\Users\DataObjects\User;
 
 interface AuthenticationInterface
 {
