@@ -28,6 +28,8 @@ class ValidateRegistration extends AbstractAuthActionModel
             throw ExceptionFactory::EmailInvalid->create();
         }
 
+        $this->auth->validateDomain($email);
+
         $this->auth->setEmail($email);
 
         $this->auth->sendActivationEmail($email);

@@ -36,6 +36,7 @@ class ValidateAccount extends AbstractAuthActionModel
                 $this->addRedirection(Password::class);
             }
         } catch (Exception) {
+            $this->auth->validateDomain($email);
             $this->addRedirection(pageClass: Registration::class, parameters: ['email' => $email]);
         }
 
