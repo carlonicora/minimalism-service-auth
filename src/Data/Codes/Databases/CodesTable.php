@@ -15,15 +15,15 @@ enum CodesTable
     #[SqlField(fieldType: FieldType::Integer)]
     case userId;
 
+    #[SqlField]
+    case email;
+
     #[SqlField(fieldType: FieldType::Integer)]
     case code;
-
-    #[SqlField]
-    case type;
 
     #[SqlField(fieldOption: FieldOption::TimeCreate)]
     case createdAt;
 
-    #[SqlField(fieldOption: FieldType::Integer)]
+    #[SqlField(fieldOption: FieldOption::TimeUpdate)]
     case expirationTime;
 }

@@ -1,0 +1,27 @@
+{% extends "/Auth/Templates/Container.twig" %}
+
+{% block content %}
+    <h1>Login</h1>
+    {% if links.facebook %}
+        <a href="{{ links.facebook }}">Continue with Facebook</a>
+    {% endif %}
+    {% if links.google %}
+        <a href="{{ links.google }}">Continue with Google</a>
+    {% endif %}
+    {% if links.apple %}
+        <a href="{{ links.apple }}">Continue with Apple</a>
+    {% endif %}
+
+    <form method="{{ links.formAction.meta.method }}" action="{{ links.formAction.href }}" id="defaultForm">
+        Email:<br/>
+        <input id="id_email" name="email"/>
+        <input type="submit"/>
+    </form>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        ready(document.getElementById('id_email').focus());
+        formSetup('defaultForm', '{{ links.formAction.meta.method | capitalize }}');
+    </script>
+{% endblock %}

@@ -29,6 +29,10 @@ class OneTimePasswordBackup implements SqlDataObjectInterface
     #[DbField(fieldType: DbFieldType::Bool)]
     private bool $hasBeenUsed;
 
+    /** @var int */
+    #[DbField(fieldType: DbFieldType::IntDateTime)]
+    private int $createdAt;
+
     /** @return int */
     public function getId(): int{return $this->id;}
 
@@ -52,4 +56,10 @@ class OneTimePasswordBackup implements SqlDataObjectInterface
 
     /** @param bool $hasBeenUsed */
     public function setHasBeenUsed(bool $hasBeenUsed): void{$this->hasBeenUsed = $hasBeenUsed;}
+
+    /** @return int */
+    public function getCreatedAt(): int{return $this->createdAt;}
+
+    /** @param int $createdAt */
+    public function setCreatedAt(int $createdAt): void{$this->createdAt = $createdAt;}
 }

@@ -1,0 +1,18 @@
+{% extends "/Auth/Templates/Container.twig" %}
+
+{% block content %}
+    <h1>Authorisation</h1>
+    <form method="{{ links.formAction.meta.method }}" action="{{ links.formAction.href }}" id="defaultForm">
+        Allowed scopes<br/>
+{% for scope in data %}
+        <input type="checkbox" name="scopes[{{ scope.id }}]" value=""/>{{ scope.attributes.name }}<br/>
+{% endfor %}
+        <input type="submit"/>
+    </form>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        formSetup('defaultForm', '{{ links.formAction.meta.method | capitalize }}');
+    </script>
+{% endblock %}

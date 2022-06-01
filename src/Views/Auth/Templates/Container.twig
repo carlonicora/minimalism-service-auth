@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>title</title>
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no,viewport-fit=cover"/>
+    <link rel="stylesheet" href="{{ links.home }}public/css/styles.css" media="all" />
+</head>
+<body>
+<div><a href="{{ links.auth }}">home</a> | <a href="{{ links.return }}">cancel</a> | <a href="{{ links.forgot }}">forgot</a></div>
+
+{{ block('content') }}
+
+<script src="{{ links.home }}public/scripts/auth.js"></script>
+
+{{ block('scripts') }}
+<div id="errorMessage" style="color: #ff0000;"></div>
+</body>
+</html>

@@ -20,4 +20,7 @@ enum OneTimePasswordsBackupTable
 
     #[SqlField(fieldType: FieldType::Integer)]
     case hasBeenUsed;
+
+    #[SqlField(fieldOption: FieldOption::TimeCreate)]
+    case createdAt;
 }

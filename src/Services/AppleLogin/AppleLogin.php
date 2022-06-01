@@ -175,23 +175,21 @@ class AppleLogin extends AbstractService implements SocialLoginInterface
     ): array
     {
         if ($state !== $this->getAppleState()) {
-            header('Location:' . $this->path->getUrl() . 'index?error=' . ExceptionFactory::AppleResponseStateMismatch->value);
-            exit;
+            throw ExceptionFactory::AppleResponseStateMismatch->create();
         }
 
         $response = $this->httpCall(
             [
                 'grant_type' => 'authorization_code',
                 'code' => $code ?? '',
-                'redirect_uri' => $this->path->getUrl() . 'social/apple',
+                'redirect_uri' => $this->path->getUrl() . 'auth/social/apple',
                 'client_id' => $this->MINIMALISM_SERVICE_AUTH_APPLE_CLIENT_ID,
                 'client_secret' => $this->getAppleClientSecret(),
             ]
         );
 
         if (!isset($response['access_token'])) {
-            header('Location:' . $this->path->getUrl() . 'index?error=' . ExceptionFactory::AppleResponseMissingToken->value);
-            exit;
+            throw ExceptionFactory::AppleResponseMissingToken->create();
         }
 
         $response = explode('.', $response['id_token'])[1];

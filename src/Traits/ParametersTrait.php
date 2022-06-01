@@ -21,6 +21,9 @@ trait ParametersTrait
     /** @var string|null  */
     private ?string $source=null;
 
+    /** @var string|null  */
+    private ?string $email=null;
+
     /** @var bool  */
     private bool $saveInSession=true;
 
@@ -146,6 +149,34 @@ trait ParametersTrait
     }
 
     /**
+     * @return string|null
+     */
+    public function getEmail(
+    ): ?string
+    {
+        return $this->email;
+    }
+
+    /**
+     * @param string|null $email
+     */
+    public function setEmail(
+        ?string $email,
+    ): void
+    {
+        $this->email = $email;
+    }
+
+    /**
+     * @return void
+     */
+    public function allowSaveInSession(
+    ): void
+    {
+        $this->saveInSession = true;
+    }
+
+    /**
      * @return void
      */
     protected function readParametersFromSession(
@@ -155,6 +186,7 @@ trait ParametersTrait
         $this->state = $_SESSION['state'] ?? null;
         $this->userId = $_SESSION['userId'] ?? null;
         $this->source = $_SESSION['source'] ?? null;
+        $this->email = $_SESSION['email'] ?? null;
         $this->isAuthenticated = array_key_exists('isAuthenticated', $_SESSION) ? $_SESSION['isAuthenticated'] : false;
         $this->isNewRegistration = array_key_exists('isNewRegistration', $_SESSION) ? $_SESSION['isNewRegistration'] : false;
     }
@@ -170,6 +202,7 @@ trait ParametersTrait
             $_SESSION['client_id'] = $this->client_id;
             $_SESSION['state'] = $this->state;
             $_SESSION['source'] = $this->source;
+            $_SESSION['email'] = $this->email;
             $_SESSION['isAuthenticated'] = $this->isAuthenticated;
             $_SESSION['isNewRegistration'] = $this->isNewRegistration;
         }
@@ -178,6 +211,7 @@ trait ParametersTrait
         $this->state = null;
         $this->userId = null;
         $this->source = null;
+        $this->email = null;
         $this->isNewRegistration = false;
     }
 
@@ -191,10 +225,11 @@ trait ParametersTrait
         $this->state = null;
         $this->userId = null;
         $this->source = null;
+        $this->email = null;
         $this->isNewRegistration = false;
         $this->isAuthenticated = false;
 
-        unset($_SESSION['userId'],$_SESSION['client_id'],$_SESSION['state'],$_SESSION['source'],$_SESSION['isAuthenticated'],$_SESSION['isNewRegistration']);
+        unset($_SESSION['userId'],$_SESSION['client_id'],$_SESSION['state'],$_SESSION['source'],$_SESSION['email'],$_SESSION['isAuthenticated'],$_SESSION['isNewRegistration']);
         $this->saveInSession = false;
     }
 }

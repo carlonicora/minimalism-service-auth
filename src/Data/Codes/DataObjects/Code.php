@@ -5,8 +5,8 @@ use CarloNicora\Minimalism\Interfaces\Sql\Attributes\DbField;
 use CarloNicora\Minimalism\Interfaces\Sql\Attributes\DbTable;
 use CarloNicora\Minimalism\Interfaces\Sql\Enums\DbFieldType;
 use CarloNicora\Minimalism\Interfaces\Sql\Interfaces\SqlDataObjectInterface;
+use CarloNicora\Minimalism\Services\Auth\Data\Codes\Databases\CodesTable;
 use CarloNicora\Minimalism\Services\MySQL\Traits\SqlDataObjectTrait;
-use CarloNicora\Minimalism\Services\OAuth\Data\Codes\Databases\CodesTable;
 
 #[DbTable(tableClass: CodesTable::class)]
 class Code implements SqlDataObjectInterface
@@ -17,9 +17,13 @@ class Code implements SqlDataObjectInterface
     #[DbField(field: CodesTable::codeId)]
     private int $id;
 
-    /** @var int */
+    /** @var int|null */
     #[DbField]
-    private int $userId;
+    private ?int $userId=null;
+
+    /** @var string|null */
+    #[DbField]
+    private ?string $email=null;
 
     /** @var int */
     #[DbField]
@@ -33,47 +37,29 @@ class Code implements SqlDataObjectInterface
     #[DbField(fieldType: DbFieldType::IntDateTime)]
     private int $expirationTime;
 
-    /** @var string|null */
-    #[DbField]
-    private ?string $type = null;
-
-    /**
-     * @param int $userId
-     * @param int $code
-     */
-    public function __construct(
-        int $userId,
-        int $code,
-    )
-    {
-        $this->userId = $userId;
-        $this->code = $code;
-        $this->expirationTime = time() + 60 * 5;
-    }
-
     /** @return int */
     public function getId(): int{return $this->id;}
 
     /** @param int $id */
     public function setId(int $id): void{$this->id = $id;}
 
-    /** @return int */
-    public function getUserId(): int{return $this->userId;}
+    /** @return int|null */
+    public function getUserId(): ?int{return $this->userId;}
 
-    /** @param int $userId */
-    public function setUserId(int $userId): void{$this->userId = $userId;}
+    /** @param int|null $userId */
+    public function setUserId(?int $userId): void{$this->userId = $userId;}
 
-    /** @return int */
-    public function getCode(): int{return $this->code;}
+    /** @return string|null */
+    public function getEmail(): ?string{return $this->email;}
 
-    /** @param int $code */
-    public function setCode(int $code): void{$this->code = $code;}
+    /** @param string|null $email */
+    public function setEmail(?string $email): void{$this->email = $email;}
 
-    /** @return int */
-    public function getCreatedAt(): int{return $this->createdAt;}
+    /** @return int|null */
+    public function getCode(): ?int{return $this->code;}
 
-    /** @param int $createdAt */
-    public function setCreatedAt(int $createdAt): void{$this->createdAt = $createdAt;}
+    /** @param int|null $code */
+    public function setCode(?int $code): void{$this->code = $code;}
 
     /** @return int */
     public function getExpirationTime(): int{return $this->expirationTime;}
@@ -81,9 +67,9 @@ class Code implements SqlDataObjectInterface
     /** @param int $expirationTime */
     public function setExpirationTime(int $expirationTime): void{$this->expirationTime = $expirationTime;}
 
-    /** @return string|null */
-    public function getType(): ?string{return $this->type;}
+    /** @return int */
+    public function getCreatedAt(): int{return $this->createdAt;}
 
-    /** @param string|null $type */
-    public function setType(?string $type): void{$this->type = $type;}
+    /** @param int $createdAt */
+    public function setCreatedAt(int $createdAt): void{$this->createdAt = $createdAt;}
 }

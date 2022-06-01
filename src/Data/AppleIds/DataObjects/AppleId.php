@@ -20,19 +20,6 @@ class AppleId implements SqlDataObjectInterface
     #[DbField(field: AppleIdsTable::userId)]
     protected int $userId;
 
-    /**
-     * @param string $appleId
-     * @param int $userId
-     */
-    public function __construct(
-        string $appleId,
-        int $userId,
-    )
-    {
-        $this->appleId = $appleId;
-        $this->userId = $userId;
-    }
-
     /** @return string */
     public function getAppleId(): string{return $this->appleId;}
 

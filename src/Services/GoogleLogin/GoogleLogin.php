@@ -60,8 +60,7 @@ class GoogleLogin extends AbstractService implements SocialLoginInterface
         $response = $client->verifyIdToken();
 
         if (!array_key_exists('email', $response)){
-            header('Location:' . $this->path->getUrl() . 'index?error=' . ExceptionFactory::GoogleAccountMissingEmail->value);
-            exit;
+            throw ExceptionFactory::GoogleAccountMissingEmail->create();
         }
 
         return $response;

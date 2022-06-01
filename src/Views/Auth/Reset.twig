@@ -1,0 +1,43 @@
+{% extends "/Auth/Templates/Container.twig" %}
+
+{% block content %}
+    <h1>Password Reset</h1>
+{% if meta.code %}
+    <form method="{{ links.formAction.meta.method }}" action="{{ links.formAction.href }}" id="defaultForm">
+        <input type="hidden" name="code" value="{{ meta.code }}"/>
+        Password:<input id="id_password" name="password" type="password"/><br/>
+        Repeat Password:<input id="id_password_retype" name="retypePassword" type="password"/><br/>
+        <input type="submit"/>
+    </form>
+{% else %}
+    {{ meta.error }}
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+{% if meta.code %}
+    <script>
+        ready(document.getElementById('id_password').focus());
+
+        document.getElementById('defaultForm').addEventListener('submit', function(e){
+            e.preventDefault();
+
+            if (document.getElementById('id_password').value === ''){
+                document.getElementById('errorMessage').innerText = 'The password cannot be empty';
+            }
+
+            if (document.getElementById('id_password').value !== document.getElementById('id_password').value){
+                document.getElementById('errorMessage').innerText = 'The retyped password does not match the password';
+            }
+
+            http{{ links.formAction.meta.method | capitalize }}(e, undefined, undefined, function(data){
+                console.log(data.links.redirect);
+                window.location.replace(data.links.redirect);
+            }, function(error, status){
+                document.getElementById('errorMessage').innerText = error.title;
+                console.log(error.title);
+            })
+        });
+    </script>
+{% endif %}
+{% endblock %}

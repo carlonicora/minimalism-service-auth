@@ -2,24 +2,17 @@
 namespace CarloNicora\Minimalism\Services\Auth\Abstracts;
 
 use CarloNicora\JsonApi\Objects\Link;
-use CarloNicora\Minimalism\Abstracts\AbstractModel;
+use CarloNicora\JsonApi\Objects\Meta;
 use CarloNicora\Minimalism\Factories\MinimalismFactories;
-use CarloNicora\Minimalism\Services\Auth\Auth;
-use CarloNicora\Minimalism\Services\OAuth\Data\Apps\IO\AppIO;
+use CarloNicora\Minimalism\Services\Auth\Models\Auth\Cancel;
 use CarloNicora\Minimalism\Services\OAuth\OAuth;
 use Exception;
 
-class AbstractAuthWebModel extends AbstractModel
+class AbstractAuthWebModel extends AbstractAuthModel
 {
-    /** @var Auth  */
-    protected Auth $auth;
-
     /** @var OAuth  */
-    protected OAuth $OAuth;
-
-    /** @var string  */
-    protected string $url;
-
+    protected OAuth $oauth;
+    
     /**
      * AbstractAuthWebModel constructor.
      * @param MinimalismFactories $minimalismFactories
@@ -36,55 +29,97 @@ class AbstractAuthWebModel extends AbstractModel
             $function
         );
 
-        $this->url = $minimalismFactories->getServiceFactory()->getPath()?->getUrl();
-        $this->auth = $minimalismFactories->getServiceFactory()->create(Auth::class);
-        $this->OAuth = $minimalismFactories->getServiceFactory()->create(OAuth::class);
+        $this->oauth = $minimalismFactories->getServiceFactory()->create(OAuth::class);
+
+        $this->resetAuthLink();
 
         $this->document->links->add(
-            new Link('home', $this->url)
+            new Link(
+                name: 'home',
+                href: $this->url,
+            ),
         );
 
-        if ($this->auth->getClientId() !== null) {
-            $this->generateReturnToAppLink();
-        }
+        $this->document->links->add(
+            new Link(
+                name: 'forgot',
+                href: $this->url . 'auth/forgot',
+            ),
+        );
     }
 
     /**
      * @return void
      * @throws Exception
      */
-    protected function generateReturnToAppLink(
+    protected function resetAuthLink(
     ): void
     {
-        if ($this->document->links->has(name: 'return')) {
-            $this->document->links->remove(linkName: 'return');
+        if ($this->document->links->has('auth')){
+            $this->document->links->remove('auth');
         }
 
-        $this->document->links->add(
-            new Link(name: 'return', href: $this->url . 'cancel'),
-        );
-    }
-
-    /**
-     * @param bool $redirectImmediately
-     * @return void
-     * @throws Exception
-     */
-    protected function addCorrectRedirection(
-        bool $redirectImmediately = false,
-    ): void
-    {
-        $app = $this->objectFactory->create(AppIO::class)->readByClientId($this->auth->getClientId());
-
-        if ($redirectImmediately){
-            header('Location:' . $this->url . ($app->isTrusted() ? 'redirect' :'auth'));
-            exit;
+        $link = $this->url . 'auth/index?client_id=' . $this->auth->getClientId() . '&state=' . $this->auth->getState();
+        if ($this->auth->getSource() !== null){
+            $link .= '&source=' . $this->auth->getSource();
         }
 
         $this->document->links->add(
             new Link(
-                name: 'redirect',
-                href: $this->url . ($app->isTrusted() ? 'redirect' :'auth'),
+                name: 'auth',
+                href: $link,
+            ),
+        );
+
+        if ($this->document->links->has('return')){
+            $this->document->links->remove('return');
+        }
+
+        if ($this->auth->getClientId() !== null) {
+            $this->document->links->add(
+                new Link(
+                    name: 'return',
+                    href: $this->getRedirectionLink(Cancel::class),
+                ),
+            );
+        }
+    }
+
+    /**
+     * @param string $actionClass
+     * @return string
+     * @throws Exception
+     */
+    protected function addFormLink(
+        string $actionClass,
+    ): string
+    {
+        $path = explode('\\', $actionClass);
+        $actionName = array_pop($path);
+
+        return $this->url . 'auth/actions/' . $actionName;
+    }
+
+    /**
+     * @param string $modelClass
+     * @param string $linkName
+     * @param string $method
+     * @return void
+     * @throws Exception
+     */
+    protected function addFormAction(
+        string $modelClass,
+        string $linkName='formAction',
+        string $method='POST',
+    ): void
+    {
+        $this->document->links->add(
+            new Link(
+                name: $linkName,
+                href:$this->addFormLink(actionClass: $modelClass),
+                meta: new Meta([
+                    'method' => $method,
+                ]),
             ),
         );
     }

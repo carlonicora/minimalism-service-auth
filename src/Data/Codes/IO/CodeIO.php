@@ -18,8 +18,9 @@ class CodeIO extends AbstractSqlIO
     ) : void
     {
         $this->data->delete(
-            queryFactory: SqlQueryFactory::create(CodesTable::class)->delete()
-                ->addParameter(field: CodesTable::expirationTime, value: time(), comparison: SqlComparison::LesserThan)
+            queryFactory: SqlQueryFactory::create(CodesTable::class)
+                ->delete()
+                ->addParameter(field: CodesTable::expirationTime, value: date('Y-m-d H:i:s'), comparison: SqlComparison::LesserThan)
         );
     }
 
@@ -41,6 +42,23 @@ class CodeIO extends AbstractSqlIO
     }
 
     /**
+     * @param string $email
+     * @return Code[]
+     * @throws MinimalismException
+     */
+    public function readByEmail(
+        string $email,
+    ): array
+    {
+        return $this->data->read(
+            queryFactory: SqlQueryFactory::create(CodesTable::class)
+                ->addParameter(field: CodesTable::email, value: $email),
+            responseType: Code::class,
+            requireObjectsList: true,
+        );
+    }
+
+    /**
      * @param int $userId
      * @throws Exception
      */
@@ -51,6 +69,20 @@ class CodeIO extends AbstractSqlIO
         $this->data->delete(
             queryFactory: SqlQueryFactory::create(CodesTable::class)->delete()
                 ->addParameter(field: CodesTable::userId, value: $userId)
+        );
+    }
+
+    /**
+     * @param string $email
+     * @throws Exception
+     */
+    public function purgeEmail(
+        string $email,
+    ) : void
+    {
+        $this->data->delete(
+            queryFactory: SqlQueryFactory::create(CodesTable::class)->delete()
+                ->addParameter(field: CodesTable::email, value: $email)
         );
     }
 
@@ -75,39 +107,74 @@ class CodeIO extends AbstractSqlIO
     }
 
     /**
-     * @param int $userId
+     * @param string $email
      * @param int $code
+     * @return array
+     * @throws Exception
+     */
+    public function readByEmailCode(
+        string $email,
+        int $code,
+    ): array
+    {
+        return $this->data->read(
+            queryFactory: SqlQueryFactory::create(CodesTable::class)
+                ->addParameter(field: CodesTable::email, value: $email)
+                ->addParameter(field: CodesTable::code, value: $code),
+            responseType: Code::class,
+            requireObjectsList: true,
+        );
+    }
+
+    /**
+     * @param int $code
+     * @param int|null $userId
+     * @param string|null $email
      * @return bool
      * @throws MinimalismException
      */
     public function isCodeValid(
-        int $userId,
         int $code,
+        ?int $userId=null,
+        ?string $email=null,
     ): bool
     {
         $this->purgeExpired();
 
+        $factory = SqlQueryFactory::create(CodesTable::class)
+            ->addParameter(field: CodesTable::code, value: $code)
+            ->addParameter(field: CodesTable::expirationTime, value: date('Y-m-d H:i:s'), comparison: SqlComparison::GreaterThan);
+
+        if ($userId !== null){
+            $factory->addParameter(field: CodesTable::userId, value: $userId);
+        } else {
+            $factory->addParameter(field: CodesTable::email, value: $email);
+        }
+
         $recordset = $this->data->read(
-            queryFactory: SqlQueryFactory::create(CodesTable::class)
-                ->addParameter(field: CodesTable::userId, value: $userId)
-                ->addParameter(field: CodesTable::code, value: $code)
-                ->addParameter(field: CodesTable::expirationTime, value: time(), comparison: SqlComparison::GreaterThan)
+            queryFactory: $factory
         );
 
         return $recordset !== [];
     }
 
     /**
-     * @param int $userId
+     * @param int|null $userId
+     * @param string|null $email
      * @return string
-     * @throws MinimalismException
+     * @throws Exception
      */
     public function generateCode(
-        int $userId,
+        ?int $userId=null,
+        ?string $email=null,
     ): string{
         $this->purgeExpired();
 
-        $codes = $this->readByUserId($userId);
+        if ($userId !== null) {
+            $codes = $this->readByUserId($userId);
+        } else {
+            $codes = $this->readByEmail($email);
+        }
 
         if ($codes === []) {
             try {
@@ -117,7 +184,14 @@ class CodeIO extends AbstractSqlIO
                 $response = rand(100000, 999999);
             }
 
-            $newCode = new Code(userId: $userId, code: $response);
+            $newCode = new Code();
+            if ($userId !== null) {
+                $newCode->setUserId($userId);
+            } else {
+                $newCode->setEmail($email);
+            }
+            $newCode->setCode($response);
+            $newCode->setExpirationTime(time() + 60 * 5);
 
             /** @noinspection UnusedFunctionResultInspection */
             $this->data->create(

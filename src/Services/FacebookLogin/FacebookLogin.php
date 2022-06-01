@@ -76,8 +76,7 @@ class FacebookLogin extends AbstractService implements SocialLoginInterface
         $response = $fb->get('/me?&fields=name,email,picture', $accessToken)->getDecodedBody();
 
         if (!array_key_exists('email', $response) || empty($response['email'])){
-            header('Location:' . $this->path->getUrl() . 'index?error=' . ExceptionFactory::FacebookAccountMissingEmail->value);
-            exit;
+            throw ExceptionFactory::FacebookAccountMissingEmail->create();
         }
 
         return $response;

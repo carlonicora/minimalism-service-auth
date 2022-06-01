@@ -1,0 +1,30 @@
+{% extends "/Auth/Templates/Container.twig" %}
+
+{% block content %}
+    <h1>Login with Code</h1>
+    <form method="{{ links.formAction.meta.method }}" action="{{ links.formAction.href }}" id="defaultForm">
+        Code:<br/>
+        <input id="id_code" name="code" value="{{ meta.code }}"/>
+        <input type="submit"/>
+    </form>
+
+    <form method="{{ links.resendCodeAction.meta.method }}" action="{{ links.resendCodeAction.href }}" id="resendCodeForm">
+        <input type="submit" value="Resend Code"/>
+    </form>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        ready(document.getElementById('id_code').focus());
+        formSetup('defaultForm', '{{ links.formAction.meta.method | capitalize }}');
+
+        document.getElementById('resendCodeForm').addEventListener('submit', function(e){
+            httpPost(e, undefined, undefined, function(data){
+                console.log('Code resent');
+            }, function(error, status){
+                document.getElementById('errorMessage').innerText = error.title;
+                console.log(error.title);
+            })
+        });
+    </script>
+{% endblock %}

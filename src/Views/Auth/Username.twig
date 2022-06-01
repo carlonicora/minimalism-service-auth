@@ -1,0 +1,18 @@
+{% extends "/Auth/Templates/Container.twig" %}
+
+{% block content %}
+    <h1>Account Completion</h1>
+    Select your username and password
+    <form method="{{ links.formAction.meta.method }}" action="{{ links.formAction.href }}" id="defaultForm">
+        Username: <input id="id_username" name="username" value="{{ meta.username }}"/><br/>
+        Password: <input id="id_password" name="password" type="password"/> (can be empty)<br/>
+        <input type="submit"/>
+    </form>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        ready(document.getElementById('id_username').focus());
+        formSetup('defaultForm', '{{ links.formAction.meta.method | capitalize }}');
+    </script>
+{% endblock %}

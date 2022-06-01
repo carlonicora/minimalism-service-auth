@@ -1,0 +1,17 @@
+{% extends "/Auth/Templates/Container.twig" %}
+
+{% block content %}
+    <h1>Forgot Password</h1>
+    <form method="{{ links.formAction.meta.method }}" action="{{ links.formAction.href }}" id="defaultForm">
+        Email:<input id="id_email" name="email"/>
+        <input type="submit"/>
+    </form>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        ready(document.getElementById('id_email').focus());
+
+        formSetup('defaultForm', '{{ links.formAction.meta.method | capitalize }}');
+    </script>
+{% endblock %}
