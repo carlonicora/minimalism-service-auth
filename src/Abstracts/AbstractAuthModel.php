@@ -66,6 +66,6 @@ class AbstractAuthModel extends AbstractModel
             $isFirstParameter = false;
         }
 
-        return $response;
+        return strtolower($response);
     }
 }

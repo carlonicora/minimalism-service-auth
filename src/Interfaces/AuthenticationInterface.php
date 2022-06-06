@@ -47,4 +47,10 @@ interface AuthenticationInterface
      * @param User $user
      */
     public function activateUser(User $user): void;
+
+    /**
+     * @param User $user
+     * @return bool
+     */
+    public function isSocialLogin(User $user): bool;
 }

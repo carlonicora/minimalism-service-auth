@@ -3,6 +3,7 @@ namespace CarloNicora\Minimalism\Services\Auth\Models\Auth\Actions;
 
 use CarloNicora\Minimalism\Enums\HttpCode;
 use CarloNicora\Minimalism\Services\Auth\Abstracts\AbstractAuthActionModel;
+use CarloNicora\Minimalism\Services\Auth\Models\Auth\Code;
 use Exception;
 
 class ResendCode extends AbstractAuthActionModel
@@ -17,6 +18,8 @@ class ResendCode extends AbstractAuthActionModel
         $user = $this->authenticator->authenticateById($this->auth->getUserId());
         $this->auth->sendCodeEmail($user);
 
-        return HttpCode::NoContent;
+        $this->addRedirection(Code::class);
+
+        return HttpCode::Accepted;
     }
 }

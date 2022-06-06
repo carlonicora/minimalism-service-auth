@@ -26,7 +26,6 @@ enum ExceptionFactory: int
     case EmailNotFound=16;
     case ClientIdInvalid=17;
     case UsernameAlreadyInUse=18;
-    case InvalidDomain=19;
 
     /**
      * @return MinimalismException
@@ -93,11 +92,6 @@ enum ExceptionFactory: int
             self::UsernameAlreadyInUse => new MinimalismException(
                 status: HttpCode::Conflict,
                 message: 'The selected username is already in use',
-                code: self::SERVICE_IDENTIFIER + $this->value,
-            ),
-            self::InvalidDomain => new MinimalismException(
-                status: HttpCode::PreconditionFailed,
-                message: 'The email belongs to a domain which is not supported. Please use a different email address.',
                 code: self::SERVICE_IDENTIFIER + $this->value,
             ),
             default =>  new MinimalismException(

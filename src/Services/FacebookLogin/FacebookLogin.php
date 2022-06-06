@@ -45,7 +45,7 @@ class FacebookLogin extends AbstractService implements SocialLoginInterface
         ]);
         $helper = $fb->getRedirectLoginHelper();
         $permissions = ['email'];
-        return $helper->getLoginUrl($this->path->getUrl() . 'social/facebook', $permissions);
+        return $helper->getLoginUrl($this->path->getUrl() . 'auth/social/facebook', $permissions);
     }
 
     /**
@@ -65,7 +65,7 @@ class FacebookLogin extends AbstractService implements SocialLoginInterface
         $oAuth = new OAuth2Client($facebookApp, $facebookClient);
 
         /** @noinspection ProperNullCoalescingOperatorUsageInspection */
-        $accessToken = $facebookToken ?? (new FacebookRedirectLoginHelper($oAuth))->getAccessToken($this->path->getUrl() . 'social/facebook');
+        $accessToken = $facebookToken ?? (new FacebookRedirectLoginHelper($oAuth))->getAccessToken($this->path->getUrl() . 'auth/social/facebook');
 
         $fb = new Facebook([
             'app_id' => $this->MINIMALISM_SERVICE_AUTH_FACEBOOK_ID,

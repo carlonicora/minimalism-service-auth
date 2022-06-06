@@ -5,12 +5,10 @@ use CarloNicora\Minimalism\Abstracts\AbstractService;
 use CarloNicora\Minimalism\Interfaces\Encrypter\Interfaces\EncrypterInterface;
 use CarloNicora\Minimalism\Interfaces\Mailer\Enums\RecipientType;
 use CarloNicora\Minimalism\Interfaces\Mailer\Objects\Recipient;
-use CarloNicora\Minimalism\Services\Auth\Data\BlockedDomains\IO\BlockedDomainIO;
 use CarloNicora\Minimalism\Services\Auth\Data\Codes\IO\CodeIO;
 use CarloNicora\Minimalism\Services\Auth\Data\Users\DataObjects\User;
 use CarloNicora\Minimalism\Services\Auth\Enums\Views;
 use CarloNicora\Minimalism\Services\Auth\Factories\EmailFactory;
-use CarloNicora\Minimalism\Services\Auth\Factories\ExceptionFactory;
 use CarloNicora\Minimalism\Services\Auth\Interfaces\AuthenticationInterface;
 use CarloNicora\Minimalism\Services\Auth\Traits\ParametersTrait;
 use CarloNicora\Minimalism\Services\Path;
@@ -172,24 +170,6 @@ class Auth extends AbstractService
             name: $this->MINIMALISM_SERVICE_AUTH_SENDER_NAME,
             type: RecipientType::Sender,
         );
-    }
-
-    /**
-     * @param string $email
-     * @return void
-     * @throws Exception
-     */
-    public function validateDomain(
-        string $email,
-    ): void
-    {
-        $domainName = explode('@', $email)[1];
-        try {
-            /** @noinspection UnusedFunctionResultInspection */
-            $this->objectFactory->create(BlockedDomainIO::class)->readBydomain($domainName);
-            throw ExceptionFactory::InvalidDomain->create();
-        } catch (Exception) {
-        }
     }
 
     /**

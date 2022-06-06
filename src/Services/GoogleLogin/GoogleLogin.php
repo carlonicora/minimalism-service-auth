@@ -34,7 +34,7 @@ class GoogleLogin extends AbstractService implements SocialLoginInterface
 
         $client = new Google_Client();
         $client->setAuthConfig($this->path->getRoot() . DIRECTORY_SEPARATOR . $this->MINIMALISM_SERVICE_AUTH_GOOGLE_IDENTITY_FILE);
-        $client->setRedirectUri($this->path->getUrl() . 'social/google');
+        $client->setRedirectUri($this->path->getUrl() . 'auth/social/google');
         $client->addScope('email');
         $client->addScope('profile');
         return $client->createAuthUrl();
@@ -51,7 +51,7 @@ class GoogleLogin extends AbstractService implements SocialLoginInterface
     {
         $client = new Google_Client();
         $client->setAuthConfig($this->path->getRoot() . DIRECTORY_SEPARATOR . $this->MINIMALISM_SERVICE_AUTH_GOOGLE_IDENTITY_FILE);
-        $client->setRedirectUri($this->path->getUrl() . 'social/google');
+        $client->setRedirectUri($this->path->getUrl() . 'auth/social/google');
         $client->addScope('email');
         $client->addScope('profile');
 

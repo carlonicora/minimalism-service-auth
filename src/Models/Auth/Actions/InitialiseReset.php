@@ -29,6 +29,7 @@ class InitialiseReset extends AbstractAuthActionModel
         }
 
         $this->auth->sendForgotEmail($user);
+        $this->auth->setEmail($email);
 
         $this->addRedirection(ResetInitialised::class);
 
