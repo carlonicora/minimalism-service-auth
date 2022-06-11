@@ -5,8 +5,8 @@ use CarloNicora\Minimalism\Interfaces\Sql\Attributes\DbField;
 use CarloNicora\Minimalism\Interfaces\Sql\Attributes\DbTable;
 use CarloNicora\Minimalism\Interfaces\Sql\Enums\DbFieldType;
 use CarloNicora\Minimalism\Interfaces\Sql\Interfaces\SqlDataObjectInterface;
+use CarloNicora\Minimalism\Interfaces\Sql\Traits\SqlDataObjectTrait;
 use CarloNicora\Minimalism\Services\Auth\Data\OneTimePasswordBackups\Databases\OneTimePasswordsBackupTable;
-use CarloNicora\Minimalism\Services\MySQL\Traits\SqlDataObjectTrait;
 
 #[DbTable(tableClass: OneTimePasswordsBackupTable::class)]
 class OneTimePasswordBackup implements SqlDataObjectInterface

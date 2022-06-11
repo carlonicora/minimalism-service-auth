@@ -2,9 +2,9 @@
 namespace CarloNicora\Minimalism\Services\Auth\Data\AppleIds\IO;
 
 use CarloNicora\Minimalism\Interfaces\Sql\Abstracts\AbstractSqlIO;
+use CarloNicora\Minimalism\Interfaces\Sql\Factories\SqlQueryFactory;
 use CarloNicora\Minimalism\Services\Auth\Data\AppleIds\Databases\AppleIdsTable;
 use CarloNicora\Minimalism\Services\Auth\Data\AppleIds\DataObjects\AppleId;
-use CarloNicora\Minimalism\Services\MySQL\Factories\SqlQueryFactory;
 use Exception;
 
 class AppleIdIO extends AbstractSqlIO

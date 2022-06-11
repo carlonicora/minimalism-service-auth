@@ -1,16 +1,16 @@
 <?php
 namespace CarloNicora\Minimalism\Services\Auth\Data\AppleIds\Databases;
 
-use CarloNicora\Minimalism\Services\MySQL\Data\SqlField;
-use CarloNicora\Minimalism\Services\MySQL\Data\SqlTable;
-use CarloNicora\Minimalism\Services\MySQL\Enums\FieldType;
+use CarloNicora\Minimalism\Interfaces\Sql\Attributes\SqlFieldAttribute;
+use CarloNicora\Minimalism\Interfaces\Sql\Attributes\SqlTableAttribute;
+use CarloNicora\Minimalism\Interfaces\Sql\Enums\SqlFieldType;
 
-#[SqlTable(name: 'appleIds', databaseIdentifier: 'Auth')]
+#[SqlTableAttribute(name: 'appleIds', databaseIdentifier: 'Auth')]
 enum AppleIdsTable
 {
-    #[SqlField(fieldType: FieldType::String)]
+    #[SqlFieldAttribute(fieldType: SqlFieldType::String)]
     case appleId;
 
-    #[SqlField(fieldType: FieldType::Integer)]
+    #[SqlFieldAttribute(fieldType: SqlFieldType::Integer)]
     case userId;
 }

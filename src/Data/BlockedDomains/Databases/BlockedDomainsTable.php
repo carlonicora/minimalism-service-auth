@@ -1,17 +1,17 @@
 <?php
 namespace CarloNicora\Minimalism\Services\Auth\Data\BlockedDomains\Databases;
 
-use CarloNicora\Minimalism\Services\MySQL\Data\SqlField;
-use CarloNicora\Minimalism\Services\MySQL\Data\SqlTable;
-use CarloNicora\Minimalism\Services\MySQL\Enums\FieldOption;
-use CarloNicora\Minimalism\Services\MySQL\Enums\FieldType;
+use CarloNicora\Minimalism\Interfaces\Sql\Attributes\SqlFieldAttribute;
+use CarloNicora\Minimalism\Interfaces\Sql\Attributes\SqlTableAttribute;
+use CarloNicora\Minimalism\Interfaces\Sql\Enums\SqlFieldOption;
+use CarloNicora\Minimalism\Interfaces\Sql\Enums\SqlFieldType;
 
-#[SqlTable(name: 'codes', databaseIdentifier: 'Auth')]
+#[SqlTableAttribute(name: 'codes', databaseIdentifier: 'Auth')]
 enum BlockedDomainsTable
 {
-    #[SqlField(fieldType: FieldType::Integer,fieldOption: FieldOption::AutoIncrement)]
+    #[SqlFieldAttribute(fieldType: SqlFieldType::Integer,fieldOption: SqlFieldOption::AutoIncrement)]
     case blockedDomainId;
 
-    #[SqlField(fieldType: FieldType::String)]
+    #[SqlFieldAttribute(fieldType: SqlFieldType::String)]
     case domain;
 }

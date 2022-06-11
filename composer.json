@@ -1,7 +1,7 @@
 {
   "name": "carlonicora/minimalism-service-auth",
   "description": "Authentication and Authorisation service for minimalism",
-  "version": "6.0.0",
+  "version": "6.0.1",
   "homepage": "https://carlonicora.com",
   "time": "2020-06-13",
   "license": "MIT",
@@ -22,7 +22,6 @@
   },
   "require": {
     "php": ">=8.1",
-    "ext-redis": "*",
     "ext-json": "*",
     "ext-curl": "*",
     "carlonicora/jsonapi": "~3.0",
@@ -32,7 +31,6 @@
     "carlonicora/minimalism-interface-mailer": "~1.0",
     "carlonicora/minimalism-service-encrypter": "~4.0",
     "carlonicora/minimalism-service-mailer-twig": "~1.0",
-    "carlonicora/minimalism-service-mysql": "~6.0",
     "carlonicora/minimalism-service-oauth": "~2.0",
     "web-token/jwt-framework": "~2.2",
     "facebook/graph-sdk":"*",

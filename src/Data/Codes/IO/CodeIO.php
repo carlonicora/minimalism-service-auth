@@ -4,9 +4,9 @@ namespace CarloNicora\Minimalism\Services\Auth\Data\Codes\IO;
 use CarloNicora\Minimalism\Exceptions\MinimalismException;
 use CarloNicora\Minimalism\Interfaces\Sql\Abstracts\AbstractSqlIO;
 use CarloNicora\Minimalism\Interfaces\Sql\Enums\SqlComparison;
+use CarloNicora\Minimalism\Interfaces\Sql\Factories\SqlQueryFactory;
 use CarloNicora\Minimalism\Services\Auth\Data\Codes\Databases\CodesTable;
 use CarloNicora\Minimalism\Services\Auth\Data\Codes\DataObjects\Code;
-use CarloNicora\Minimalism\Services\MySQL\Factories\SqlQueryFactory;
 use Exception;
 
 class CodeIO extends AbstractSqlIO

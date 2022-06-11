@@ -3,9 +3,9 @@ namespace CarloNicora\Minimalism\Services\Auth\Data\OneTimePasswordBackups\IO;
 
 use CarloNicora\Minimalism\Exceptions\MinimalismException;
 use CarloNicora\Minimalism\Interfaces\Sql\Abstracts\AbstractSqlIO;
+use CarloNicora\Minimalism\Interfaces\Sql\Factories\SqlQueryFactory;
 use CarloNicora\Minimalism\Services\Auth\Data\OneTimePasswordBackups\Databases\OneTimePasswordsBackupTable;
 use CarloNicora\Minimalism\Services\Auth\Data\OneTimePasswordBackups\DataObjects\OneTimePasswordBackup;
-use CarloNicora\Minimalism\Services\MySQL\Factories\SqlQueryFactory;
 
 class OneTimePasswordBackupIO extends AbstractSqlIO
 {

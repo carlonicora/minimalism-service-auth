@@ -2,9 +2,9 @@
 namespace CarloNicora\Minimalism\Services\Auth\Data\BlockedDomains\IO;
 
 use CarloNicora\Minimalism\Interfaces\Sql\Abstracts\AbstractSqlIO;
+use CarloNicora\Minimalism\Interfaces\Sql\Factories\SqlQueryFactory;
 use CarloNicora\Minimalism\Services\Auth\Data\BlockedDomains\Databases\BlockedDomainsTable;
 use CarloNicora\Minimalism\Services\Auth\Data\BlockedDomains\DataObjects\BlockedDomain;
-use CarloNicora\Minimalism\Services\MySQL\Factories\SqlQueryFactory;
 use Exception;
 
 class BlockedDomainIO extends AbstractSqlIO

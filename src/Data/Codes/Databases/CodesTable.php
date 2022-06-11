@@ -1,29 +1,29 @@
 <?php
 namespace CarloNicora\Minimalism\Services\Auth\Data\Codes\Databases;
 
-use CarloNicora\Minimalism\Services\MySQL\Data\SqlField;
-use CarloNicora\Minimalism\Services\MySQL\Data\SqlTable;
-use CarloNicora\Minimalism\Services\MySQL\Enums\FieldOption;
-use CarloNicora\Minimalism\Services\MySQL\Enums\FieldType;
+use CarloNicora\Minimalism\Interfaces\Sql\Attributes\SqlFieldAttribute;
+use CarloNicora\Minimalism\Interfaces\Sql\Attributes\SqlTableAttribute;
+use CarloNicora\Minimalism\Interfaces\Sql\Enums\SqlFieldOption;
+use CarloNicora\Minimalism\Interfaces\Sql\Enums\SqlFieldType;
 
-#[SqlTable(name: 'codes', databaseIdentifier: 'Auth')]
+#[SqlTableAttribute(name: 'codes', databaseIdentifier: 'Auth')]
 enum CodesTable
 {
-    #[SqlField(fieldType: FieldType::Integer, fieldOption: FieldOption::AutoIncrement)]
+    #[SqlFieldAttribute(fieldType: SqlFieldType::Integer, fieldOption: SqlFieldOption::AutoIncrement)]
     case codeId;
 
-    #[SqlField(fieldType: FieldType::Integer)]
+    #[SqlFieldAttribute(fieldType: SqlFieldType::Integer)]
     case userId;
 
-    #[SqlField]
+    #[SqlFieldAttribute(fieldType: SqlFieldType::String)]
     case email;
 
-    #[SqlField(fieldType: FieldType::Integer)]
+    #[SqlFieldAttribute(fieldType: SqlFieldType::Integer)]
     case code;
 
-    #[SqlField(fieldOption: FieldOption::TimeCreate)]
+    #[SqlFieldAttribute(fieldType: SqlFieldType::String, fieldOption: SqlFieldOption::TimeCreate)]
     case createdAt;
 
-    #[SqlField(fieldOption: FieldOption::TimeUpdate)]
+    #[SqlFieldAttribute(fieldType: SqlFieldType::String, fieldOption: SqlFieldOption::TimeUpdate)]
     case expirationTime;
 }

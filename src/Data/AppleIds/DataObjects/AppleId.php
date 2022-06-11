@@ -4,8 +4,8 @@ namespace CarloNicora\Minimalism\Services\Auth\Data\AppleIds\DataObjects;
 use CarloNicora\Minimalism\Interfaces\Sql\Attributes\DbField;
 use CarloNicora\Minimalism\Interfaces\Sql\Attributes\DbTable;
 use CarloNicora\Minimalism\Interfaces\Sql\Interfaces\SqlDataObjectInterface;
+use CarloNicora\Minimalism\Interfaces\Sql\Traits\SqlDataObjectTrait;
 use CarloNicora\Minimalism\Services\Auth\Data\AppleIds\Databases\AppleIdsTable;
-use CarloNicora\Minimalism\Services\MySQL\Traits\SqlDataObjectTrait;
 
 #[DbTable(tableClass: AppleIdsTable::class)]
 class AppleId implements SqlDataObjectInterface
