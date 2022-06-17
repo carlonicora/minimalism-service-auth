@@ -95,7 +95,6 @@ function httpCall(e, method, url, data, successCallback, failCallback) {
 
     var request = new XMLHttpRequest();
     request.open(method, url, true);
-    request.setRequestHeader('Authorization', 'Bearer bearerDefault');
 
     if (data === undefined && e !== undefined){
         request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
