@@ -29,9 +29,13 @@ class UsernameCheck extends AbstractAuthActionModel
         if ($user->getUsername() !== $username){
             try {
                 /** @noinspection UnusedFunctionResultInspection */
-                $this->authenticator->authenticateByUsername($username);
-                throw ExceptionFactory::UsernameAlreadyInUse->create();
+                $existingUser = $this->authenticator->authenticateByUsername($username);
             } catch (Exception) {
+                $existingUser = null;
+            }
+
+            if ($existingUser !== null){
+                throw ExceptionFactory::UsernameAlreadyInUse->create();
             }
         }
 

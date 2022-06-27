@@ -11,7 +11,7 @@ class UsernameFactory
         string $username,
     ): string
     {
-        $response = str_replace(' ', '-', strtolower($username));
+        $response = str_replace(' ', '-', trim(strtolower($username)));
 
         return preg_replace('/[^a-z\d\-\_]/', '', $response);
     }
