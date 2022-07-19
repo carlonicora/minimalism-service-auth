@@ -23,9 +23,11 @@ class Redirect extends AbstractAuthWebModel
             throw ExceptionFactory::MissingUserInformation->create();
         }
 
+        /*
         if ($this->auth->getState() === null){
             throw ExceptionFactory::MissingState->create();
         }
+        */
 
         if (!$this->auth->isAuthenticated()){
             return $this->redirect(Cancel::class);
